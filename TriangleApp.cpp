@@ -10,6 +10,7 @@ TriangleApp::TriangleApp()
 	mModel(NULL),
 	mUniformModel(0),
 	mDirection(true),
+	mCurrAngle(0.0f),
 	mTriOffset(0.0f),
 	mTriMaxOffset(0.7f),
 	mTriIncrement(0.0005f)
@@ -58,6 +59,10 @@ void TriangleApp::Update(float deltaTime)
 
 	if (abs(mTriOffset) >= mTriMaxOffset)
 		mDirection = !mDirection;
+
+	mCurrAngle -= 0.005f * deltaTime;
+	if (abs(mCurrAngle) >= 360.0f)
+		mCurrAngle -= 360.0f;
 }
 
 void TriangleApp::Render()
@@ -66,6 +71,7 @@ void TriangleApp::Render()
 
 	mModel = glm::mat4(1.0f);
 	mModel = glm::translate(mModel, glm::vec3(mTriOffset, 0.0f, 0.0f));
+	mModel = glm::rotate(mModel, mCurrAngle * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 
 	glUniformMatrix4fv(mUniformModel, 1, GL_FALSE, glm::value_ptr(mModel));
 

@@ -13,6 +13,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+const float toRadians = 3.14159265f / 180.0f;
+
 static const char* VSHADER = "												\n\
 #version 330																\n\
 																			\n\
