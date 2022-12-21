@@ -1,5 +1,5 @@
-#ifndef SHADERS_H
-#define SHADERS_H
+#ifndef UTIL_H
+#define UTIL_H
 
 static const char* VSHADER = "									\n\
 #version 330													\n\
