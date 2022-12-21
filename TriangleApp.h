@@ -21,7 +21,8 @@ private:
 	bool CompileShaders();
 private:
 	GLuint mVAO;
-	GLuint mVBO;
+	GLuint mVBO1;
+	GLuint mVBO2;
 	GLuint mShader;
 
 	glm::mat4 mModel;

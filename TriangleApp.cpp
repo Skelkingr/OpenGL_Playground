@@ -4,7 +4,8 @@ TriangleApp::TriangleApp()
 	:
 	App(),
 	mVAO(0),
-	mVBO(0),
+	mVBO1(0),
+	mVBO2(0),
 	mShader(0),
 	mModel(NULL),
 	mUniformModel(0),
@@ -24,7 +25,7 @@ int TriangleApp::Run()
 		glfwPollEvents();
 
 		Update(0.3f);
-		Clear(0.0f, 0.0f, 0.0f, 1.0f);
+		Clear(0.4f, 0.6f, 0.9f, 1.0f);
 		Render();
 	}
 
@@ -85,15 +86,30 @@ void TriangleApp::CreateTriangle()
 		 0.0f,  1.0f, 0.0f
 	};
 
+	GLfloat vertexColors[] = {
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+	};
+
 	glGenVertexArrays(1, &mVAO);
 	glBindVertexArray(mVAO);
 
-	glGenBuffers(1, &mVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+	// Positions
+	glGenBuffers(1, &mVBO1);
+	glBindBuffer(GL_ARRAY_BUFFER, mVBO1);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(0);
+
+	// Colors
+	glGenBuffers(1, &mVBO2);
+	glBindBuffer(GL_ARRAY_BUFFER, mVBO2);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexColors), vertexColors, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
