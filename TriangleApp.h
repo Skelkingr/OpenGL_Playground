@@ -29,10 +29,16 @@ private:
 	GLuint mUniformModel;
 
 	bool mDirection;
-	float mCurrAngle;
 	float mTriOffset;
 	float mTriMaxOffset;
 	float mTriIncrement;
+
+	float mCurrAngle;
+
+	bool mSizeDirection;
+	float mCurrSize;
+	float mMaxSize;
+	float mMinSize;
 };
 
 #endif
