@@ -2,7 +2,6 @@
 #define TRIANGLEAPP_H
 
 #include "App.h"
-#include "util.h"
 
 class TriangleApp : public App
 {

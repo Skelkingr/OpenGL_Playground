@@ -1,6 +1,12 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include <stdio.h>
+#include <string.h>
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
 static const char* VSHADER = "									\n\
 #version 330													\n\
 																\n\
