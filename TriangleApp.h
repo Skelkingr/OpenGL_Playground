@@ -13,8 +13,8 @@ public:
 
 	bool Init();
 
-	bool Update(float deltaTime);
-	bool Render();
+	void Update(float deltaTime);
+	void Render();
 private:
 	void CreateTriangle();
 	bool AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
@@ -23,6 +23,13 @@ private:
 	GLuint mVAO;
 	GLuint mVBO;
 	GLuint mShader;
+
+	GLuint mUniformXMove;
+
+	bool mDirection;
+	float mTriOffset;
+	float mTriMaxOffset;
+	float mTriIncrement;
 };
 
 #endif

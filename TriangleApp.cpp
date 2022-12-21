@@ -5,7 +5,12 @@ TriangleApp::TriangleApp()
 	App(),
 	mVAO(0),
 	mVBO(0),
-	mShader(0)
+	mShader(0),
+	mUniformXMove(0),
+	mDirection(true),
+	mTriOffset(0.0f),
+	mTriMaxOffset(0.7f),
+	mTriIncrement(0.0005f)
 {}
 
 TriangleApp::~TriangleApp()
@@ -18,17 +23,9 @@ int TriangleApp::Run()
 	{
 		glfwPollEvents();
 
+		Update(0.5f);
 		Clear(0.0f, 0.0f, 0.0f, 1.0f);
-
-		glUseProgram(mShader);
-
-		glBindVertexArray(mVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		glBindVertexArray(0);
-
-		glUseProgram(0);
-
-		glfwSwapBuffers(mMainWindow);
+		Render();
 	}
 
 	return 0;
@@ -47,14 +44,34 @@ bool TriangleApp::Init()
 	return true;
 }
 
-bool TriangleApp::Update(float deltaTime)
+void TriangleApp::Update(float deltaTime)
 {
-	return false;
+	if (mDirection)
+	{
+		mTriOffset += mTriIncrement * deltaTime;
+	}
+	else
+	{
+		mTriOffset -= mTriIncrement * deltaTime;
+	}
+
+	if (abs(mTriOffset) >= mTriMaxOffset)
+		mDirection = !mDirection;
 }
 
-bool TriangleApp::Render()
+void TriangleApp::Render()
 {
-	return false;
+	glUseProgram(mShader);
+
+	glUniform1f(mUniformXMove, mTriOffset);
+
+	glBindVertexArray(mVAO);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);
+
+	glUseProgram(0);
+
+	glfwSwapBuffers(mMainWindow);
 }
 
 void TriangleApp::CreateTriangle()
@@ -141,6 +158,8 @@ bool TriangleApp::CompileShaders()
 		printf("[ERR] Error validating program: '%s' \n", eLog);
 		return false;
 	}
+
+	mUniformXMove = glGetUniformLocation(mShader, "xMove");
 
 	return true;
 }

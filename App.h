@@ -15,8 +15,8 @@ public:
 
 	virtual bool Init();
 
-	virtual bool Update(float deltaTime) = 0;
-	virtual bool Render() = 0;
+	virtual void Update(float deltaTime) = 0;
+	virtual void Render() = 0;
 protected:
 	bool InitMainWindow();
 protected:
