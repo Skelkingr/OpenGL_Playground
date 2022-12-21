@@ -6,7 +6,8 @@ TriangleApp::TriangleApp()
 	mVAO(0),
 	mVBO(0),
 	mShader(0),
-	mUniformXMove(0),
+	mModel(NULL),
+	mUniformModel(0),
 	mDirection(true),
 	mTriOffset(0.0f),
 	mTriMaxOffset(0.7f),
@@ -18,12 +19,11 @@ TriangleApp::~TriangleApp()
 
 int TriangleApp::Run()
 {
-	// Loop until window closes
 	while (!glfwWindowShouldClose(mMainWindow))
 	{
 		glfwPollEvents();
 
-		Update(0.5f);
+		Update(0.3f);
 		Clear(0.0f, 0.0f, 0.0f, 1.0f);
 		Render();
 	}
@@ -63,7 +63,10 @@ void TriangleApp::Render()
 {
 	glUseProgram(mShader);
 
-	glUniform1f(mUniformXMove, mTriOffset);
+	mModel = glm::mat4(1.0f);
+	mModel = glm::translate(mModel, glm::vec3(mTriOffset, 0.0f, 0.0f));
+
+	glUniformMatrix4fv(mUniformModel, 1, GL_FALSE, glm::value_ptr(mModel));
 
 	glBindVertexArray(mVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -159,7 +162,7 @@ bool TriangleApp::CompileShaders()
 		return false;
 	}
 
-	mUniformXMove = glGetUniformLocation(mShader, "xMove");
+	mUniformModel = glGetUniformLocation(mShader, "model");
 
 	return true;
 }

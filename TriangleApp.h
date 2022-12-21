@@ -24,7 +24,8 @@ private:
 	GLuint mVBO;
 	GLuint mShader;
 
-	GLuint mUniformXMove;
+	glm::mat4 mModel;
+	GLuint mUniformModel;
 
 	bool mDirection;
 	float mTriOffset;
