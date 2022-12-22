@@ -1,11 +1,12 @@
-#include "TriangleApp.h"
+#include "CubeApp.h"
 
-TriangleApp::TriangleApp()
+CubeApp::CubeApp()
 	:
 	App(),
 	mVAO(0),
 	mVBO1(0),
 	mVBO2(0),
+	mIBO(0),
 	mShader(0),
 	mModel(NULL),
 	mUniformModel(0),
@@ -20,16 +21,16 @@ TriangleApp::TriangleApp()
 	mMinSize(0.1f)
 {}
 
-TriangleApp::~TriangleApp()
+CubeApp::~CubeApp()
 {}
 
-int TriangleApp::Run()
+int CubeApp::Run()
 {
 	while (!glfwWindowShouldClose(mMainWindow))
 	{
 		glfwPollEvents();
 
-		Update(0.3f);
+		Update(0.2f);
 		Clear(0.4f, 0.6f, 0.9f, 1.0f);
 		Render();
 	}
@@ -37,12 +38,12 @@ int TriangleApp::Run()
 	return 0;
 }
 
-bool TriangleApp::Init()
+bool CubeApp::Init()
 {
 	if (!App::Init())
 		return false;
 
-	CreateTriangle();
+	CreateCube();
 
 	if (!CompileShaders())
 		return false;
@@ -50,7 +51,7 @@ bool TriangleApp::Init()
 	return true;
 }
 
-void TriangleApp::Update(float deltaTime)
+void CubeApp::Update(float deltaTime)
 {
 	if (mDirection)
 	{
@@ -63,8 +64,8 @@ void TriangleApp::Update(float deltaTime)
 	if (abs(mTriOffset) >= mTriMaxOffset)
 		mDirection = !mDirection;
 
-	mCurrAngle -= 0.005f * deltaTime;
-	if (abs(mCurrAngle) >= 360.0f)
+	mCurrAngle += 0.005f * deltaTime;
+	if (mCurrAngle >= 360.0f)
 		mCurrAngle -= 360.0f;
 
 	if (mSizeDirection)
@@ -79,19 +80,23 @@ void TriangleApp::Update(float deltaTime)
 		mSizeDirection = !mSizeDirection;
 }
 
-void TriangleApp::Render()
+void CubeApp::Render()
 {
 	glUseProgram(mShader);
 
 	mModel = glm::mat4(1.0f);
-	mModel = glm::translate(mModel, glm::vec3(mTriOffset, 0.0f, 0.0f));
-	mModel = glm::rotate(mModel, mCurrAngle * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
-	mModel = glm::scale(mModel, glm::vec3(mCurrSize, mCurrSize, 1.0f));
+	mModel = glm::rotate(mModel, mCurrAngle, glm::vec3(0.0f, 1.0f, 1.0f));
+	mModel = glm::scale(mModel, glm::vec3(0.4f, 0.4f, 0.4f));
+	
 
 	glUniformMatrix4fv(mUniformModel, 1, GL_FALSE, glm::value_ptr(mModel));
 
 	glBindVertexArray(mVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
+
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
 	glUseProgram(0);
@@ -99,44 +104,91 @@ void TriangleApp::Render()
 	glfwSwapBuffers(mMainWindow);
 }
 
-void TriangleApp::CreateTriangle()
+void CubeApp::CreateCube()
 {
-	GLfloat vertices[] = {
-		-1.0f, -1.0f, 0.0f,
-		 1.0f, -1.0f, 0.0f,
-		 0.0f,  1.0f, 0.0f
+	const std::vector<GLuint> indices
+	{
+		//Top
+		2, 6, 7,
+		2, 3, 7,
+
+		//Bottom
+		0, 4, 5,
+		0, 1, 5,
+
+		//Left
+		0, 2, 6,
+		0, 4, 6,
+
+		//Right
+		1, 3, 7,
+		1, 5, 7,
+
+		//Front
+		0, 2, 3,
+		0, 1, 3,
+
+		//Back
+		4, 6, 7,
+		4, 5, 7
 	};
 
-	GLfloat vertexColors[] = {
-		1.0f, 0.0f, 0.0f,
+	const std::vector<GLfloat> vertices
+	{
+		 -1, -1,  1.0,
+		  1, -1,  1.0,
+		 -1,  1,  1.0,
+		  1,  1,  1.0,
+		 -1, -1, -1.0,
+		  1, -1, -1.0,
+		 -1,  1, -1.0,
+		  1,  1, -1.0
+	};
+
+	const std::vector<GLfloat> vertexColors
+	{
+		0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f,
+		1.0f, 1.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 1.0f
 	};
 
 	glGenVertexArrays(1, &mVAO);
 	glBindVertexArray(mVAO);
 
-	// Positions
+	// Index buffer
+	glGenBuffers(1, &mIBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+
+	// Vertex buffer
 	glGenBuffers(1, &mVBO1);
 	glBindBuffer(GL_ARRAY_BUFFER, mVBO1);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(0);
 
-	// Colors
+	// Vertex color buffer
 	glGenBuffers(1, &mVBO2);
 	glBindBuffer(GL_ARRAY_BUFFER, mVBO2);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexColors), vertexColors, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertexColors.size() * sizeof(GLfloat), vertexColors.data(), GL_STATIC_DRAW);
 
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(1);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// Unbind
 	glBindVertexArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-bool TriangleApp::AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType)
+bool CubeApp::AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType)
 {
 	GLuint theShader = glCreateShader(shaderType);
 
@@ -165,7 +217,7 @@ bool TriangleApp::AddShader(GLuint theProgram, const char* shaderCode, GLenum sh
 	return true;
 }
 
-bool TriangleApp::CompileShaders()
+bool CubeApp::CompileShaders()
 {
 	mShader = glCreateProgram();
 

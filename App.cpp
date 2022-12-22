@@ -14,7 +14,7 @@ App::~App()
 void App::Clear(float r, float g, float b, float a)
 {
 	glClearColor(r, g, b, a);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 int App::Run()
@@ -80,6 +80,9 @@ bool App::InitMainWindow()
 		glfwTerminate();
 		return false;
 	}
+
+	// Enable depth
+	glEnable(GL_DEPTH_TEST);
 
 	// Setup viewport size
 	glViewport(0, 0, bufferWidth, bufferHeight);

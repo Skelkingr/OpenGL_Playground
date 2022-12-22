@@ -1,8 +1,8 @@
-#include "TriangleApp.h"
+#include "CubeApp.h"
 
 int main()
 {
-	TriangleApp theApp;
+	CubeApp theApp;
 
 	if (!theApp.Init())
 		return 1;

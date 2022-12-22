@@ -3,11 +3,11 @@
 
 #include "App.h"
 
-class TriangleApp : public App
+class CubeApp : public App
 {
 public:
-	TriangleApp();
-	~TriangleApp();
+	CubeApp();
+	~CubeApp();
 
 	int Run();
 
@@ -16,13 +16,14 @@ public:
 	void Update(float deltaTime);
 	void Render();
 private:
-	void CreateTriangle();
+	void CreateCube();
 	bool AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
 	bool CompileShaders();
 private:
 	GLuint mVAO;
 	GLuint mVBO1;
 	GLuint mVBO2;
+	GLuint mIBO;
 	GLuint mShader;
 
 	glm::mat4 mModel;

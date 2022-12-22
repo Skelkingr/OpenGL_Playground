@@ -2,6 +2,7 @@
 #define UTIL_H
 
 #include <cmath>
+#include <vector>
 
 #include <stdio.h>
 #include <string.h>
