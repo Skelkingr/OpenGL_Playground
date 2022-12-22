@@ -2,6 +2,7 @@
 #define TRIANGLEAPP_H
 
 #include "App.h"
+#include "Mesh.h"
 
 class CubeApp : public App
 {
@@ -15,21 +16,9 @@ public:
 
 	void Update(float deltaTime);
 	void Render();
-private:
-	void CreateCube();
-	bool AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
-	bool CompileShaders();
-private:
-	GLuint mVAO;
-	GLuint mVBO1;
-	GLuint mVBO2;
-	GLuint mIBO;
-	GLuint mShader;
 
-	glm::mat4 mModel;
-	glm::mat4 mProjection;
-	GLuint mUniformModel;
-	GLuint mUniformProjection;
+private:
+	Mesh* mCube;
 
 	bool mDirection;
 	float mOffset;
