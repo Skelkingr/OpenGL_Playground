@@ -5,7 +5,9 @@ App::App()
 	mClientWidth(800),
 	mClientHeight(600),
 	mWindowName("Skelkingr"),
-	mMainWindow(nullptr)
+	mMainWindow(nullptr),
+	mBufferWidth(0),
+	mBufferHeight(0)
 {}
 
 App::~App()
@@ -64,9 +66,7 @@ bool App::InitMainWindow()
 		return false;
 	}
 
-	int bufferWidth;
-	int bufferHeight;
-	glfwGetFramebufferSize(mMainWindow, &bufferWidth, &bufferHeight);
+	glfwGetFramebufferSize(mMainWindow, &mBufferWidth, &mBufferHeight);
 
 	// Bind context to window
 	glfwMakeContextCurrent(mMainWindow);
@@ -85,7 +85,7 @@ bool App::InitMainWindow()
 	glEnable(GL_DEPTH_TEST);
 
 	// Setup viewport size
-	glViewport(0, 0, bufferWidth, bufferHeight);
+	glViewport(0, 0, mBufferWidth, mBufferHeight);
 
 	return true;
 }

@@ -9,11 +9,13 @@ CubeApp::CubeApp()
 	mIBO(0),
 	mShader(0),
 	mModel(NULL),
+	mProjection(NULL),
 	mUniformModel(0),
+	mUniformProjection(0),
 	mDirection(true),
-	mTriOffset(0.0f),
-	mTriMaxOffset(0.7f),
-	mTriIncrement(0.0005f),
+	mOffset(0.0f),
+	mMaxOffset(1.0f),
+	mIncrement(0.0005f),
 	mCurrAngle(0.0f),
 	mSizeDirection(true),
 	mCurrSize(0.4f),
@@ -30,7 +32,7 @@ int CubeApp::Run()
 	{
 		glfwPollEvents();
 
-		Update(0.2f);
+		Update(0.3f);
 		Clear(0.4f, 0.6f, 0.9f, 1.0f);
 		Render();
 	}
@@ -48,6 +50,8 @@ bool CubeApp::Init()
 	if (!CompileShaders())
 		return false;
 
+	mProjection = glm::perspective(45.0f, (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f);
+
 	return true;
 }
 
@@ -55,16 +59,16 @@ void CubeApp::Update(float deltaTime)
 {
 	if (mDirection)
 	{
-		mTriOffset += mTriIncrement * deltaTime;
+		mOffset += mIncrement * deltaTime;
 	}
 	else
 	{
-		mTriOffset -= mTriIncrement * deltaTime;
+		mOffset -= mIncrement * deltaTime;
 	}
-	if (abs(mTriOffset) >= mTriMaxOffset)
+	if (abs(mOffset) >= mMaxOffset)
 		mDirection = !mDirection;
 
-	mCurrAngle += 0.005f * deltaTime;
+	mCurrAngle += 0.05f * deltaTime;
 	if (mCurrAngle >= 360.0f)
 		mCurrAngle -= 360.0f;
 
@@ -85,11 +89,13 @@ void CubeApp::Render()
 	glUseProgram(mShader);
 
 	mModel = glm::mat4(1.0f);
-	mModel = glm::rotate(mModel, mCurrAngle, glm::vec3(0.0f, 1.0f, 1.0f));
+	
+	mModel = glm::translate(mModel, glm::vec3(mOffset, 0.0f, -2.5f));
+	mModel = glm::rotate(mModel, mCurrAngle * TO_RADIANS, glm::vec3(0.0f, 1.0f, -1.0f));
 	mModel = glm::scale(mModel, glm::vec3(0.4f, 0.4f, 0.4f));
 	
-
 	glUniformMatrix4fv(mUniformModel, 1, GL_FALSE, glm::value_ptr(mModel));
+	glUniformMatrix4fv(mUniformProjection, 1, GL_FALSE, glm::value_ptr(mProjection));
 
 	glBindVertexArray(mVAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
@@ -252,6 +258,7 @@ bool CubeApp::CompileShaders()
 	}
 
 	mUniformModel = glGetUniformLocation(mShader, "model");
+	mUniformProjection = glGetUniformLocation(mShader, "projection");
 
 	return true;
 }

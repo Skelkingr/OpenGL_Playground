@@ -25,6 +25,9 @@ protected:
 	const char* mWindowName;
 
 	GLFWwindow* mMainWindow;
+
+	int mBufferWidth;
+	int mBufferHeight;
 };
 
 #endif

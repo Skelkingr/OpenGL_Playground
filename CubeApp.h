@@ -27,12 +27,14 @@ private:
 	GLuint mShader;
 
 	glm::mat4 mModel;
+	glm::mat4 mProjection;
 	GLuint mUniformModel;
+	GLuint mUniformProjection;
 
 	bool mDirection;
-	float mTriOffset;
-	float mTriMaxOffset;
-	float mTriIncrement;
+	float mOffset;
+	float mMaxOffset;
+	float mIncrement;
 
 	float mCurrAngle;
 
