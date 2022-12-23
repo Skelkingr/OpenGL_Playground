@@ -4,18 +4,8 @@ CubeApp::CubeApp()
 	:
 	App(),
 	mCubeList({}),
-	mDirection(true),
-	mOffset(0.0f),
-	mMaxOffset(1.0f),
-	mIncrement(0.0005f),
-	mCurrAngle(0.0f),
-	mSizeDirection(true),
-	mCurrSize(0.4f),
-	mMaxSize(0.8f),
-	mMinSize(0.1f)
-{
-	
-}
+	mShaderList({})
+{}
 
 CubeApp::~CubeApp()
 {
@@ -29,7 +19,7 @@ int CubeApp::Run()
 	{
 		glfwPollEvents();
 
-		Update(0.3f);
+		Update(0.35f);
 		Clear(0.4f, 0.6f, 0.9f, 1.0f);
 		Render();
 	}
@@ -42,8 +32,9 @@ bool CubeApp::Init()
 	if (!App::Init())
 		return false;
 
-	CreateObject();
-	CreateObject();
+	CreateObject(true, 0.5f, 1.0f, 0.0005f);
+	CreateObject(false, 0.0f, 1.0f, 0.0005f);
+	CreateObject(true, -0.5f, 1.0f, 0.0005f);
 
 	CreateShader();
 
@@ -55,46 +46,37 @@ bool CubeApp::Init()
 
 void CubeApp::Update(float deltaTime)
 {
-	if (mDirection)
+	for (Mesh* cube : mCubeList)
 	{
-		mOffset += mIncrement * deltaTime;
-	}
-	else
-	{
-		mOffset -= mIncrement * deltaTime;
-	}
-	if (abs(mOffset) >= mMaxOffset)
-		mDirection = !mDirection;
+		if (cube->GetDirection())
+		{
+			cube->SetOffset(cube->GetOffset() + cube->GetIncrement() * deltaTime);
+		}
+		else
+		{
+			cube->SetOffset(cube->GetOffset() - cube->GetIncrement() * deltaTime);
+		}
+		if (abs(cube->GetOffset()) >= cube->GetMaxOffset())
+			cube->SetDirection(!cube->GetDirection());
 
-	mCurrAngle += 0.05f * deltaTime;
-	if (mCurrAngle >= 360.0f)
-		mCurrAngle -= 360.0f;
-
-	if (mSizeDirection)
-	{
-		mCurrSize += 0.0001f * deltaTime;
+		cube->SetCurrentAngle(cube->GetCurrentAngle() + 0.05f * deltaTime);
+		if (cube->GetCurrentAngle() >= 360.0f)
+			cube->SetCurrentAngle(cube->GetCurrentAngle() - 360.0f);
 	}
-	else
-	{
-		mCurrSize -= 0.0001f * deltaTime;
-	}
-	if (mCurrSize <= mMinSize || mCurrSize >= mMaxSize)
-		mSizeDirection = !mSizeDirection;
 }
 
 void CubeApp::Render()
 {
-	float yOffset = -0.75f;
-
+	float f = -1.0f;
 	for (Mesh* cube : mCubeList)
 	{
 		mShaderList[0].UseShader();
 
 		cube->SetModel(glm::mat4(1.0f));
 
-		cube->SetModel(glm::translate(cube->GetModel(), glm::vec3(mOffset, yOffset, -2.5f)));
-		cube->SetModel(glm::rotate(cube->GetModel(), mCurrAngle * TO_RADIANS, glm::vec3(0.0f, 1.0f, -1.0f)));
-		cube->SetModel(glm::scale(cube->GetModel(), glm::vec3(0.3f, 0.3f, 0.3f)));
+		cube->SetModel(glm::translate(cube->GetModel(), glm::vec3(cube->GetOffset(), 0.95f * f, -2.5f)));
+		cube->SetModel(glm::rotate(cube->GetModel(), cube->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.0f, 1.0f, -1.0f)));
+		cube->SetModel(glm::scale(cube->GetModel(), glm::vec3(0.2f, 0.2f, 0.2f)));
 
 		glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetModel()));
 		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetProjection()));
@@ -103,13 +85,13 @@ void CubeApp::Render()
 
 		glUseProgram(0);
 
-		yOffset += 1.5f;
+		f += 1.0f;
 	}
 
 	glfwSwapBuffers(mMainWindow);
 }
 
-void CubeApp::CreateObject()
+void CubeApp::CreateObject(bool direction, float offset, float maxOffset, float increment)
 {
 	GLuint indices[] =
 	{
@@ -162,7 +144,7 @@ void CubeApp::CreateObject()
 		1.0f, 0.0f, 1.0f
 	};
 
-	Mesh* cube = new Mesh();
+	Mesh* cube = new Mesh(direction, offset, maxOffset, increment);
 	cube->CreateMesh(vertices, indices, vertexColors, 24, 36, 24);
 	mCubeList.push_back(cube);
 }

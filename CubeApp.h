@@ -18,24 +18,12 @@ public:
 	void Update(float deltaTime);
 	void Render();
 
-	void CreateObject();
+	void CreateObject(bool direction, float offset, float maxOffset, float increment);
 	void CreateShader();
 
 private:
 	std::vector<Mesh*> mCubeList;
 	std::vector<Shader> mShaderList;
-
-	bool mDirection;
-	float mOffset;
-	float mMaxOffset;
-	float mIncrement;
-
-	float mCurrAngle;
-
-	bool mSizeDirection;
-	float mCurrSize;
-	float mMaxSize;
-	float mMinSize;
 };
 
 #endif

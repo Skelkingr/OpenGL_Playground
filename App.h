@@ -18,7 +18,7 @@ public:
 	virtual void Update(float deltaTime) = 0;
 	virtual void Render() = 0;
 
-	virtual void CreateObject() = 0;
+	virtual void CreateObject(bool direction, float offset, float maxOffset, float increment) = 0;
 
 protected:
 	bool InitMainWindow();

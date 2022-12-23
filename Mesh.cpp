@@ -8,8 +8,30 @@ Mesh::Mesh()
 	mIBO(0),
 	mIndexCount(0),
 	mModel(NULL),
-	mProjection(NULL)
+	mProjection(NULL),
+	mDirection(true),
+	mOffset(0.0f),
+	mMaxOffset(1.0f),
+	mIncrement(0.0005f),
+	mCurrAngle(0.0f)
 {}
+
+Mesh::Mesh(bool direction, float offset, float maxOffset, float increment)
+	:
+	mVAO(0),
+	mVBO1(0),
+	mVBO2(0),
+	mIBO(0),
+	mIndexCount(0),
+	mModel(NULL),
+	mProjection(NULL),
+	mCurrAngle(0.0f)
+{
+	mDirection = direction;
+	mOffset = offset;
+	mMaxOffset = maxOffset;
+	mIncrement = increment;
+}
 
 Mesh::~Mesh()
 {
