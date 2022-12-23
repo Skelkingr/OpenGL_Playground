@@ -11,7 +11,10 @@ App::App()
 {}
 
 App::~App()
-{}
+{
+	glfwDestroyWindow(mMainWindow);
+	glfwTerminate();
+}
 
 void App::Clear(float r, float g, float b, float a)
 {
