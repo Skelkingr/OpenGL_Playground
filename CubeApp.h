@@ -17,8 +17,10 @@ public:
 	void Update(float deltaTime);
 	void Render();
 
+	void CreateCube();
+
 private:
-	Mesh* mCube;
+	std::vector<Mesh*> mCubeList;
 
 	bool mDirection;
 	float mOffset;
