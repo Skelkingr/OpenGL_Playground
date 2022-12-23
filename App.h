@@ -31,6 +31,9 @@ public:
 	virtual void Render() = 0;
 
 	virtual void CreateObject(bool direction, float offset, float maxOffset, float increment) = 0;
+	
+	bool* GetKeys() { return mKeys; }
+	MouseChange GetChange();
 
 protected:
 	bool InitMainWindow();

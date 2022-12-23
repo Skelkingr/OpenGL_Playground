@@ -7,7 +7,10 @@ App::App()
 	mWindowName("Skelkingr"),
 	mMainWindow(nullptr),
 	mBufferWidth(0),
-	mBufferHeight(0)
+	mBufferHeight(0),
+	mLastMousePosition({ 0 }),
+	mMouseChange({ 0 }),
+	mMouseFirstMoved(true)
 {
 	for (size_t i = 0; i < 1024; i++)
 		mKeys[i] = false;
@@ -50,6 +53,17 @@ bool App::Init()
 	return true;
 }
 
+MouseChange App::GetChange()
+{
+	GLfloat theChangeX = mMouseChange.x;
+	GLfloat theChangeY = mMouseChange.y;
+
+	mMouseChange.x = 0.0f;
+	mMouseChange.y = 0.0f;
+
+	return MouseChange{ theChangeX, theChangeY };
+}
+
 bool App::InitMainWindow()
 {
 	if (!glfwInit())
@@ -79,6 +93,7 @@ bool App::InitMainWindow()
 
 	// Handle key + mouse input
 	CreateCallbacks();
+	glfwSetInputMode(mMainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glewExperimental = GL_TRUE; // Allow modern extension features
 
