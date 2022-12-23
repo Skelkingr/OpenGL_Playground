@@ -10,6 +10,7 @@ Mesh::Mesh()
 	mVBO2(0),
 	mIBO(0),
 	mShader(0),
+	mIndexCount(0),
 	mModel(NULL),
 	mProjection(NULL),
 	mUniformModel(0),
@@ -17,10 +18,14 @@ Mesh::Mesh()
 {}
 
 Mesh::~Mesh()
-{}
-
-void Mesh::CreateMesh()
 {
+	ClearMesh();
+}
+
+void Mesh::CreateMesh(GLfloat* vertices, GLuint* indices, GLfloat* vertexColors)//, unsigned int numOfVertices, unsigned int numOfIndicies)
+{
+	mIndexCount = mIndices.size();
+
 	glGenVertexArrays(1, &mVAO);
 	glBindVertexArray(mVAO);
 
@@ -50,6 +55,46 @@ void Mesh::CreateMesh()
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void Mesh::RenderMesh()
+{
+	glBindVertexArray(mVAO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
+
+	glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, (void*)0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+void Mesh::ClearMesh()
+{
+	if (mIBO != 0)
+	{
+		glDeleteBuffers(1, &mIBO);
+		mIBO = 0;
+	}
+
+	if (mVBO2 != 0)
+	{
+		glDeleteBuffers(1, &mVBO2);
+		mVBO2 = 0;
+	}
+
+	if (mVBO1 != 0)
+	{
+		glDeleteBuffers(1, &mVBO1);
+		mVBO1 = 0;
+	}
+
+	if (mVAO != 0)
+	{
+		glDeleteVertexArrays(1, &mVAO);
+			mVAO = 0;
+	}
+
+	mIndexCount = 0;
 }
 
 bool Mesh::AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType)

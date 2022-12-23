@@ -9,7 +9,10 @@ public:
 	Mesh();
 	~Mesh();
 
-	void CreateMesh();
+	void CreateMesh(GLfloat* vertices, GLuint* indices, GLfloat* vertexColors); // unsigned int numOfVertices, unsigned int numOfIndicies);
+	void RenderMesh();
+	void ClearMesh();
+
 	bool AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
 	bool CompileShaders();
 
@@ -53,6 +56,8 @@ protected:
 	GLuint mVBO2;
 	GLuint mIBO;
 	GLuint mShader;
+
+	GLsizei mIndexCount;
 
 	glm::mat4 mModel;
 	glm::mat4 mProjection;
