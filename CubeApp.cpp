@@ -43,11 +43,15 @@ bool CubeApp::Init()
 		return false;
 
 	CreateCube();
+	CreateCube();
 
-	if (!mCubeList[0]->CompileShaders())
-		return false;
+	for (Mesh* cube : mCubeList)
+	{
+		if (!cube->CompileShaders())
+			return false;
 
-	mCubeList[0]->SetProjection(glm::perspective(45.0f, (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f));
+		cube->SetProjection(glm::perspective(45.0f, (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f));
+	}
 
 	return true;
 }
@@ -83,20 +87,27 @@ void CubeApp::Update(float deltaTime)
 
 void CubeApp::Render()
 {
-	glUseProgram(mCubeList[0]->GetShader());
+	float yOffset = -0.75f;
 
-	mCubeList[0]->SetModel(glm::mat4(1.0f));
-	
-	mCubeList[0]->SetModel(glm::translate(mCubeList[0]->GetModel(), glm::vec3(mOffset, 0.0f, -2.5f)));
-	mCubeList[0]->SetModel(glm::rotate(mCubeList[0]->GetModel(), mCurrAngle * TO_RADIANS, glm::vec3(0.0f, 1.0f, -1.0f)));
-	mCubeList[0]->SetModel(glm::scale(mCubeList[0]->GetModel(), glm::vec3(0.4f, 0.4f, 0.4f)));
-	
-	glUniformMatrix4fv(mCubeList[0]->GetUniformModel(), 1, GL_FALSE, glm::value_ptr(mCubeList[0]->GetModel()));
-	glUniformMatrix4fv(mCubeList[0]->GetUniformProjection(), 1, GL_FALSE, glm::value_ptr(mCubeList[0]->GetProjection()));
+	for (Mesh* cube : mCubeList)
+	{
+		glUseProgram(cube->GetShader());
 
-	mCubeList[0]->RenderMesh();
+		cube->SetModel(glm::mat4(1.0f));
 
-	glUseProgram(0);
+		cube->SetModel(glm::translate(cube->GetModel(), glm::vec3(mOffset, yOffset, -2.5f)));
+		cube->SetModel(glm::rotate(cube->GetModel(), mCurrAngle * TO_RADIANS, glm::vec3(0.0f, 1.0f, -1.0f)));
+		cube->SetModel(glm::scale(cube->GetModel(), glm::vec3(0.3f, 0.3f, 0.3f)));
+
+		glUniformMatrix4fv(cube->GetUniformModel(), 1, GL_FALSE, glm::value_ptr(cube->GetModel()));
+		glUniformMatrix4fv(cube->GetUniformProjection(), 1, GL_FALSE, glm::value_ptr(cube->GetProjection()));
+
+		cube->RenderMesh();
+
+		glUseProgram(0);
+
+		yOffset += 1.5f;
+	}
 
 	glfwSwapBuffers(mMainWindow);
 }
