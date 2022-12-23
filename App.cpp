@@ -8,7 +8,10 @@ App::App()
 	mMainWindow(nullptr),
 	mBufferWidth(0),
 	mBufferHeight(0)
-{}
+{
+	for (size_t i = 0; i < 1024; i++)
+		mKeys[i] = false;
+}
 
 App::~App()
 {
@@ -43,6 +46,8 @@ bool App::Init()
 		printf("[ERR] Failed to initialize the main window.");
 		return false;
 	}
+
+	CreateCallbacks();
 
 	return true;
 }
@@ -90,5 +95,36 @@ bool App::InitMainWindow()
 	// Setup viewport size
 	glViewport(0, 0, mBufferWidth, mBufferHeight);
 
+	glfwSetWindowUserPointer(mMainWindow, this);
+
 	return true;
+}
+
+void App::CreateCallbacks()
+{
+	glfwSetKeyCallback(mMainWindow, HandleKeys);
+}
+
+void App::HandleKeys(GLFWwindow* window, int key, int code, int action, int mode)
+{
+
+	App* theApp = static_cast<App*>(glfwGetWindowUserPointer(window));
+
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, GL_TRUE);
+	}
+
+	if (key >= 0 && key <= 1024)
+	{
+		if (action == GLFW_PRESS)
+		{
+			theApp->mKeys[key] = true;
+		}
+		else if (action == GLFW_RELEASE)
+		{
+			theApp->mKeys[key] = false;
+		}
+	}
+
 }

@@ -23,6 +23,9 @@ public:
 protected:
 	bool InitMainWindow();
 
+	void CreateCallbacks();
+	static void HandleKeys(GLFWwindow* window, int key, int code, int action, int mode);
+
 protected:
 	GLint mClientWidth;
 	GLint mClientHeight;
@@ -32,6 +35,8 @@ protected:
 
 	int mBufferWidth;
 	int mBufferHeight;
+
+	bool mKeys[1024];
 };
 
 #endif
