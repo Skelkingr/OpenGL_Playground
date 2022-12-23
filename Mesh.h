@@ -9,16 +9,12 @@ public:
 	Mesh();
 	~Mesh();
 
-	void CreateMesh(GLfloat* vertices, GLuint* indices, GLfloat* vertexColors); // unsigned int numOfVertices, unsigned int numOfIndicies);
+	void CreateMesh(GLfloat* vertices, GLuint* indices, GLfloat* vertexColors, GLuint numOfVertices, GLuint numOfIndices, GLuint numOfVertexColors);
 	void RenderMesh();
 	void ClearMesh();
 
 	bool AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
 	bool CompileShaders();
-
-	const std::vector<GLuint> GetIndices() const { return mIndices; }
-	const std::vector<GLfloat> GetVertices() const { return mVertices; }
-	const std::vector<GLfloat> GetVertexColors() const { return mVertexColors; }
 
 	GLuint GetVAO() const { return mVAO; }
 	GLuint GetVBO1() const { return mVBO1; }
@@ -31,10 +27,6 @@ public:
 	GLuint GetUniformModel() const { return mUniformModel; }
 	GLuint GetUniformProjection() const { return mUniformProjection; }
 
-	void SetIndices(std::vector<GLuint> indices) { mIndices = indices; }
-	void SetVertices(std::vector<GLfloat> vertices) { mVertices = vertices; }
-	void SetVertexColors(std::vector<GLfloat> vertexColors) { mVertexColors = vertexColors; }
-
 	void SetVAO(GLuint VAO) { mVAO = VAO; }
 	void SetVBO1(GLuint VBO1) { mVBO1 = VBO1; }
 	void SetVBO2(GLuint VBO2) { mVBO2 = VBO2; }
@@ -46,11 +38,7 @@ public:
 	void SetUniformModel(GLuint uniformModel) { mUniformModel = uniformModel; }
 	void SetUniformProjection(GLuint uniformProjection) { mUniformProjection = uniformProjection; }
 
-protected:
-	std::vector<GLuint> mIndices;
-	std::vector<GLfloat> mVertices;
-	std::vector<GLfloat> mVertexColors;
-
+private:
 	GLuint mVAO;
 	GLuint mVBO1;
 	GLuint mVBO2;

@@ -2,10 +2,6 @@
 
 Mesh::Mesh()
 	:
-	mIndices({}),
-	mVertices({}),
-	mVertexColors({}),
-	mVAO(0),
 	mVBO1(0),
 	mVBO2(0),
 	mIBO(0),
@@ -15,16 +11,18 @@ Mesh::Mesh()
 	mProjection(NULL),
 	mUniformModel(0),
 	mUniformProjection(0)
-{}
+{
+	mVAO = 0;
+}
 
 Mesh::~Mesh()
 {
 	ClearMesh();
 }
 
-void Mesh::CreateMesh(GLfloat* vertices, GLuint* indices, GLfloat* vertexColors)//, unsigned int numOfVertices, unsigned int numOfIndicies)
+void Mesh::CreateMesh(GLfloat* vertices, GLuint* indices, GLfloat* vertexColors, GLuint numOfVertices, GLuint numOfIndices, GLuint numOfVertexColors)
 {
-	mIndexCount = mIndices.size();
+	mIndexCount = numOfIndices;
 
 	glGenVertexArrays(1, &mVAO);
 	glBindVertexArray(mVAO);
@@ -32,12 +30,12 @@ void Mesh::CreateMesh(GLfloat* vertices, GLuint* indices, GLfloat* vertexColors)
 	// Index buffer
 	glGenBuffers(1, &mIBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() * sizeof(GLuint), mIndices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * numOfIndices, indices, GL_STATIC_DRAW);
 
 	// Vertex buffer
 	glGenBuffers(1, &mVBO1);
 	glBindBuffer(GL_ARRAY_BUFFER, mVBO1);
-	glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(GLfloat), mVertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * numOfVertices, vertices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(0);
@@ -45,7 +43,7 @@ void Mesh::CreateMesh(GLfloat* vertices, GLuint* indices, GLfloat* vertexColors)
 	// Vertex color buffer
 	glGenBuffers(1, &mVBO2);
 	glBindBuffer(GL_ARRAY_BUFFER, mVBO2);
-	glBufferData(GL_ARRAY_BUFFER, mVertexColors.size() * sizeof(GLfloat), mVertexColors.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexColors[0]) * numOfVertexColors, vertexColors, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(1);
