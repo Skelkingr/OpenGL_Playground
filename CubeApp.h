@@ -3,6 +3,7 @@
 
 #include "App.h"
 #include "Mesh.h"
+#include "Shader.h"
 
 class CubeApp : public App
 {
@@ -17,10 +18,12 @@ public:
 	void Update(float deltaTime);
 	void Render();
 
-	void CreateCube();
+	void CreateObject();
+	void CreateShader();
 
 private:
 	std::vector<Mesh*> mCubeList;
+	std::vector<Shader> mShaderList;
 
 	bool mDirection;
 	float mOffset;

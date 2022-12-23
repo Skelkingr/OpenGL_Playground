@@ -2,10 +2,12 @@
 #define UTIL_H
 
 #include <cmath>
+#include <iostream>
+#include <fstream>
+#include <string>
 #include <vector>
 
 #include <stdio.h>
-#include <string.h>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

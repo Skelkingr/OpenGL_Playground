@@ -42,17 +42,14 @@ bool CubeApp::Init()
 	if (!App::Init())
 		return false;
 
-	CreateCube();
-	CreateCube();
+	CreateObject();
+	CreateObject();
+
+	CreateShader();
 
 	for (Mesh* cube : mCubeList)
-	{
-		if (!cube->CompileShaders())
-			return false;
-
 		cube->SetProjection(glm::perspective(45.0f, (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f));
-	}
-
+		
 	return true;
 }
 
@@ -91,7 +88,7 @@ void CubeApp::Render()
 
 	for (Mesh* cube : mCubeList)
 	{
-		glUseProgram(cube->GetShader());
+		mShaderList[0].UseShader();
 
 		cube->SetModel(glm::mat4(1.0f));
 
@@ -99,8 +96,8 @@ void CubeApp::Render()
 		cube->SetModel(glm::rotate(cube->GetModel(), mCurrAngle * TO_RADIANS, glm::vec3(0.0f, 1.0f, -1.0f)));
 		cube->SetModel(glm::scale(cube->GetModel(), glm::vec3(0.3f, 0.3f, 0.3f)));
 
-		glUniformMatrix4fv(cube->GetUniformModel(), 1, GL_FALSE, glm::value_ptr(cube->GetModel()));
-		glUniformMatrix4fv(cube->GetUniformProjection(), 1, GL_FALSE, glm::value_ptr(cube->GetProjection()));
+		glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetModel()));
+		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetProjection()));
 
 		cube->RenderMesh();
 
@@ -112,7 +109,7 @@ void CubeApp::Render()
 	glfwSwapBuffers(mMainWindow);
 }
 
-void CubeApp::CreateCube()
+void CubeApp::CreateObject()
 {
 	GLuint indices[] =
 	{
@@ -168,4 +165,11 @@ void CubeApp::CreateCube()
 	Mesh* cube = new Mesh();
 	cube->CreateMesh(vertices, indices, vertexColors, 24, 36, 24);
 	mCubeList.push_back(cube);
+}
+
+void CubeApp::CreateShader()
+{
+	Shader* shader = new Shader();
+	shader->CreateFromFiles("Shaders\\shader.vert", "Shaders\\shader.frag");
+	mShaderList.push_back(*shader);
 }

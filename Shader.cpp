@@ -17,6 +17,40 @@ void Shader::CreateFromString(const char* vertexCode, const char* fragmentCode)
 	CompileShader(vertexCode, fragmentCode);
 }
 
+void Shader::CreateFromFiles(const char* vertexShaderLocation, const char* fragmentShaderLocation)
+{
+	std::string vertexString = ReadFile(vertexShaderLocation);
+	std::string fragmentString = ReadFile(fragmentShaderLocation);
+
+	const char* vertexCode = vertexString.c_str();
+	const char* fragmentCode = fragmentString.c_str();
+
+	CompileShader(vertexCode, fragmentCode);
+}
+
+std::string Shader::ReadFile(const char* fileLocation)
+{
+	std::string content;
+	std::ifstream fileStream(fileLocation, std::ios::in);
+
+	if (!fileStream.is_open())
+	{
+		printf("[ERR] Failed to read %s. File doesn't exist.", fileLocation);
+		return "";
+	}
+
+	std::string line = "";
+	while (!fileStream.eof())
+	{
+		std::getline(fileStream, line);
+		content.append(line + "\n");
+	}
+
+	fileStream.close();
+
+	return content;
+}
+
 void Shader::UseShader()
 {
 	glUseProgram(mShaderID);

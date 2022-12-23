@@ -10,6 +10,9 @@ public:
 	~Shader();
 
 	void CreateFromString(const char* vertexCode, const char* fragmentCode);
+	void CreateFromFiles(const char* vertexShaderLocation, const char* fragmentShaderLocation);
+
+	std::string ReadFile(const char* fileLocation);
 
 	GLuint GetModelLocation() const { return mUniformModel; }
 	GLuint GetProjectionLocation() const { return mUniformProjection; }
