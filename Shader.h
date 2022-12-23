@@ -16,6 +16,7 @@ public:
 
 	GLuint GetModelLocation() const { return mUniformModel; }
 	GLuint GetProjectionLocation() const { return mUniformProjection; }
+	GLuint GetViewLocation() const { return mUniformView; }
 
 	void UseShader();
 	void ClearShader();
@@ -28,6 +29,7 @@ private:
 	GLuint mShaderID;
 	GLuint mUniformModel;
 	GLuint mUniformProjection;
+	GLuint mUniformView;
 };
 
 #endif

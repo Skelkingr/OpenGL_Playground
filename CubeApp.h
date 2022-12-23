@@ -1,7 +1,7 @@
 #ifndef TRIANGLEAPP_H
 #define TRIANGLEAPP_H
-
 #include "App.h"
+#include "Camera.h"
 #include "Mesh.h"
 #include "Shader.h"
 
@@ -24,6 +24,8 @@ public:
 private:
 	std::vector<Mesh*> mCubeList;
 	std::vector<Shader> mShaderList;
+
+	Camera* mCamera;
 };
 
 #endif

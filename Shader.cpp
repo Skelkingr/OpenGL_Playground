@@ -4,7 +4,8 @@ Shader::Shader()
 	:
 	mShaderID(0),
 	mUniformModel(0),
-	mUniformProjection(0)
+	mUniformProjection(0),
+	mUniformView(0)
 {}
 
 Shader::~Shader()
@@ -133,6 +134,7 @@ bool Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 
 	mUniformModel = glGetUniformLocation(mShaderID, "model");
 	mUniformProjection = glGetUniformLocation(mShaderID, "projection");
+	mUniformView = glGetUniformLocation(mShaderID, "view");
 
 	return true;
 }

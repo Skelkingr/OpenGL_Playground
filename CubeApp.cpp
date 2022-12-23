@@ -4,11 +4,14 @@ CubeApp::CubeApp()
 	:
 	App(),
 	mCubeList({}),
-	mShaderList({})
+	mShaderList({}),
+	mCamera(nullptr)
 {}
 
 CubeApp::~CubeApp()
 {
+	delete mCamera;
+
 	for (Mesh* cube : mCubeList)
 		cube->ClearMesh();
 }
@@ -18,6 +21,8 @@ int CubeApp::Run()
 	while (!glfwWindowShouldClose(mMainWindow))
 	{
 		glfwPollEvents();
+
+		mCamera->KeyControl(mKeys);
 
 		Update(0.35f);
 		Clear(0.4f, 0.6f, 0.9f, 1.0f);
@@ -37,6 +42,15 @@ bool CubeApp::Init()
 	CreateObject(true, -0.5f, 1.0f, 0.0005f);
 
 	CreateShader();
+
+	mCamera = new Camera(
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		-90.0f,
+		0.0f,
+		0.001f,
+		1.0f
+	);
 
 	for (Mesh* cube : mCubeList)
 		cube->SetProjection(glm::perspective(45.0f, (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f));
@@ -80,6 +94,7 @@ void CubeApp::Render()
 
 		glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetModel()));
 		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetProjection()));
+		glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera->CalculateViewMatrix()));
 
 		cube->RenderMesh();
 

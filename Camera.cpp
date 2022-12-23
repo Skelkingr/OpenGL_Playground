@@ -15,15 +15,15 @@ Camera::Camera()
 	Update();
 }
 
-Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat yaw, GLfloat pitch, GLfloat movementSpeed, GLfloat turnSpeed)
+Camera::Camera(glm::vec3 position, glm::vec3 worldUp, GLfloat yaw, GLfloat pitch, GLfloat movementSpeed, GLfloat turnSpeed)
 	:
 	mFront(glm::vec3(0.0f, 0.0f, -1.0f)),
+	mUp(0.0f),
 	mRight(0.0f),
-	mWorldUp(0.0f),
 	mTurnSpeed(0.0f)
 {
 	mPosition = position;
-	mUp = up;
+	mWorldUp = worldUp;
 	mYaw = yaw;
 	mPitch = pitch;
 	mMovementSpeed = movementSpeed;
@@ -63,5 +63,5 @@ void Camera::KeyControl(bool* keys)
 
 glm::mat4 Camera::CalculateViewMatrix()
 {
-	glm::lookAt(mPosition, mPosition + mFront, mUp);
+	return glm::lookAt(mPosition, mPosition + mFront, mUp);
 }
