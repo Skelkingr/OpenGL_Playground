@@ -3,6 +3,18 @@
 
 #include "util.h"
 
+struct LastMousePos
+{
+	GLfloat x;
+	GLfloat y;
+};
+
+struct MouseChange
+{
+	GLfloat x;
+	GLfloat y;
+};
+
 class App
 {
 public:
@@ -25,6 +37,7 @@ protected:
 
 	void CreateCallbacks();
 	static void HandleKeys(GLFWwindow* window, int key, int code, int action, int mode);
+	static void HandleMouse(GLFWwindow* window, double xPos, double yPos);
 
 protected:
 	GLint mClientWidth;
@@ -37,6 +50,11 @@ protected:
 	int mBufferHeight;
 
 	bool mKeys[1024];
+
+	LastMousePos mLastMousePosition;
+	MouseChange mMouseChange;
+
+	bool mMouseFirstMoved;
 };
 
 #endif

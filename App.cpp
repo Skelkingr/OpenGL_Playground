@@ -47,8 +47,6 @@ bool App::Init()
 		return false;
 	}
 
-	CreateCallbacks();
-
 	return true;
 }
 
@@ -79,6 +77,9 @@ bool App::InitMainWindow()
 	// Bind context to window
 	glfwMakeContextCurrent(mMainWindow);
 
+	// Handle key + mouse input
+	CreateCallbacks();
+
 	glewExperimental = GL_TRUE; // Allow modern extension features
 
 	if (glewInit() != GLEW_OK)
@@ -103,6 +104,7 @@ bool App::InitMainWindow()
 void App::CreateCallbacks()
 {
 	glfwSetKeyCallback(mMainWindow, HandleKeys);
+	glfwSetCursorPosCallback(mMainWindow, HandleMouse);
 }
 
 void App::HandleKeys(GLFWwindow* window, int key, int code, int action, int mode)
@@ -126,5 +128,23 @@ void App::HandleKeys(GLFWwindow* window, int key, int code, int action, int mode
 			theApp->mKeys[key] = false;
 		}
 	}
+}
 
+void App::HandleMouse(GLFWwindow* window, double xPos, double yPos)
+{
+	App* theApp = static_cast<App*>(glfwGetWindowUserPointer(window));
+
+	if (theApp->mMouseFirstMoved)
+	{
+		theApp->mLastMousePosition.x = xPos;
+		theApp->mLastMousePosition.y = yPos;
+
+		theApp->mMouseFirstMoved = false;
+	}
+
+	theApp->mMouseChange.x = xPos - theApp->mLastMousePosition.x;
+	theApp->mMouseChange.y = theApp->mLastMousePosition.y - yPos;
+
+	theApp->mLastMousePosition.x = xPos;
+	theApp->mLastMousePosition.y = yPos;
 }
