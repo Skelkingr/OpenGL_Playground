@@ -1,8 +1,11 @@
 #ifndef APP_H
 #define APP_H
 
+#include "Camera.h"
 #include "GameTimer.h"
-#include "util.h"
+#include "Mesh.h"
+#include "Shader.h"
+#include "Util.h"
 
 struct LastMousePos
 {
@@ -20,32 +23,31 @@ class App
 {
 public:
 	App();
-	virtual ~App();
+	~App();
 
 	void Clear(float r, float g, float b, float a);
 
-	virtual int Run();
+	int Run();
 
-	virtual bool Init();
+	bool Init();
 
-	virtual void Update(float deltaTime) = 0;
-	virtual void Render() = 0;
+	void Update(float deltaTime);
+	void Render();
 
-	virtual void CreateObject(bool direction, float offset, float maxOffset, float increment) = 0;
+	void CreateObject(bool direction, float offset, float maxOffset, float increment);
+	void CreateShader();
 	
 	bool* GetKeys() { return mKeys; }
 	MouseChange GetMouseChange();
 
-protected:
+private:
 	bool InitMainWindow();
 
 	void CreateCallbacks();
 	static void HandleKeys(GLFWwindow* window, int key, int code, int action, int mode);
 	static void HandleMouse(GLFWwindow* window, double xPos, double yPos);
 
-protected:
-	GameTimer mTimer;
-
+private:
 	GLint mClientWidth;
 	GLint mClientHeight;
 	const char* mWindowName;
@@ -55,12 +57,18 @@ protected:
 	int mBufferWidth;
 	int mBufferHeight;
 
+	std::vector<Mesh*> mCubeList;
+	std::vector<Shader> mShaderList;
+
 	bool mKeys[1024];
 
 	LastMousePos mLastMousePosition;
 	MouseChange mMouseChange;
 
 	bool mMouseFirstMoved;
+
+	Camera mCamera;
+	GameTimer mTimer;
 };
 
 #endif

@@ -1,8 +1,8 @@
-#include "CubeApp.h"
+#include "App.h"
 
 int main()
 {
-	CubeApp theApp;
+	App theApp;
 
 	if (!theApp.Init())
 		return 1;
