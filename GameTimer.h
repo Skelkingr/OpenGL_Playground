@@ -9,7 +9,7 @@ public:
 	GameTimer();
 	~GameTimer();
 
-	GLfloat DeltaTime() const;
+	GLfloat DeltaTime();
 
 private:
 	GLfloat mDeltaTime;
