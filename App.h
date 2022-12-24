@@ -1,6 +1,7 @@
 #ifndef APP_H
 #define APP_H
 
+#include "GameTimer.h"
 #include "util.h"
 
 struct LastMousePos
@@ -43,6 +44,8 @@ protected:
 	static void HandleMouse(GLFWwindow* window, double xPos, double yPos);
 
 protected:
+	GameTimer mTimer;
+
 	GLint mClientWidth;
 	GLint mClientHeight;
 	const char* mWindowName;

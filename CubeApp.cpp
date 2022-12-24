@@ -22,9 +22,11 @@ int CubeApp::Run()
 	{
 		glfwPollEvents();
 
-		mCamera->KeyControl(mKeys);
+		GLfloat deltaTime = mTimer.DeltaTime();
 
-		Update(0.35f);
+		mCamera->KeyControl(mKeys, deltaTime);
+
+		Update(deltaTime);
 		Clear(0.4f, 0.6f, 0.9f, 1.0f);
 		Render();
 	}
@@ -48,7 +50,7 @@ bool CubeApp::Init()
 		glm::vec3(0.0f, 1.0f, 0.0f),
 		-90.0f,
 		0.0f,
-		0.001f,
+		5.0f,
 		1.0f
 	);
 
@@ -64,16 +66,16 @@ void CubeApp::Update(float deltaTime)
 	{
 		if (cube->GetDirection())
 		{
-			cube->SetOffset(cube->GetOffset() + cube->GetIncrement() * deltaTime);
+			cube->SetOffset(cube->GetOffset() + cube->GetIncrement() * 0.35f);
 		}
 		else
 		{
-			cube->SetOffset(cube->GetOffset() - cube->GetIncrement() * deltaTime);
+			cube->SetOffset(cube->GetOffset() - cube->GetIncrement() * 0.35f);
 		}
 		if (abs(cube->GetOffset()) >= cube->GetMaxOffset())
 			cube->SetDirection(!cube->GetDirection());
 
-		cube->SetCurrentAngle(cube->GetCurrentAngle() + 0.05f * deltaTime);
+		cube->SetCurrentAngle(cube->GetCurrentAngle() + 0.05f);
 		if (cube->GetCurrentAngle() >= 360.0f)
 			cube->SetCurrentAngle(cube->GetCurrentAngle() - 360.0f);
 	}
