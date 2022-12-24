@@ -12,7 +12,7 @@ public:
 
 	void Update();
 
-	void KeyControl(bool* keys);
+	void KeyControl(bool* keys, GLfloat deltaTime);
 
 	glm::mat4 CalculateViewMatrix();
 

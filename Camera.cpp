@@ -46,19 +46,21 @@ void Camera::Update()
 	mUp = glm::normalize(glm::cross(mRight, mFront));
 }
 
-void Camera::KeyControl(bool* keys)
+void Camera::KeyControl(bool* keys, GLfloat deltaTime)
 {
+	GLfloat velocity = mMovementSpeed * deltaTime;
+
 	if (keys[GLFW_KEY_W])
-		mPosition += mFront * mMovementSpeed;
+		mPosition += mFront * velocity;
 
 	if (keys[GLFW_KEY_S])
-		mPosition -= mFront * mMovementSpeed;
+		mPosition -= mFront * velocity;
 
 	if (keys[GLFW_KEY_A])
-		mPosition -= mRight * mMovementSpeed;
+		mPosition -= mRight * velocity;
 
 	if (keys[GLFW_KEY_D])
-		mPosition += mRight * mMovementSpeed;
+		mPosition += mRight * velocity;
 }
 
 glm::mat4 Camera::CalculateViewMatrix()
