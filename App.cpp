@@ -49,7 +49,7 @@ int App::Run()
 		GLfloat deltaTime = mTimer.DeltaTime();
 
 		mCamera.KeyControl(mKeys, deltaTime);
-		mCamera.MouseControl(GetMouseChange().x, GetMouseChange().y, deltaTime);
+		mCamera.MouseControl(GetMouseChangeX(), GetMouseChangeY(), deltaTime);
 
 		Update(0.35f);
 		Clear(0.4f, 0.6f, 0.9f, 1.0f);
@@ -75,8 +75,6 @@ bool App::Init()
 
 	for (Mesh* cube : mCubeList)
 		cube->SetProjection(glm::perspective(45.0f, (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f));
-
-	return true;
 
 	return true;
 }
@@ -194,15 +192,22 @@ void App::CreateShader()
 	mShaderList.push_back(*shader);
 }
 
-MouseChange App::GetMouseChange()
+GLfloat App::GetMouseChangeX()
 {
-	GLfloat theChangeX = mMouseChange.x;
-	GLfloat theChangeY = mMouseChange.y;
+	GLfloat theChange = mMouseChange.x;
 
 	mMouseChange.x = 0.0f;
+
+	return theChange;
+}
+
+GLfloat App::GetMouseChangeY()
+{
+	GLfloat theChange = mMouseChange.y;
+
 	mMouseChange.y = 0.0f;
 
-	return MouseChange{ theChangeX, theChangeY };
+	return theChange;
 }
 
 bool App::InitMainWindow()

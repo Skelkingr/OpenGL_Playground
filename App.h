@@ -38,7 +38,9 @@ public:
 	void CreateShader();
 	
 	bool* GetKeys() { return mKeys; }
-	MouseChange GetMouseChange();
+
+	GLfloat GetMouseChangeX();
+	GLfloat GetMouseChangeY();
 
 private:
 	bool InitMainWindow();
