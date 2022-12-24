@@ -13,6 +13,7 @@ public:
 	void Update();
 
 	void KeyControl(bool* keys, GLfloat deltaTime);
+	void MouseControl(GLfloat xChange, GLfloat yChange, GLfloat deltaTime);
 
 	glm::mat4 CalculateViewMatrix();
 

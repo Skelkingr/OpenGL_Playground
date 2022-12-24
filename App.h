@@ -34,7 +34,7 @@ public:
 	virtual void CreateObject(bool direction, float offset, float maxOffset, float increment) = 0;
 	
 	bool* GetKeys() { return mKeys; }
-	MouseChange GetChange();
+	MouseChange GetMouseChange();
 
 protected:
 	bool InitMainWindow();

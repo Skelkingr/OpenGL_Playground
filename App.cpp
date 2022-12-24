@@ -8,8 +8,8 @@ App::App()
 	mMainWindow(nullptr),
 	mBufferWidth(0),
 	mBufferHeight(0),
-	mLastMousePosition({ 0 }),
-	mMouseChange({ 0 }),
+	mLastMousePosition({ 0.0f, 0.0f }),
+	mMouseChange({ 0.0f, 0.0f }),
 	mMouseFirstMoved(true)
 {
 	for (size_t i = 0; i < 1024; i++)
@@ -53,7 +53,7 @@ bool App::Init()
 	return true;
 }
 
-MouseChange App::GetChange()
+MouseChange App::GetMouseChange()
 {
 	GLfloat theChangeX = mMouseChange.x;
 	GLfloat theChangeY = mMouseChange.y;
@@ -151,15 +151,15 @@ void App::HandleMouse(GLFWwindow* window, double xPos, double yPos)
 
 	if (theApp->mMouseFirstMoved)
 	{
-		theApp->mLastMousePosition.x = xPos;
-		theApp->mLastMousePosition.y = yPos;
+		theApp->mLastMousePosition.x = (GLfloat)xPos;
+		theApp->mLastMousePosition.y = (GLfloat)yPos;
 
 		theApp->mMouseFirstMoved = false;
 	}
 
-	theApp->mMouseChange.x = xPos - theApp->mLastMousePosition.x;
-	theApp->mMouseChange.y = theApp->mLastMousePosition.y - yPos;
+	theApp->mMouseChange.x = (GLfloat)xPos - theApp->mLastMousePosition.x;
+	theApp->mMouseChange.y = theApp->mLastMousePosition.y - (GLfloat)yPos;
 
-	theApp->mLastMousePosition.x = xPos;
-	theApp->mLastMousePosition.y = yPos;
+	theApp->mLastMousePosition.x = (GLfloat)xPos;
+	theApp->mLastMousePosition.y = (GLfloat)yPos;
 }

@@ -25,8 +25,9 @@ int CubeApp::Run()
 		GLfloat deltaTime = mTimer.DeltaTime();
 
 		mCamera->KeyControl(mKeys, deltaTime);
+		mCamera->MouseControl(GetMouseChange().x, GetMouseChange().y, deltaTime);
 
-		Update(deltaTime);
+		Update(0.35f);
 		Clear(0.4f, 0.6f, 0.9f, 1.0f);
 		Render();
 	}
@@ -51,7 +52,7 @@ bool CubeApp::Init()
 		-90.0f,
 		0.0f,
 		5.0f,
-		1.0f
+		100.0f
 	);
 
 	for (Mesh* cube : mCubeList)
@@ -66,11 +67,11 @@ void CubeApp::Update(float deltaTime)
 	{
 		if (cube->GetDirection())
 		{
-			cube->SetOffset(cube->GetOffset() + cube->GetIncrement() * 0.35f);
+			cube->SetOffset(cube->GetOffset() + cube->GetIncrement() * deltaTime);
 		}
 		else
 		{
-			cube->SetOffset(cube->GetOffset() - cube->GetIncrement() * 0.35f);
+			cube->SetOffset(cube->GetOffset() - cube->GetIncrement() * deltaTime);
 		}
 		if (abs(cube->GetOffset()) >= cube->GetMaxOffset())
 			cube->SetDirection(!cube->GetDirection());

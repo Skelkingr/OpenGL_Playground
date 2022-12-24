@@ -19,8 +19,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 worldUp, GLfloat yaw, GLfloat pitch
 	:
 	mFront(glm::vec3(0.0f, 0.0f, -1.0f)),
 	mUp(0.0f),
-	mRight(0.0f),
-	mTurnSpeed(0.0f)
+	mRight(0.0f)
 {
 	mPosition = position;
 	mWorldUp = worldUp;
@@ -61,6 +60,25 @@ void Camera::KeyControl(bool* keys, GLfloat deltaTime)
 
 	if (keys[GLFW_KEY_D])
 		mPosition += mRight * velocity;
+}
+
+void Camera::MouseControl(GLfloat xChange, GLfloat yChange, GLfloat deltaTime)
+{
+	GLfloat velocity = mTurnSpeed * deltaTime;
+
+	xChange *= velocity;
+	yChange *= velocity;
+
+	mYaw += xChange;
+	mPitch += yChange;
+
+	if (mPitch > 89.0f)
+		mPitch = 89.0f;
+
+	if (mPitch < -89.0f)
+		mPitch = -89.0f;
+
+	Update();
 }
 
 glm::mat4 Camera::CalculateViewMatrix()
