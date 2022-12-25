@@ -6,17 +6,17 @@ Texture::Texture()
 	mWidth(0),
 	mHeight(0),
 	mBitDepth(0),
-	mFileLocation("")
+	mFileLocation((char*)"")
 {}
 
-Texture::Texture(const char* fileLocation)
+Texture::Texture(char* fileLocation)
 	:
 	mTextureID(0),
 	mWidth(0),
 	mHeight(0),
 	mBitDepth(0)
 {
-	mFileLocation = fileLocation;
+	mFileLocation = (char*)fileLocation;
 }
 
 Texture::~Texture()
@@ -41,7 +41,7 @@ void Texture::LoadTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)mWidth, (GLsizei)mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -67,5 +67,5 @@ void Texture::ResetTexture()
 	mWidth = 0;
 	mHeight = 0;
 	mBitDepth = 0;
-	mFileLocation = "";
+	mFileLocation = (char*)"";
 }
