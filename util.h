@@ -1,6 +1,9 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#define STB_IMAGE_IMPLEMENTATION 
+
+// INCLUDES
 #include <cmath>
 #include <iostream>
 #include <fstream>
@@ -16,8 +19,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "stb_image.h"
+
+// CONSTANTS
 const float TO_RADIANS = 3.14159265f / 180.0f;
 
+// TEXT SHADERS
 static const char* VSHADER = "									\n\
 #version 330													\n\
 																\n\
