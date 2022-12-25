@@ -1,7 +1,7 @@
 #ifndef GAMETIMER_H
 #define GAMETIMER_H
 
-#include "util.h"
+#include "Util.h"
 
 class GameTimer
 {

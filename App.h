@@ -5,7 +5,7 @@
 #include "GameTimer.h"
 #include "Mesh.h"
 #include "Shader.h"
-#include "Util.h"
+#include "Texture.h"
 
 struct LastMousePos
 {
@@ -36,6 +36,8 @@ public:
 
 	void CreateObject(bool direction, float offset, float maxOffset, float increment);
 	void CreateShader();
+
+	void InitTextures();
 	
 	bool* GetKeys() { return mKeys; }
 
@@ -71,6 +73,8 @@ private:
 
 	Camera mCamera;
 	GameTimer mTimer;
+
+	std::vector<Texture> mTextureList;
 };
 
 #endif
