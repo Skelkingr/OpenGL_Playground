@@ -158,14 +158,14 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 
 	GLfloat vertices[] =
 	{
-		 -1, -1,  1.0,
-		  1, -1,  1.0,
-		 -1,  1,  1.0,
-		  1,  1,  1.0,
-		 -1, -1, -1.0,
-		  1, -1, -1.0,
-		 -1,  1, -1.0,
-		  1,  1, -1.0
+		 -1.0f, -1.0f,  1.0f,
+		  1.0f, -1.0f,  1.0f,
+		 -1.0f,  1.0f,  1.0f,
+		  1.0f,  1.0f,  1.0f,
+		 -1.0f, -1.0f, -1.0f,
+		  1.0f, -1.0f, -1.0f,
+		 -1.0f,  1.0f, -1.0f,
+		  1.0f,  1.0f, -1.0f
 	};
 
 	GLfloat vertexColors[] =
