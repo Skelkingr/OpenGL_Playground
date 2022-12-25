@@ -12,7 +12,7 @@ GameTimer::~GameTimer()
 
 GLfloat GameTimer::DeltaTime()
 {
-	GLfloat now = glfwGetTime();
+	GLfloat now = (GLfloat)glfwGetTime();
 	mDeltaTime = now - mLastTime;
 	mLastTime = now;
 
