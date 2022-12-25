@@ -119,15 +119,15 @@ void App::Render()
 
 		cube->SetModel(glm::mat4(1.0f));
 
-		cube->SetModel(glm::translate(cube->GetModel(), glm::vec3(cube->GetOffset(), 1 - i, -2.5f)));
-		cube->SetModel(glm::rotate(cube->GetModel(), cube->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.0f, 1.0f, -1.0f)));
+		cube->SetModel(glm::translate(cube->GetModel(), glm::vec3(0.0f, 0.0f, -3.0f)));
+		/*cube->SetModel(glm::rotate(cube->GetModel(), cube->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.0f, 1.0f, -1.0f)));*/
 		cube->SetModel(glm::scale(cube->GetModel(), glm::vec3(0.2f, 0.2f, 0.2f)));
 
 		glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetModel()));
 		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetProjection()));
 		glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
 
-		mTextureList[i]->UseTexture();
+		mTextureList[0]->UseTexture();
 		cube->RenderMesh();
 
 		glUseProgram(0);
@@ -188,7 +188,7 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 	};
 
 	Mesh* cube = new Mesh(direction, offset, maxOffset, increment);
-	cube->CreateMesh(vertices, indices, 40, 36);
+	cube->CreateMesh(vertices, indices, sizeof(vertices) * sizeof(GLfloat), sizeof(indices) * sizeof(GLuint));
 	mCubeList.push_back(cube);
 }
 
