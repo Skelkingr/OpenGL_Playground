@@ -10,7 +10,8 @@ App::App()
 	mBufferHeight(0),
 	mLastMousePosition({ 0.0f, 0.0f }),
 	mMouseChange({ 0.0f, 0.0f }),
-	mMouseFirstMoved(true)
+	mMouseFirstMoved(true),
+	mTextureList({})
 {
 	for (size_t i = 0; i < 1024; i++)
 		mKeys[i] = false;
@@ -21,14 +22,19 @@ App::App()
 		-90.0f,
 		0.0f,
 		5.0f,
-		100.0f
+		200.0f
 	);
 }
 
 App::~App()
 {
-	for (Texture texture : mTextureList)
-		texture.ClearTexture();
+	for (Texture* texture : mTextureList)
+	{
+		texture->ClearTexture();
+		delete texture;
+	}
+
+	//mTexture.ClearTexture();
 
 	for (Mesh* cube : mCubeList)
 		cube->ClearMesh();
@@ -73,7 +79,6 @@ bool App::Init()
 	CreateObject(true, 0.5f, 1.0f, 0.0005f);
 	CreateObject(false, 0.0f, 1.0f, 0.0005f);
 	CreateObject(true, -0.5f, 1.0f, 0.0005f);
-
 	CreateShader();
 
 	InitTextures();
@@ -106,16 +111,15 @@ void App::Update(float deltaTime)
 }
 
 void App::Render()
-{	
+{
 	int i = 0;
-	float f = -1.0f;
 	for (Mesh* cube : mCubeList)
 	{
 		mShaderList[0].UseShader();
 
 		cube->SetModel(glm::mat4(1.0f));
 
-		cube->SetModel(glm::translate(cube->GetModel(), glm::vec3(cube->GetOffset(), 0.95f * f, -2.5f)));
+		cube->SetModel(glm::translate(cube->GetModel(), glm::vec3(cube->GetOffset(), 1 - i, -2.5f)));
 		cube->SetModel(glm::rotate(cube->GetModel(), cube->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.0f, 1.0f, -1.0f)));
 		cube->SetModel(glm::scale(cube->GetModel(), glm::vec3(0.2f, 0.2f, 0.2f)));
 
@@ -123,12 +127,11 @@ void App::Render()
 		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetProjection()));
 		glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
 
-		mTextureList[i].UseTexture();
+		mTextureList[i]->UseTexture();
 		cube->RenderMesh();
 
 		glUseProgram(0);
 
-		f += 1.0f;
 		i++;
 	}
 
@@ -164,34 +167,28 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 		4, 5, 7
 	};
 
-	// x, y, z, u, v
+	// x, y, z,		u, v
 	GLfloat vertices[] =
 	{
-		 -1.0f, -1.0f,  1.0f, 0.0f, 0.0f,
-		  1.0f, -1.0f,  1.0f, 1.0f, 0.0f,
-		 -1.0f,  1.0f,  1.0f, 0.0f, 1.0f,
-		  1.0f,  1.0f,  1.0f, 1.0f, 1.0f,
-		 -1.0f, -1.0f, -1.0f, 0.0f, 0.0f,
-		  1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
-		 -1.0f,  1.0f, -1.0f, 0.0f, 1.0f,
-		  1.0f,  1.0f, -1.0f, 1.0f, 1.0f
-	};
+		 -1.0f, -1.0f,  1.0f,	0.0f, 0.0f,
 
-	// x, y, z, u, v
-	GLfloat vertexColors[] =
-	{
-		0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 0.0f,
-		1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-		0.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 0.0f, 1.0f
+		  1.0f, -1.0f,  1.0f,	1.0f, 0.0f,
+
+		 -1.0f,  1.0f,  1.0f,	0.0f, 1.0f,
+
+		  1.0f,  1.0f,  1.0f,	1.0f, 1.0f,
+
+		 -1.0f, -1.0f, -1.0f,	0.0f, 0.0f,
+
+		  1.0f, -1.0f, -1.0f,	1.0f, 0.0f,
+
+		 -1.0f,  1.0f, -1.0f,	0.0f, 1.0f,
+
+		  1.0f,  1.0f, -1.0f,	1.0f, 1.0f
 	};
 
 	Mesh* cube = new Mesh(direction, offset, maxOffset, increment);
-	cube->CreateMesh(vertices, indices, vertexColors, 40, 36, 24);
+	cube->CreateMesh(vertices, indices, 40, 36);
 	mCubeList.push_back(cube);
 }
 
@@ -204,12 +201,12 @@ void App::CreateShader()
 
 void App::InitTextures()
 {
-	mTextureList.push_back(Texture("Textures\\brick.png"));
-	mTextureList.push_back(Texture("Textures\\dirt.png"));
-	mTextureList.push_back(Texture("Textures\\wood.png"));
+	mTextureList.push_back(new Texture((char*)"Textures\\brick.png"));
+	mTextureList.push_back(new Texture((char*)"Textures\\dirt.png"));
+	mTextureList.push_back(new Texture((char*)"Textures\\wood.png"));
 
-	for (Texture texture : mTextureList)
-		texture.LoadTexture();
+	for (Texture* tex : mTextureList)
+		tex->LoadTexture();
 }
 
 GLfloat App::GetMouseChangeX()

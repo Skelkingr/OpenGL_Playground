@@ -10,13 +10,12 @@ public:
 	Mesh(bool direction, float offset, float maxOffset, float increment);
 	~Mesh();
 
-	void CreateMesh(GLfloat* vertices, GLuint* indices, GLfloat* vertexColors, GLuint numOfVertices, GLuint numOfIndices, GLuint numOfVertexColors);
+	void CreateMesh(GLfloat* vertices, GLuint* indices, GLuint numOfVertices, GLuint numOfIndices);
 	void RenderMesh();
 	void ClearMesh();
 
 	GLuint GetVAO() const { return mVAO; }
-	GLuint GetVBO1() const { return mVBO1; }
-	GLuint GetVBO2() const { return mVBO2; }
+	GLuint GetVBO() const { return mVBO; }
 	GLuint GetIBO() const { return mIBO; }
 
 	GLsizei GetIndexCount() const { return mIndexCount; }
@@ -32,8 +31,7 @@ public:
 	float GetCurrentAngle() const { return mCurrAngle; }
 
 	void SetVAO(GLuint VAO) { mVAO = VAO; }
-	void SetVBO1(GLuint VBO1) { mVBO1 = VBO1; }
-	void SetVBO2(GLuint VBO2) { mVBO2 = VBO2; }
+	void SetVBO(GLuint VBO) { mVBO = VBO; }
 	void SetIBO(GLuint IBO) { mIBO = IBO; }
 
 	void SetModel(glm::mat4 model) { mModel = model; }
@@ -46,8 +44,7 @@ public:
 
 protected:
 	GLuint mVAO;
-	GLuint mVBO1;
-	GLuint mVBO2;
+	GLuint mVBO;
 	GLuint mIBO;
 
 	GLsizei mIndexCount;

@@ -74,7 +74,7 @@ private:
 	Camera mCamera;
 	GameTimer mTimer;
 
-	std::vector<Texture> mTextureList;
+	std::vector<Texture*> mTextureList;
 };
 
 #endif
