@@ -27,6 +27,9 @@ App::App()
 
 App::~App()
 {
+	for (Texture texture : mTextureList)
+		texture.ClearTexture();
+
 	for (Mesh* cube : mCubeList)
 		cube->ClearMesh();
 
@@ -73,6 +76,8 @@ bool App::Init()
 
 	CreateShader();
 
+	InitTextures();
+
 	for (Mesh* cube : mCubeList)
 		cube->SetProjection(glm::perspective(45.0f, (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f));
 
@@ -101,7 +106,8 @@ void App::Update(float deltaTime)
 }
 
 void App::Render()
-{
+{	
+	int i = 0;
 	float f = -1.0f;
 	for (Mesh* cube : mCubeList)
 	{
@@ -117,11 +123,13 @@ void App::Render()
 		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetProjection()));
 		glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
 
+		mTextureList[i].UseTexture();
 		cube->RenderMesh();
 
 		glUseProgram(0);
 
 		f += 1.0f;
+		i++;
 	}
 
 	glfwSwapBuffers(mMainWindow);
@@ -156,18 +164,20 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 		4, 5, 7
 	};
 
+	// x, y, z, u, v
 	GLfloat vertices[] =
 	{
-		 -1.0f, -1.0f,  1.0f,
-		  1.0f, -1.0f,  1.0f,
-		 -1.0f,  1.0f,  1.0f,
-		  1.0f,  1.0f,  1.0f,
-		 -1.0f, -1.0f, -1.0f,
-		  1.0f, -1.0f, -1.0f,
-		 -1.0f,  1.0f, -1.0f,
-		  1.0f,  1.0f, -1.0f
+		 -1.0f, -1.0f,  1.0f, 0.0f, 0.0f,
+		  1.0f, -1.0f,  1.0f, 1.0f, 0.0f,
+		 -1.0f,  1.0f,  1.0f, 0.0f, 1.0f,
+		  1.0f,  1.0f,  1.0f, 1.0f, 1.0f,
+		 -1.0f, -1.0f, -1.0f, 0.0f, 0.0f,
+		  1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
+		 -1.0f,  1.0f, -1.0f, 0.0f, 1.0f,
+		  1.0f,  1.0f, -1.0f, 1.0f, 1.0f
 	};
 
+	// x, y, z, u, v
 	GLfloat vertexColors[] =
 	{
 		0.0f, 0.0f, 0.0f,
@@ -181,7 +191,7 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 	};
 
 	Mesh* cube = new Mesh(direction, offset, maxOffset, increment);
-	cube->CreateMesh(vertices, indices, vertexColors, 24, 36, 24);
+	cube->CreateMesh(vertices, indices, vertexColors, 40, 36, 24);
 	mCubeList.push_back(cube);
 }
 
@@ -190,6 +200,16 @@ void App::CreateShader()
 	Shader* shader = new Shader();
 	shader->CreateFromFiles("Shaders\\shader.vert", "Shaders\\shader.frag");
 	mShaderList.push_back(*shader);
+}
+
+void App::InitTextures()
+{
+	mTextureList.push_back(Texture("Textures\\brick.png"));
+	mTextureList.push_back(Texture("Textures\\dirt.png"));
+	mTextureList.push_back(Texture("Textures\\wood.png"));
+
+	for (Texture texture : mTextureList)
+		texture.LoadTexture();
 }
 
 GLfloat App::GetMouseChangeX()

@@ -2,6 +2,7 @@
 #define TEXTURE_H
 
 #include "Util.h"
+#include "stb_image.h"
 
 class Texture
 {

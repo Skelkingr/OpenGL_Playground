@@ -65,7 +65,7 @@ void Mesh::CreateMesh(GLfloat* vertices, GLuint* indices, GLfloat* vertexColors,
 	glBindBuffer(GL_ARRAY_BUFFER, mVBO2);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexColors[0]) * numOfVertexColors, vertexColors, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertexColors[0]) * 5, (void*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertexColors[0]) * 3, (void*)0);
 	glEnableVertexAttribArray(1);
 
 	// Unbind
