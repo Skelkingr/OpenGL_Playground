@@ -25,7 +25,7 @@ App::App()
 		200.0f
 	);
 
-	mMainLight = Light();
+	mMainLight = AmbientLight(1.0f, 0.0f, 0.0f, 0.3f);
 }
 
 App::~App()

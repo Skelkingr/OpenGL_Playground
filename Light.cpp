@@ -2,14 +2,14 @@
 
 Light::Light()
 	:
-	mColour({1.0f}),
-	mAmbientIntensity(1.0f)
+	mVecType({1.0f}),
+	mIntensity(1.0f)
 {}
 
-Light::Light(GLfloat red, GLfloat green, GLfloat blue, GLfloat ambientIntensity)
+Light::Light(GLfloat x, GLfloat y, GLfloat z, GLfloat ambientIntensity)
 {
-	mColour = glm::vec3(red, green, blue);
-	mAmbientIntensity = ambientIntensity;
+	mVecType = glm::vec3(x, y, z);
+	mIntensity = ambientIntensity;
 }
 
 
@@ -18,6 +18,6 @@ Light::~Light()
 
 void Light::UseLight(GLfloat ambientIntensityLocation, GLfloat ambientColorLocation)
 {
-	glUniform1f(ambientIntensityLocation, mAmbientIntensity);
-	glUniform3f(ambientColorLocation, mColour.x, mColour.y, mColour.z);
+	glUniform1f(ambientIntensityLocation, mIntensity);
+	glUniform3f(ambientColorLocation, mVecType.x, mVecType.y, mVecType.z);
 }

@@ -1,9 +1,9 @@
 #ifndef APP_H
 #define APP_H
 
+#include "AmbientLight.h"
 #include "Camera.h"
 #include "GameTimer.h"
-#include "Light.h"
 #include "Mesh.h"
 #include "Shader.h"
 #include "Texture.h"
@@ -77,7 +77,7 @@ private:
 
 	std::vector<Texture*> mTextureList;
 
-	Light mMainLight;
+	AmbientLight mMainLight;
 };
 
 #endif
