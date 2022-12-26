@@ -113,21 +113,22 @@ void App::Update(float deltaTime)
 void App::Render()
 {
 	int i = 0;
+
 	for (Mesh* cube : mCubeList)
 	{
 		mShaderList[0].UseShader();
 
 		cube->SetModel(glm::mat4(1.0f));
 
-		cube->SetModel(glm::translate(cube->GetModel(), glm::vec3(0.0f, 0.0f, -3.0f)));
-		/*cube->SetModel(glm::rotate(cube->GetModel(), cube->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.0f, 1.0f, -1.0f)));*/
-		cube->SetModel(glm::scale(cube->GetModel(), glm::vec3(0.2f, 0.2f, 0.2f)));
+		cube->SetModel(glm::translate(cube->GetModel(), glm::vec3(cube->GetOffset(), (GLfloat)(i - 1), -3.0f)));
+		cube->SetModel(glm::rotate(cube->GetModel(), cube->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.5f, 0.5f, -0.3f)));
+		cube->SetModel(glm::scale(cube->GetModel(), glm::vec3(0.3f, 0.3f, 0.3f)));
 
 		glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetModel()));
 		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetProjection()));
 		glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
 
-		mTextureList[1]->UseTexture();
+		mTextureList[i]->UseTexture();
 		cube->RenderMesh();
 
 		glUseProgram(0);
@@ -140,47 +141,47 @@ void App::Render()
 
 void App::CreateObject(bool direction, float offset, float maxOffset, float increment)
 {
-	GLuint indices[] =
+	std::vector<GLuint> indices =
 	{
 		//Top:
-		2, 6, 7,
-		2, 3, 7,
-
-		//Bottom:
-		0, 4, 5,
-		0, 1, 5,
-
-		//Left:
-		0, 2, 6,
-		0, 4, 6,
-
-		//Right:
-		1, 3, 7,
-		1, 5, 7,
-
-		//Front:
 		0, 2, 3,
 		0, 1, 3,
 
-		//Back:
+		//Bottom:
 		4, 6, 7,
-		4, 5, 7
+		4, 5, 7,
+
+		//Left:	
+		8, 10, 11,
+		8, 9, 11,
+
+		//Right:
+		12, 14, 15,
+		12, 13, 15,
+		
+		//Front:
+		16, 18, 19,
+		16, 17, 19,
+
+		//Back:
+		20, 22, 23,
+		20, 21, 23
 	};
 
 	// X, Y, Z		U, V
-	GLfloat vertices[] =
+	std::vector<GLfloat> vertices =
 	{
 		//Top:
 		 -1.0f,  1.0f,  1.0f,	0.0f, 0.0f,
 		  1.0f,  1.0f,  1.0f,	1.0f, 0.0f,
-		 - .0f,  1.0f, -1.0f,	0.0f, 1.0f,
+		 -1.0f,  1.0f, -1.0f,	0.0f, 1.0f,
 		  1.0f,  1.0f, -1.0f,	1.0f, 1.0f,
 
 		//Bottom:
 		 -1.0f, -1.0f,  1.0f,	0.0f, 0.0f,
 		  1.0f, -1.0f,  1.0f,	1.0f, 0.0f,
 		 -1.0f, -1.0f, -1.0f,	0.0f, 1.0f,
-		  1.0f, -1.0f, -1.0f,	10.f, 10.f,
+		  1.0f, -1.0f, -1.0f,	1.0f, 1.0f,
 
 		//Left:
 		 -1.0f, -1.0f, -1.0f,	0.0f, 0.0f,
@@ -208,7 +209,7 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 	};
 
 	Mesh* cube = new Mesh(direction, offset, maxOffset, increment);
-	cube->CreateMesh(vertices, indices, sizeof(vertices[0]) * sizeof(GLfloat), sizeof(indices[0]) * sizeof(GLuint));
+	cube->CreateMesh(vertices, indices, vertices.size(), indices.size());
 	mCubeList.push_back(cube);
 }
 
