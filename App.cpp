@@ -34,10 +34,11 @@ App::~App()
 		delete texture;
 	}
 
-	//mTexture.ClearTexture();
-
 	for (Mesh* cube : mCubeList)
+	{
 		cube->ClearMesh();
+		delete cube;
+	}
 
 	glfwDestroyWindow(mMainWindow);
 	glfwTerminate();
@@ -61,7 +62,7 @@ int App::Run()
 		mCamera.MouseControl(GetMouseChangeX(), GetMouseChangeY(), deltaTime);
 
 		Update(0.35f);
-		Clear(0.4f, 0.6f, 0.9f, 1.0f);
+		Clear(0.0f, 0.0f, 0.0f, 1.0f);
 		Render();
 	}
 
