@@ -19,6 +19,8 @@ public:
 	GLuint GetViewLocation() const { return mUniformView; }
 	GLuint GetAmbientIntensityLocation() const { return mUniformAmbientIntensity; }
 	GLuint GetAmbientColourLocation() const { return mUniformAmbientColour; }
+	GLuint GetDiffuseIntensityLocation() const { return mUniformDiffuseIntensity; }
+	GLuint GetDirectionLocation() const { return mUniformDirection; }
 
 	void UseShader();
 	void ClearShader();
@@ -34,6 +36,8 @@ private:
 	GLuint mUniformView;
 	GLuint mUniformAmbientIntensity;
 	GLuint mUniformAmbientColour;
+	GLuint mUniformDiffuseIntensity;
+	GLuint mUniformDirection;
 };
 
 #endif
