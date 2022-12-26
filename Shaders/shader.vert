@@ -18,6 +18,6 @@ void main()
 	vCol = vec4(clamp(pos, 0.0f, 1.0f), 1.0f);
 	
 	TexCoord = tex;
-
-	Normal = mat3(transpose(inverse(model))) * norm;	
+	
+	Normal = mat3(transpose(inverse(model))) * norm;
 }

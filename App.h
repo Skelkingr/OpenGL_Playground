@@ -1,12 +1,12 @@
 #ifndef APP_H
 #define APP_H
 
-#include "DiffuseLight.h"
-#include "DirectionalLight.h"
 #include "Camera.h"
 #include "GameTimer.h"
+#include "Light.h"
 #include "Mesh.h"
 #include "Shader.h"
+#include "Util.h"
 #include "Texture.h"
 
 struct LastMousePos
@@ -63,7 +63,7 @@ private:
 	int mBufferWidth;
 	int mBufferHeight;
 
-	std::vector<Mesh*> mCubeList;
+	std::vector<Mesh*> mMeshList;
 	std::vector<Shader> mShaderList;
 
 	bool mKeys[1024];
@@ -78,8 +78,7 @@ private:
 
 	std::vector<Texture*> mTextureList;
 
-	DirectionalLight mMainLight;
-	DiffuseLight mDiffuseLight;
+	Light mMainLight;
 };
 
 #endif

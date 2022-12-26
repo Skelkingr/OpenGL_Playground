@@ -28,9 +28,8 @@ void Light::UseLight(
 	GLfloat directionLocation
 )
 {
-	glUniform3f((GLint)ambientColourLocation, mColour.x, mColour.y, mColour.z);
-	glUniform1f((GLint)ambientIntensityLocation, mDiffuseIntensity);
-	
+	glUniform3f(ambientColourLocation, mColour.x, mColour.y, mColour.z);
+	glUniform1f(ambientIntensityLocation, mAmbientIntensity);
 	glUniform3f(directionLocation, mDirection.x, mDirection.y, mDirection.z);
 	glUniform1f(diffuseIntensityLocation, mDiffuseIntensity);
 }

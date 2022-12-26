@@ -23,7 +23,7 @@ public:
 	GLuint GetDirectionLocation() const { return mUniformDirection; }
 
 	void UseShader();
-	void ClearShader();
+	void ClearShader();	
 
 private:
 	bool AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);

@@ -5,7 +5,11 @@ Shader::Shader()
 	mShaderID(0),
 	mUniformModel(0),
 	mUniformProjection(0),
-	mUniformView(0)
+	mUniformView(0),
+	mUniformAmbientIntensity(0),
+	mUniformAmbientColour(0),
+	mUniformDiffuseIntensity(0),
+	mUniformDirection(0)
 {}
 
 Shader::~Shader()
@@ -132,13 +136,14 @@ bool Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 		return false;
 	}
 
-	mUniformModel = glGetUniformLocation(mShaderID, "model");
 	mUniformProjection = glGetUniformLocation(mShaderID, "projection");
+	mUniformModel = glGetUniformLocation(mShaderID, "model");
 	mUniformView = glGetUniformLocation(mShaderID, "view");
-	mUniformAmbientIntensity = glGetUniformLocation(mShaderID, "directionalLight.ambientIntensity");
 	mUniformAmbientColour = glGetUniformLocation(mShaderID, "directionalLight.colour");
-	mUniformDiffuseIntensity = glGetUniformLocation(mShaderID, "diffuseLight.intensity");
-	mUniformDirection = glGetUniformLocation(mShaderID, "diffuseLight.direction");
+	mUniformAmbientIntensity = glGetUniformLocation(mShaderID, "directionalLight.ambientIntensity");
+	mUniformDirection = glGetUniformLocation(mShaderID, "directionalLight.direction");
+	mUniformDiffuseIntensity = glGetUniformLocation(mShaderID, "directionalLight.diffuseIntensity");
+		
 
 	return true;
 }

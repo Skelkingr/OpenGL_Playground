@@ -25,8 +25,7 @@ App::App()
 		200.0f
 	);
 
-	mMainLight = DirectionalLight(1.0f, 0.0f, 0.0f, 0.3f);
-	mDiffuseLight = DiffuseLight();
+	mMainLight = Light(1.0f, 1.0f, 1.0f, 0.2f, 2.0f, -1.0f, -2.0f, 1.0f);
 }
 
 App::~App()
@@ -37,10 +36,10 @@ App::~App()
 		delete texture;
 	}
 
-	for (Mesh* cube : mCubeList)
+	for (Mesh* obj : mMeshList)
 	{
-		cube->ClearMesh();
-		delete cube;
+		obj->ClearMesh();
+		delete obj;
 	}
 
 	glfwDestroyWindow(mMainWindow);
@@ -87,30 +86,30 @@ bool App::Init()
 
 	InitTextures();
 
-	for (Mesh* cube : mCubeList)
-		cube->SetProjection(glm::perspective(45.0f, (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f));
+	for (Mesh* obj : mMeshList)
+		obj->SetProjection(glm::perspective(45.0f, (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f));
 
 	return true;
 }
 
 void App::Update(float deltaTime)
 {
-	for (Mesh* cube : mCubeList)
+	for (Mesh* obj : mMeshList)
 	{
-		if (cube->GetDirection())
+		if (obj->GetDirection())
 		{
-			cube->SetOffset(cube->GetOffset() + cube->GetIncrement() * deltaTime);
+			obj->SetOffset(obj->GetOffset() + obj->GetIncrement() * deltaTime);
 		}
 		else
 		{
-			cube->SetOffset(cube->GetOffset() - cube->GetIncrement() * deltaTime);
+			obj->SetOffset(obj->GetOffset() - obj->GetIncrement() * deltaTime);
 		}
-		if (abs(cube->GetOffset()) >= cube->GetMaxOffset())
-			cube->SetDirection(!cube->GetDirection());
+		if (abs(obj->GetOffset()) >= obj->GetMaxOffset())
+			obj->SetDirection(!obj->GetDirection());
 
-		cube->SetCurrentAngle(cube->GetCurrentAngle() + 0.05f);
-		if (cube->GetCurrentAngle() >= 360.0f)
-			cube->SetCurrentAngle(cube->GetCurrentAngle() - 360.0f);
+		obj->SetCurrentAngle(obj->GetCurrentAngle() + 0.05f);
+		if (obj->GetCurrentAngle() >= 360.0f)
+			obj->SetCurrentAngle(obj->GetCurrentAngle() - 360.0f);
 	}
 }
 
@@ -118,28 +117,30 @@ void App::Render()
 {
 	int i = 0;
 
-	for (Mesh* cube : mCubeList)
+	for (Mesh* obj : mMeshList)
 	{
 		mShaderList[0].UseShader();
 
 		mMainLight.UseLight(
 			(GLfloat)(mShaderList[0].GetAmbientIntensityLocation()),
-			(GLfloat)(mShaderList[0].GetAmbientColourLocation())
+			(GLfloat)(mShaderList[0].GetAmbientColourLocation()),
+			(GLfloat)(mShaderList[0].GetDirectionLocation()),
+			(GLfloat)(mShaderList[0].GetDiffuseIntensityLocation())
 		);
 
-		cube->SetModel(glm::mat4(1.0f));
+		obj->SetModel(glm::mat4(1.0f));
 
-		cube->SetModel(glm::translate(cube->GetModel(), glm::vec3(cube->GetOffset(), (GLfloat)(i - 1), -3.0f)));
-		cube->SetModel(glm::rotate(cube->GetModel(), cube->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.5f, 0.5f, -0.3f)));
-		cube->SetModel(glm::scale(cube->GetModel(), glm::vec3(0.3f, 0.3f, 0.3f)));
+		obj->SetModel(glm::translate(obj->GetModel(), glm::vec3(obj->GetOffset(), (GLfloat)(i - 1), -3.0f)));
+		obj->SetModel(glm::rotate(obj->GetModel(), obj->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.5f, 0.5f, -0.3f)));
+		obj->SetModel(glm::scale(obj->GetModel(), glm::vec3(0.3f, 0.3f, 0.3f)));
 
-		glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetModel()));
-		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetProjection()));
+		glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(obj->GetModel()));
+		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(obj->GetProjection()));
 		glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
 
 
 		mTextureList[i]->UseTexture();
-		cube->RenderMesh();
+		obj->RenderMesh();
 
 		glUseProgram(0);
 
@@ -178,49 +179,51 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 		20, 21, 23
 	};
 
-	// X, Y, Z		U, V
+	// X, Y, Z		U, V	NX, NY, NZ
 	std::vector<GLfloat> vertices =
 	{
 		//Top:
-		 -1.0f,  1.0f,  1.0f,	0.0f, 0.0f,
-		  1.0f,  1.0f,  1.0f,	1.0f, 0.0f,
-		 -1.0f,  1.0f, -1.0f,	0.0f, 1.0f,
-		  1.0f,  1.0f, -1.0f,	1.0f, 1.0f,
+		 -1.0f,  1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,		
+		  1.0f,  1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 -1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		  1.0f,  1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
 		//Bottom:
-		 -1.0f, -1.0f,  1.0f,	0.0f, 0.0f,
-		  1.0f, -1.0f,  1.0f,	1.0f, 0.0f,
-		 -1.0f, -1.0f, -1.0f,	0.0f, 1.0f,
-		  1.0f, -1.0f, -1.0f,	1.0f, 1.0f,
+		 -1.0f, -1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		  1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 -1.0f, -1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		  1.0f, -1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
 		//Left:
-		 -1.0f, -1.0f, -1.0f,	0.0f, 0.0f,
-		 -1.0f, -1.0f,  1.0f,	1.0f, 0.0f,
-		 -1.0f,  1.0f, -1.0f,	0.0f, 1.0f,
-		 -1.0f,  1.0f,  1.0f,	1.0f, 1.0f,
+		 -1.0f, -1.0f, -1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 -1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 -1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 -1.0f,  1.0f,  1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
 		//Right:
-		  1.0f, -1.0f,  1.0f,	0.0f, 0.0f,
-		  1.0f, -1.0f, -1.0f,	1.0f, 0.0f,
-		  1.0f,  1.0f,  1.0f,	0.0f, 1.0f,
-		  1.0f,  1.0f, -1.0f,	1.0f, 1.0f,
+		  1.0f, -1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		  1.0f, -1.0f, -1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		  1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		  1.0f,  1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
 		// Front :
-		 -1.0f, -1.0f,  1.0f,	0.0f, 0.0f,
-		  1.0f, -1.0f,  1.0f,	1.0f, 0.0f,
-		 -1.0f,  1.0f,  1.0f,	0.0f, 1.0f,
-		  1.0f,  1.0f,  1.0f,	1.0f, 1.0f,
+		 -1.0f, -1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		  1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 -1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		  1.0f,  1.0f,  1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
 		//Back:
-		  1.0f, -1.0f, -1.0f,	0.0f, 0.0f,
-		 -1.0f, -1.0f, -1.0f,	1.0f, 0.0f,
-		  1.0f,  1.0f, -1.0f,	0.0f, 1.0f,
-		 -1.0f,  1.0f, -1.0f,	1.0f, 1.0f
+		  1.0f, -1.0f, -1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 -1.0f, -1.0f, -1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		  1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 -1.0f,  1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f
 	};
 
-	Mesh* cube = new Mesh(direction, offset, maxOffset, increment);
-	cube->CreateMesh(vertices, indices, vertices.size(), indices.size());
-	mCubeList.push_back(cube);
+	ComputeAverageNormals(indices, indices.size(), vertices, vertices.size(), 8, 5);
+
+	Mesh* obj = new Mesh(direction, offset, maxOffset, increment);
+	obj->CreateMesh(vertices, indices, vertices.size(), indices.size());
+	mMeshList.push_back(obj);
 }
 
 void App::CreateShader()
