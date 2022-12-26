@@ -8,7 +8,7 @@ out vec4 colour;
 struct DirectionalLight
 {
 	vec3 colour;
-	GLfloat ambientIntensity;
+	float ambientIntensity;
 };
 
 uniform sampler2D theTexture;
