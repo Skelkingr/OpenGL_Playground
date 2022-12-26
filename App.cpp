@@ -24,6 +24,8 @@ App::App()
 		5.0f,
 		200.0f
 	);
+
+	mMainLight = Light();
 }
 
 App::~App()
@@ -119,6 +121,11 @@ void App::Render()
 	{
 		mShaderList[0].UseShader();
 
+		mMainLight.UseLight(
+			mShaderList[0].GetAmbientIntensityLocation(),
+			mShaderList[0].GetAmbientColourLocation()
+		);
+
 		cube->SetModel(glm::mat4(1.0f));
 
 		cube->SetModel(glm::translate(cube->GetModel(), glm::vec3(cube->GetOffset(), (GLfloat)(i - 1), -3.0f)));
@@ -128,6 +135,7 @@ void App::Render()
 		glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetModel()));
 		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetProjection()));
 		glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
+
 
 		mTextureList[i]->UseTexture();
 		cube->RenderMesh();

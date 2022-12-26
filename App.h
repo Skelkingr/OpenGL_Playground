@@ -3,6 +3,7 @@
 
 #include "Camera.h"
 #include "GameTimer.h"
+#include "Light.h"
 #include "Mesh.h"
 #include "Shader.h"
 #include "Texture.h"
@@ -75,6 +76,8 @@ private:
 	GameTimer mTimer;
 
 	std::vector<Texture*> mTextureList;
+
+	Light mMainLight;
 };
 
 #endif

@@ -3,7 +3,7 @@
 Light::Light()
 	:
 	mColour({1.0f}),
-	mAmbientIntensity(0.0f)
+	mAmbientIntensity(1.0f)
 {}
 
 Light::Light(GLfloat red, GLfloat green, GLfloat blue, GLfloat ambientIntensity)
