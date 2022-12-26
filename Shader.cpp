@@ -135,6 +135,8 @@ bool Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 	mUniformModel = glGetUniformLocation(mShaderID, "model");
 	mUniformProjection = glGetUniformLocation(mShaderID, "projection");
 	mUniformView = glGetUniformLocation(mShaderID, "view");
+	mUniformAmbientIntensity = glGetUniformLocation(mShaderID, "directionalLight.ambientIntensity");
+	mUniformAmbientColour = glGetUniformLocation(mShaderID, "directionalLight.colour");
 
 	return true;
 }
