@@ -25,7 +25,8 @@ App::App()
 		200.0f
 	);
 
-	mMainLight = AmbientLight(1.0f, 0.0f, 0.0f, 0.3f);
+	mMainLight = DirectionalLight(1.0f, 0.0f, 0.0f, 0.3f);
+	mDiffuseLight = DiffuseLight();
 }
 
 App::~App()
@@ -122,8 +123,8 @@ void App::Render()
 		mShaderList[0].UseShader();
 
 		mMainLight.UseLight(
-			mShaderList[0].GetAmbientIntensityLocation(),
-			mShaderList[0].GetAmbientColourLocation()
+			(GLfloat)(mShaderList[0].GetAmbientIntensityLocation()),
+			(GLfloat)(mShaderList[0].GetAmbientColourLocation())
 		);
 
 		cube->SetModel(glm::mat4(1.0f));

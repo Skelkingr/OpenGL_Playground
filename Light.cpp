@@ -18,6 +18,6 @@ Light::~Light()
 
 void Light::UseLight(GLfloat ambientIntensityLocation, GLfloat ambientColorLocation)
 {
-	glUniform1f(ambientIntensityLocation, mIntensity);
-	glUniform3f(ambientColorLocation, mVecType.x, mVecType.y, mVecType.z);
+	glUniform1f((GLint)ambientIntensityLocation, mIntensity);
+	glUniform3f((GLint)ambientColorLocation, mVecType.x, mVecType.y, mVecType.z);
 }

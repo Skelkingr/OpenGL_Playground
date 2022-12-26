@@ -1,7 +1,8 @@
 #ifndef APP_H
 #define APP_H
 
-#include "AmbientLight.h"
+#include "DiffuseLight.h"
+#include "DirectionalLight.h"
 #include "Camera.h"
 #include "GameTimer.h"
 #include "Mesh.h"
@@ -77,7 +78,8 @@ private:
 
 	std::vector<Texture*> mTextureList;
 
-	AmbientLight mMainLight;
+	DirectionalLight mMainLight;
+	DiffuseLight mDiffuseLight;
 };
 
 #endif
