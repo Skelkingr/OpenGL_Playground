@@ -127,7 +127,7 @@ void App::Render()
 		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(cube->GetProjection()));
 		glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
 
-		mTextureList[0]->UseTexture();
+		mTextureList[1]->UseTexture();
 		cube->RenderMesh();
 
 		glUseProgram(0);
@@ -142,53 +142,73 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 {
 	GLuint indices[] =
 	{
-		//Top
+		//Top:
 		2, 6, 7,
 		2, 3, 7,
 
-		//Bottom
+		//Bottom:
 		0, 4, 5,
 		0, 1, 5,
 
-		//Left
+		//Left:
 		0, 2, 6,
 		0, 4, 6,
 
-		//Right
+		//Right:
 		1, 3, 7,
 		1, 5, 7,
 
-		//Front
+		//Front:
 		0, 2, 3,
 		0, 1, 3,
 
-		//Back
+		//Back:
 		4, 6, 7,
 		4, 5, 7
 	};
 
-	// x, y, z,		u, v
+	// X, Y, Z		U, V
 	GLfloat vertices[] =
 	{
+		//Top:
+		 -1.0f,  1.0f,  1.0f,	0.0f, 0.0f,
+		  1.0f,  1.0f,  1.0f,	1.0f, 0.0f,
+		 - .0f,  1.0f, -1.0f,	0.0f, 1.0f,
+		  1.0f,  1.0f, -1.0f,	1.0f, 1.0f,
+
+		//Bottom:
 		 -1.0f, -1.0f,  1.0f,	0.0f, 0.0f,
-
 		  1.0f, -1.0f,  1.0f,	1.0f, 0.0f,
+		 -1.0f, -1.0f, -1.0f,	0.0f, 1.0f,
+		  1.0f, -1.0f, -1.0f,	10.f, 10.f,
 
+		//Left:
+		 -1.0f, -1.0f, -1.0f,	0.0f, 0.0f,
+		 -1.0f, -1.0f,  1.0f,	1.0f, 0.0f,
+		 -1.0f,  1.0f, -1.0f,	0.0f, 1.0f,
+		 -1.0f,  1.0f,  1.0f,	1.0f, 1.0f,
+
+		//Right:
+		  1.0f, -1.0f,  1.0f,	0.0f, 0.0f,
+		  1.0f, -1.0f, -1.0f,	1.0f, 0.0f,
+		  1.0f,  1.0f,  1.0f,	0.0f, 1.0f,
+		  1.0f,  1.0f, -1.0f,	1.0f, 1.0f,
+
+		// Front :
+		 -1.0f, -1.0f,  1.0f,	0.0f, 0.0f,
+		  1.0f, -1.0f,  1.0f,	1.0f, 0.0f,
 		 -1.0f,  1.0f,  1.0f,	0.0f, 1.0f,
-
 		  1.0f,  1.0f,  1.0f,	1.0f, 1.0f,
 
-		 -1.0f, -1.0f, -1.0f,	0.0f, 0.0f,
-
-		  1.0f, -1.0f, -1.0f,	1.0f, 0.0f,
-
-		 -1.0f,  1.0f, -1.0f,	0.0f, 1.0f,
-
-		  1.0f,  1.0f, -1.0f,	1.0f, 1.0f
+		//Back:
+		  1.0f, -1.0f, -1.0f,	0.0f, 0.0f,
+		 -1.0f, -1.0f, -1.0f,	1.0f, 0.0f,
+		  1.0f,  1.0f, -1.0f,	0.0f, 1.0f,
+		 -1.0f,  1.0f, -1.0f,	1.0f, 1.0f
 	};
 
 	Mesh* cube = new Mesh(direction, offset, maxOffset, increment);
-	cube->CreateMesh(vertices, indices, sizeof(vertices) * sizeof(GLfloat), sizeof(indices) * sizeof(GLuint));
+	cube->CreateMesh(vertices, indices, sizeof(vertices[0]) * sizeof(GLfloat), sizeof(indices[0]) * sizeof(GLuint));
 	mCubeList.push_back(cube);
 }
 
