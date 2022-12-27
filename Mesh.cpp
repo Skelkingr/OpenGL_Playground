@@ -36,7 +36,7 @@ Mesh::~Mesh()
 	ClearMesh();
 }
 
-void Mesh::CreateMesh(std::vector<GLfloat> vertices, std::vector<GLuint> indices, GLuint numOfVertices, GLuint numOfIndices)
+void Mesh::CreateMesh(const std::vector<GLfloat> vertices, const std::vector<GLuint> indices, GLuint numOfVertices, GLuint numOfIndices)
 {
 	mIndexCount = numOfIndices;
 
@@ -46,14 +46,14 @@ void Mesh::CreateMesh(std::vector<GLfloat> vertices, std::vector<GLuint> indices
 	// Index buffer
 	glGenBuffers(1, &mIBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * numOfIndices, indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
 
 	// Vertex buffer
 	glGenBuffers(1, &mVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * numOfVertices, vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, (void*)0);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, (void*)(sizeof(vertices[0]) * 3));
 	glEnableVertexAttribArray(1);
