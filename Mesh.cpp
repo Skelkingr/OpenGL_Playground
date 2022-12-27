@@ -72,7 +72,7 @@ void Mesh::RenderMesh()
 	glBindVertexArray(mVAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
 
-	glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, (void*)0);
+	glDrawArrays(GL_TRIANGLES, 0, mIndexCount);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
