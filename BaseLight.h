@@ -10,7 +10,7 @@ public:
 	BaseLight(glm::vec3 colour, GLfloat ambientIntensity);
 	~BaseLight();
 
-private:
+protected:
 	glm::vec3 mColour;
 	GLfloat mAmbientIntensity;
 };
