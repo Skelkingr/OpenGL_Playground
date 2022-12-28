@@ -25,7 +25,7 @@ App::App()
 		200.0f
 	);
 
-	mBaseLight = BaseLight(glm::vec3(1.0f, 1.0f, 1.0f), 1.0f);
+	mBaseLight = BaseLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.5f);
 }
 
 App::~App()
@@ -162,16 +162,17 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 	std::vector<GLuint> indices =
 	{
 		//Front:
-		0, 1, 2
-		//1, 3, 2,
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 10, 11,
 
 		//Left:
-		//4, 0, 7,
-		//0, 3, 7,
+		12, 13, 14,
+		15, 16, 17,
+		18, 19, 20,
+		21, 22, 23,
 
-		//Back:
-		//5, 4, 6,
-		//4, 7, 6,
 
 		//Right:
 		//1, 5, 2,
@@ -192,13 +193,19 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 		//Front:
 		-1.0f, -1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
 		 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
-		-1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f
+		-1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f, -1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
-		// 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f, // Second triangle
-		// 1.0f,  1.0f,  1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
-		//-1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f, // Second triangle
+		 1.0f,  1.0f,  1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f,  1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
-		////Left:
+		//Left:
 		//-1.0f, -1.0f, -1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
 		//-1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
 		//-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
@@ -247,7 +254,7 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 	//ComputeAverageNormals(indices, 3, vertices, 24, 3, 5);
 
 	Mesh* obj = new Mesh();
-	obj->CreateMesh(vertices, indices, 24, 3);
+	obj->CreateMesh(vertices, indices, 96, 24);
 	mMeshList.push_back(obj);
 }
 
