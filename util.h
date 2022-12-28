@@ -29,9 +29,9 @@ const float TO_RADIANS = 3.14159265f / 180.0f;
 namespace
 {
 	void ComputeAverageNormals(
-		std::vector<GLuint> indices,
+		std::vector<GLuint>& indices,
 		GLuint indicesCount,
-		std::vector<GLfloat> vertices,
+		std::vector<GLfloat>& vertices,
 		GLuint verticesCount,
 		GLuint vLength,
 		GLuint normalOffset

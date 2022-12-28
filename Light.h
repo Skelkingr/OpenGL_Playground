@@ -18,7 +18,7 @@ public:
 	);
 																															
 private:
-	glm::vec3 mColour;
+	glm::vec3 mAmbientColour;
 	GLfloat mAmbientIntensity;
 
 	glm::vec3 mDirection;

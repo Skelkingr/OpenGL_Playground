@@ -9,8 +9,8 @@ public:
 	Mesh();
 	Mesh(bool direction, float offset, float maxOffset, float increment);
 	~Mesh();
-
-	void CreateMesh(const std::vector<GLfloat> vertices, const std::vector<GLuint> indices, GLuint numOfVertices, GLuint numOfIndices);
+		
+	void CreateMesh(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, GLuint numOfVertices, GLuint numOfIndices);
 	void RenderMesh();
 	void ClearMesh();
 
