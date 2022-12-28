@@ -37,7 +37,7 @@ namespace
 		GLuint normalOffset
 	)
 	{
-		for (size_t i = 0; i < indicesCount; i += 3)
+		for (size_t i = 0; i < indicesCount; i += 6)
 		{
 			unsigned int in0 = indices[i] * vLength;
 			unsigned int in1 = indices[i + 1] * vLength;

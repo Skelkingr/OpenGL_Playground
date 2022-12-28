@@ -25,7 +25,8 @@ App::App()
 		200.0f
 	);
 
-	mMainLight = Light(1.0f, 1.0f, 1.0f, 0.2f, 2.0f, -1.0f, -2.0f, 100.0f);
+	mBaseLight = BaseLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
+	mDirectionalLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(2.0f, -1.0f, -2.0f), 1.0f);
 }
 
 App::~App()
@@ -80,8 +81,8 @@ bool App::Init()
 	}
 
 	CreateObject(true, 0.05f, 1.5f, 0.0005f);
-	//CreateObject(false, 0.0f, 1.5f, 0.0005f);
-	//CreateObject(true, -0.5f, 1.5f, 0.0005f);
+	CreateObject(false, 0.0f, 1.5f, 0.0005f);
+	CreateObject(true, -0.5f, 1.5f, 0.0005f);
 	CreateShader();
 
 	InitTextures();
@@ -121,17 +122,36 @@ void App::Render()
 	{
 		mShaderList[0].UseShader();
 
-		GLfloat a = (GLfloat)mShaderList[0].GetAmbientIntensityLocation();
-		GLfloat b = (GLfloat)mShaderList[0].GetAmbientColourLocation();
-		GLfloat c = (GLfloat)mShaderList[0].GetDirectionLocation();
-		GLfloat d = (GLfloat)mShaderList[0].GetDiffuseIntensityLocation();
-		mMainLight.UseLight(a, b, c, d);
+		// Ambient light:
+		glUniform3f(
+			mShaderList[0].GetAmbientColourLocation(),
+			mBaseLight.GetColour().x,
+			mBaseLight.GetColour().y,
+			mBaseLight.GetColour().z
+		);
+		glUniform1f(mShaderList[0].GetAmbientIntensityLocation(), mBaseLight.GetAmbientIntensity());
 
+		// Directional light:
+		glUniform3f(
+			mShaderList[0].GetDiffuseColourLocation(),
+			mDirectionalLight.GetColour().x,
+			mDirectionalLight.GetColour().y,
+			mDirectionalLight.GetColour().z
+		);
+		glUniform3f(
+			mShaderList[0].GetDirectionLocation(),
+			mDirectionalLight.GetDirection().x,
+			mDirectionalLight.GetDirection().y,
+			mDirectionalLight.GetDirection().z	
+		);
+		glUniform1f(mShaderList[0].GetDiffuseIntensityLocation(), mDirectionalLight.GetDiffuseIntensity());
+
+		// Mesh operations:
 		obj->SetModel(glm::mat4(1.0f));
 
-		obj->SetModel(glm::translate(obj->GetModel(), glm::vec3(0.0f, 0.0f, -3.0f)));
-		obj->SetModel(glm::rotate(obj->GetModel(), obj->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.0f, -1.0f, 0.0f)));
-		obj->SetModel(glm::scale(obj->GetModel(), glm::vec3(0.5f, 0.5f, 0.5f)));
+		obj->SetModel(glm::translate(obj->GetModel(), glm::vec3(obj->GetOffset(), (GLfloat)(i - 1), -3.0f)));
+		obj->SetModel(glm::rotate(obj->GetModel(), obj->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.5f, 0.5f, -0.3f)));
+		obj->SetModel(glm::scale(obj->GetModel(), glm::vec3(0.3f, 0.3f, 0.3f)));
 
 		glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(obj->GetModel()));
 		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(obj->GetProjection()));
@@ -151,32 +171,9 @@ void App::Render()
 
 void App::CreateObject(bool direction, float offset, float maxOffset, float increment)
 {
-	std::vector<GLuint> indices =
-	{
-		//Front:
-		0, 1, 2
-		//1, 3, 2,
-
-		//Left:
-		//4, 0, 7,
-		//0, 3, 7,
-
-		//Back:
-		//5, 4, 6,
-		//4, 7, 6,
-
-		//Right:
-		//1, 5, 2,
-		//5, 6, 2,
-
-		//Bottom:
-		//0, 1, 4,
-		//1, 5, 4,
-
-		//Top:
-		//3, 2, 7,
-		//2, 6, 7
-	};
+	std::vector<GLuint> indices = {};
+	for (int i = 0; i < 72; i++)
+		indices.push_back(i);
 
 	// X, Y, Z		U, V	NX, NY, NZ
 	std::vector<GLfloat> vertices =
@@ -184,62 +181,99 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 		//Front:
 		-1.0f, -1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
 		 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
-		-1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f
+		-1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f, -1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
-		// 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f, // Second triangle
-		// 1.0f,  1.0f,  1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
-		//-1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f, // Second triangle
+		 1.0f,  1.0f,  1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f,  1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
-		////Left:
-		//-1.0f, -1.0f, -1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
-		//-1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
-		//-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		//Left:
+		-1.0f, -1.0f, -1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
+		-1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f, -1.0f, -1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
-		//-1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f, // Second triangle
-		//-1.0f,  1.0f,  1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
-		//-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f, // Second triangle
+		-1.0f,  1.0f,  1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f,  1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
-		////Back:
-		// 1.0f, -1.0f, -1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
-		//-1.0f, -1.0f, -1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
-		// 1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		//Back:
+		 1.0f, -1.0f, -1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
+		-1.0f, -1.0f, -1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f, -1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f, -1.0f, -1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
-		//-1.0f, -1.0f, -1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f, // Second triangle
-		//-1.0f,	1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
-		// 1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f, -1.0f, -1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f, // Second triangle
+		-1.0f,	1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f, -1.0f, -1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,	1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
-		////Right:
-		// 1.0f, -1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
-		// 1.0f, -1.0f, -1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
-		// 1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
-		// 1.0f, -1.0f, -1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f, // Second triangle
-		// 1.0f,  1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
-		// 1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
-		//
-		////Bottom:
-		//-1.0f, -1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
-		// 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
-		//-1.0f, -1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		//Right:
+		 1.0f, -1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
+		 1.0f, -1.0f, -1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f, -1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
-		// 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f, // Second triangle
-		// 1.0f, -1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
-		//-1.0f, -1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
-		//
-		////Top:
-		//-1.0f,  1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
-		// 1.0f,  1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
-		//-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f, -1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f, // Second triangle
+		 1.0f,  1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f, -1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f,  1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		
+		//Bottom:
+		-1.0f, -1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
+		 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f, -1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f, -1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f, -1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
-		// 1.0f,  1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f, // Second triangle
-		// 1.0f,  1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
-		//-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f
+		 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f, // Second triangle
+		 1.0f, -1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f, -1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f, -1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		
+		//Top:
+		-1.0f,  1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
+		 1.0f,  1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+
+		 1.0f,  1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f, // Second triangle
+		 1.0f,  1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f
 	};
 
-	ComputeAverageNormals(indices, 3, vertices, 24, 8, 5);
+	ComputeAverageNormals(indices, indices.size(), vertices, vertices.size() / 8, 8, 5);
 
-	Mesh* obj = new Mesh();
-	obj->CreateMesh(vertices, indices, 24, 3);
+	Mesh* obj = new Mesh(direction, offset, maxOffset, increment);
+	obj->CreateMesh(vertices, indices, vertices.size(), indices.size());
 	mMeshList.push_back(obj);
 }
 
@@ -252,9 +286,10 @@ void App::CreateShader()
 
 void App::InitTextures()
 {
+	mTextureList.push_back(new Texture((char*)"Textures\\wood.png"));
 	mTextureList.push_back(new Texture((char*)"Textures\\brick.png"));
 	mTextureList.push_back(new Texture((char*)"Textures\\dirt.png"));
-	mTextureList.push_back(new Texture((char*)"Textures\\wood.png"));
+	
 
 	for (Texture* tex : mTextureList)
 		tex->LoadTexture();
