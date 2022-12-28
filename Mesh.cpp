@@ -59,8 +59,8 @@ void Mesh::CreateMesh(std::vector<GLfloat>& vertices, std::vector<GLuint>& indic
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 8, (void*)(sizeof(vertices[0]) * 3));
 	glEnableVertexAttribArray(1);
 
-	/*glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 8, (void*)(sizeof(vertices[0]) * 5));
-	glEnableVertexAttribArray(2);*/
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 8, (void*)(sizeof(vertices[0]) * 5));
+	glEnableVertexAttribArray(2);
 
 	// Unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

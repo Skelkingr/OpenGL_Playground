@@ -14,11 +14,12 @@ public:
 
 	std::string ReadFile(const char* fileLocation);
 
-	GLuint GetModelLocation() const { return mUniformModel; }
 	GLuint GetProjectionLocation() const { return mUniformProjection; }
 	GLuint GetViewLocation() const { return mUniformView; }
-	GLuint GetColourLocation() const { return mUniformAmbientColour; }
+	GLuint GetModelLocation() const { return mUniformModel; }
+	GLuint GetAmbientColourLocation() const { return mUniformAmbientColour; }
 	GLuint GetAmbientIntensityLocation() const { return mUniformAmbientIntensity; }
+	GLuint GetDiffuseColourLocation() const { return mUniformDiffuseColour; }
 	GLuint GetDiffuseIntensityLocation() const { return mUniformDiffuseIntensity; }
 	GLuint GetDirectionLocation() const { return mUniformDirection; }
 
@@ -31,13 +32,14 @@ private:
 
 private:
 	GLuint mShaderID;
-	GLuint mUniformModel;
 	GLuint mUniformProjection;
 	GLuint mUniformView;
-	GLuint mUniformAmbientIntensity;
+	GLuint mUniformModel;
 	GLuint mUniformAmbientColour;
-	GLuint mUniformDiffuseIntensity;
+	GLuint mUniformAmbientIntensity;
+	GLuint mUniformDiffuseColour;
 	GLuint mUniformDirection;
+	GLuint mUniformDiffuseIntensity;
 };
 
 #endif
