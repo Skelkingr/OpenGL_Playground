@@ -25,7 +25,8 @@ App::App()
 		200.0f
 	);
 
-	mBaseLight = BaseLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.8f);
+	mBaseLight = BaseLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
+	mDirectionalLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(2.0f, -1.0f, -2.0f), 1.0f);
 }
 
 App::~App()
@@ -80,8 +81,8 @@ bool App::Init()
 	}
 
 	CreateObject(true, 0.05f, 1.5f, 0.0005f);
-	//CreateObject(false, 0.0f, 1.5f, 0.0005f);
-	//CreateObject(true, -0.5f, 1.5f, 0.0005f);
+	CreateObject(false, 0.0f, 1.5f, 0.0005f);
+	CreateObject(true, -0.5f, 1.5f, 0.0005f);
 	CreateShader();
 
 	InitTextures();
@@ -121,25 +122,36 @@ void App::Render()
 	{
 		mShaderList[0].UseShader();
 
-		/*GLfloat a = (GLfloat)mShaderList[0].GetAmbientIntensityLocation();
-		GLfloat b = (GLfloat)mShaderList[0].GetAmbientColourLocation();
-		GLfloat c = (GLfloat)mShaderList[0].GetDirectionLocation();
-		GLfloat d = (GLfloat)mShaderList[0].GetDiffuseIntensityLocation();
-		mMainLight.UseLight(a, b, c, d);*/
-
+		// Ambient light:
 		glUniform3f(
-			(GLfloat)mShaderList[0].GetColourLocation(),
+			mShaderList[0].GetAmbientColourLocation(),
 			mBaseLight.GetColour().x,
 			mBaseLight.GetColour().y,
 			mBaseLight.GetColour().z
 		);
-		glUniform1f((GLfloat)mShaderList[0].GetAmbientIntensityLocation(), mBaseLight.GetAmbientIntensity());
+		glUniform1f(mShaderList[0].GetAmbientIntensityLocation(), mBaseLight.GetAmbientIntensity());
 
+		// Directional light:
+		glUniform3f(
+			mShaderList[0].GetDiffuseColourLocation(),
+			mDirectionalLight.GetColour().x,
+			mDirectionalLight.GetColour().y,
+			mDirectionalLight.GetColour().z
+		);
+		glUniform3f(
+			mShaderList[0].GetDirectionLocation(),
+			mDirectionalLight.GetDirection().x,
+			mDirectionalLight.GetDirection().y,
+			mDirectionalLight.GetDirection().z	
+		);
+		glUniform1f(mShaderList[0].GetDiffuseIntensityLocation(), mDirectionalLight.GetDiffuseIntensity());
+
+		// Mesh operations:
 		obj->SetModel(glm::mat4(1.0f));
 
-		obj->SetModel(glm::translate(obj->GetModel(), glm::vec3(0.0f, 0.0f, -3.0f)));
-		obj->SetModel(glm::rotate(obj->GetModel(), obj->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.0f, -1.0f, 0.0f)));
-		obj->SetModel(glm::scale(obj->GetModel(), glm::vec3(0.5f, 0.5f, 0.5f)));
+		obj->SetModel(glm::translate(obj->GetModel(), glm::vec3(obj->GetOffset(), (GLfloat)(i - 1), -3.0f)));
+		obj->SetModel(glm::rotate(obj->GetModel(), obj->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.5f, 0.5f, -0.3f)));
+		obj->SetModel(glm::scale(obj->GetModel(), glm::vec3(0.3f, 0.3f, 0.3f)));
 
 		glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(obj->GetModel()));
 		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(obj->GetProjection()));
@@ -196,7 +208,7 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 		-1.0f,  1.0f,  1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 		-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 
-		////Back:
+		//Back:
 		 1.0f, -1.0f, -1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
 		-1.0f, -1.0f, -1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
 		 1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
@@ -242,7 +254,7 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 		 1.0f, -1.0f, -1.0f,	1.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 		-1.0f, -1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
 		
-		////Top:
+		//Top:
 		-1.0f,  1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
 		 1.0f,  1.0f,  1.0f,	1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
 		-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f,
@@ -258,9 +270,9 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 		-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f
 	};
 
-	//ComputeAverageNormals(indices, 3, vertices, 24, 3, 5);
+	ComputeAverageNormals(indices, indices.size(), vertices, vertices.size() / 8, 8, 5);
 
-	Mesh* obj = new Mesh();
+	Mesh* obj = new Mesh(direction, offset, maxOffset, increment);
 	obj->CreateMesh(vertices, indices, vertices.size(), indices.size());
 	mMeshList.push_back(obj);
 }
@@ -274,9 +286,10 @@ void App::CreateShader()
 
 void App::InitTextures()
 {
+	mTextureList.push_back(new Texture((char*)"Textures\\wood.png"));
 	mTextureList.push_back(new Texture((char*)"Textures\\brick.png"));
 	mTextureList.push_back(new Texture((char*)"Textures\\dirt.png"));
-	mTextureList.push_back(new Texture((char*)"Textures\\wood.png"));
+	
 
 	for (Texture* tex : mTextureList)
 		tex->LoadTexture();
