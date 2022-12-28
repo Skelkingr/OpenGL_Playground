@@ -2,27 +2,21 @@
 
 in vec4 vCol;
 in vec2 TexCoord;
-in vec3 Normal;
 
 out vec4 colour;
 
-struct DirectionalLight 
+struct BaseLight
 {
 	vec3 colour;
 	float ambientIntensity;
-	vec3 direction;
-	float diffuseIntensity;
 };
 
 uniform sampler2D theTexture;
-uniform DirectionalLight directionalLight;
+uniform BaseLight baseLight;
 
 void main()
 {
-	vec4 ambientColour = vec4(directionalLight.colour, 1.0) * directionalLight.ambientIntensity;
-	
-	float diffuseFactor = max(dot(normalize(Normal), normalize(directionalLight.direction)), 0.0);
-	vec4 diffuseColour = vec4(directionalLight.colour, 1.0) * directionalLight.diffuseIntensity * diffuseFactor;
+	vec4 ambientColour = vec4(baseLight.colour, 1.0f) * baseLight.ambientIntensity;
 
-	colour = texture(theTexture, TexCoord) * (ambientColour + diffuseColour);
+	colour = texture(theTexture, TexCoord) * ambientColour;
 }
