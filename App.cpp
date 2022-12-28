@@ -25,7 +25,7 @@ App::App()
 		200.0f
 	);
 
-	mMainLight = Light(1.0f, 1.0f, 1.0f, 0.2f, 2.0f, -1.0f, -2.0f, 100.0f);
+	mBaseLight = BaseLight(glm::vec3(1.0f, 1.0f, 1.0f), 1.0f);
 }
 
 App::~App()
@@ -121,11 +121,19 @@ void App::Render()
 	{
 		mShaderList[0].UseShader();
 
-		GLfloat a = (GLfloat)mShaderList[0].GetAmbientIntensityLocation();
+		/*GLfloat a = (GLfloat)mShaderList[0].GetAmbientIntensityLocation();
 		GLfloat b = (GLfloat)mShaderList[0].GetAmbientColourLocation();
 		GLfloat c = (GLfloat)mShaderList[0].GetDirectionLocation();
 		GLfloat d = (GLfloat)mShaderList[0].GetDiffuseIntensityLocation();
-		mMainLight.UseLight(a, b, c, d);
+		mMainLight.UseLight(a, b, c, d);*/
+
+		glUniform3f(
+			(GLfloat)mShaderList[0].GetColourLocation(),
+			mBaseLight.GetColour().x,
+			mBaseLight.GetColour().y,
+			mBaseLight.GetColour().z
+		);
+		glUniform1f((GLfloat)mShaderList[0].GetAmbientIntensityLocation(), mBaseLight.GetAmbientIntensity());
 
 		obj->SetModel(glm::mat4(1.0f));
 
@@ -236,7 +244,7 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 		//-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f
 	};
 
-	ComputeAverageNormals(indices, 3, vertices, 24, 8, 5);
+	//ComputeAverageNormals(indices, 3, vertices, 24, 3, 5);
 
 	Mesh* obj = new Mesh();
 	obj->CreateMesh(vertices, indices, 24, 3);
