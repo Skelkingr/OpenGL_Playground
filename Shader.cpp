@@ -6,10 +6,14 @@ Shader::Shader()
 	mUniformModel(0),
 	mUniformProjection(0),
 	mUniformView(0),
+	mUniformEyePosition(0),
 	mUniformAmbientIntensity(0),
+	mUniformDiffuseColour(0),
 	mUniformAmbientColour(0),
 	mUniformDiffuseIntensity(0),
-	mUniformDirection(0)
+	mUniformDirection(0),
+	mUniformSpecularIntensity(0),
+	mUniformShininess(0)
 {}
 
 Shader::~Shader()
