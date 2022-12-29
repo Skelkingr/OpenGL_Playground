@@ -3,15 +3,14 @@
 DirectionalLight::DirectionalLight()
 	:
 	BaseLight(),
-	mDirection({0.0f, -1.0f, 0.0f}),
-	mDiffuseIntensity(0.5f)
+	mDirection({0.0f, 0.0f, 0.0f})
 {}
 
-DirectionalLight::DirectionalLight(glm::vec3 colour, glm::vec3 direction, GLfloat diffuseIntensity)
+DirectionalLight::DirectionalLight(glm::vec3 colour, GLfloat ambientIntensity, GLfloat diffuseIntensity, glm::vec3 direction)
+	:
+	BaseLight(colour, ambientIntensity, diffuseIntensity)
 {
-	mColour = colour;
 	mDirection = direction;
-	mDiffuseIntensity = diffuseIntensity;
 }
 
 DirectionalLight::~DirectionalLight()

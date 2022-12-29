@@ -25,8 +25,7 @@ App::App()
 		200.0f
 	);
 
-	mBaseLight = BaseLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
-	mDirectionalLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-2.0f, 0.0f, 2.0f), 0.5f);
+	mDirectionalLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.1f, 0.6f, glm::vec3(-2.0f, 0.0f, 2.0f));
 
 	mShinyMaterial = Material(0.8f, 128.0f);
 	mDullMaterial = Material(0.3f, 4.0f);
@@ -128,11 +127,11 @@ void App::Render()
 		// Ambient light:
 		glUniform3f(
 			mShaderList[0].GetAmbientColourLocation(),
-			mBaseLight.GetColour().x,
-			mBaseLight.GetColour().y,
-			mBaseLight.GetColour().z
+			mDirectionalLight.GetColour().x,
+			mDirectionalLight.GetColour().y,
+			mDirectionalLight.GetColour().z
 		);
-		glUniform1f(mShaderList[0].GetAmbientIntensityLocation(), mBaseLight.GetAmbientIntensity());
+		glUniform1f(mShaderList[0].GetAmbientIntensityLocation(), mDirectionalLight.GetAmbientIntensity());
 
 		// Directional light:
 		glUniform3f(

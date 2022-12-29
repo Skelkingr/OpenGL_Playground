@@ -79,7 +79,6 @@ private:
 
 	std::vector<Texture*> mTextureList;
 
-	BaseLight mBaseLight;
 	DirectionalLight mDirectionalLight;
 
 	Material mShinyMaterial;
