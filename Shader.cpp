@@ -139,6 +139,7 @@ bool Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 	mUniformProjection = glGetUniformLocation(mShaderID, "projection");
 	mUniformView = glGetUniformLocation(mShaderID, "view");
 	mUniformModel = glGetUniformLocation(mShaderID, "model");
+	mUniformEyePosition = glGetUniformLocation(mShaderID, "eyePosition");
 
 	mUniformAmbientColour = glGetUniformLocation(mShaderID, "baseLight.colour");
 	mUniformAmbientIntensity = glGetUniformLocation(mShaderID, "baseLight.ambientIntensity");
