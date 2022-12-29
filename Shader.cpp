@@ -2,16 +2,12 @@
 
 Shader::Shader()
 	:
+	mPointLightCount(0),
 	mShaderID(0),
 	mUniformModel(0),
 	mUniformProjection(0),
 	mUniformView(0),
 	mUniformEyePosition(0),
-	mUniformAmbientIntensity(0),
-	mUniformDiffuseColour(0),
-	mUniformAmbientColour(0),
-	mUniformDiffuseIntensity(0),
-	mUniformDirection(0),
 	mUniformSpecularIntensity(0),
 	mUniformShininess(0)
 {}
@@ -145,10 +141,10 @@ bool Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 	mUniformModel = glGetUniformLocation(mShaderID, "model");
 	mUniformEyePosition = glGetUniformLocation(mShaderID, "eyePosition");
 
-	mUniformAmbientColour = glGetUniformLocation(mShaderID, "directionalLight.colour");
-	mUniformAmbientIntensity = glGetUniformLocation(mShaderID, "directionalLight.ambientIntensity");
-	mUniformDiffuseIntensity = glGetUniformLocation(mShaderID, "directionalLight.diffuseIntensity");
-	mUniformDirection = glGetUniformLocation(mShaderID, "directionalLight.direction");
+	mUniformDirectionalLight.uniformColour = glGetUniformLocation(mShaderID, "directionalLight.colour");
+	mUniformDirectionalLight.uniformAmbientIntensity = glGetUniformLocation(mShaderID, "directionalLight.ambientIntensity");
+	mUniformDirectionalLight.uniformDiffuseIntensity = glGetUniformLocation(mShaderID, "directionalLight.diffuseIntensity");
+	mUniformDirectionalLight.uniformDirection = glGetUniformLocation(mShaderID, "directionalLight.direction");
 
 	mUniformSpecularIntensity = glGetUniformLocation(mShaderID, "material.specularIntensity");
 	mUniformShininess = glGetUniformLocation(mShaderID, "material.shininess");

@@ -1,7 +1,8 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include "Util.h"
+#include "DirectionalLight.h"
+#include "PointLight.h"
 
 class Shader
 {
@@ -19,11 +20,10 @@ public:
 	GLuint GetModelLocation() const { return mUniformModel; }
 	GLuint GetEyePositionLocation() const { return mUniformEyePosition; }
 
-	GLuint GetAmbientColourLocation() const { return mUniformAmbientColour; }
-	GLuint GetAmbientIntensityLocation() const { return mUniformAmbientIntensity; }
-	GLuint GetDiffuseColourLocation() const { return mUniformDiffuseColour; }
-	GLuint GetDiffuseIntensityLocation() const { return mUniformDiffuseIntensity; }
-	GLuint GetDirectionLocation() const { return mUniformDirection; }
+	GLuint GetAmbientColourLocation() const { return mUniformDirectionalLight.uniformColour; }
+	GLuint GetAmbientIntensityLocation() const { return mUniformDirectionalLight.uniformAmbientIntensity; }
+	GLuint GetDiffuseIntensityLocation() const { return mUniformDirectionalLight.uniformDiffuseIntensity; }
+	GLuint GetDirectionLocation() const { return mUniformDirectionalLight.uniformDirection; }
 
 	GLuint GetSpecularIntensityLocation() const { return mUniformSpecularIntensity; }
 	GLuint GetShininessLocation() const { return mUniformShininess; }
@@ -36,17 +36,21 @@ private:
 	bool CompileShader(const char* vertexCode, const char* fragmentCode);
 
 private:
+	int mPointLightCount;
+
+	struct
+	{
+		GLuint uniformColour;
+		GLuint uniformAmbientIntensity;
+		GLuint uniformDiffuseIntensity;
+		GLuint uniformDirection;
+	} mUniformDirectionalLight;
+
 	GLuint mShaderID;
 	GLuint mUniformProjection;
 	GLuint mUniformView;
 	GLuint mUniformModel;
 	GLuint mUniformEyePosition;
-
-	GLuint mUniformAmbientColour;
-	GLuint mUniformAmbientIntensity;
-	GLuint mUniformDiffuseColour;
-	GLuint mUniformDirection;
-	GLuint mUniformDiffuseIntensity;
 
 	GLuint mUniformSpecularIntensity;
 	GLuint mUniformShininess;
