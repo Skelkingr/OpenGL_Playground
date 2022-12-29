@@ -12,6 +12,7 @@ public:
 
 	void UseLight(GLfloat ambientColourLocation, GLfloat ambientIntensityLocation, GLfloat diffuseIntensityLocation, GLfloat directionLocation);
 
+	glm::vec3 GetDirection() const { return mDirection; }
 private:
 	glm::vec3 mDirection;
 };
