@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "DirectionalLight.h"
 #include "GameTimer.h"
+#include "Material.h"
 #include "Mesh.h"
 #include "Shader.h"
 #include "Util.h"
@@ -80,6 +81,9 @@ private:
 
 	BaseLight mBaseLight;
 	DirectionalLight mDirectionalLight;
+
+	Material mShinyMaterial;
+	Material mDullMaterial;
 };
 
 #endif

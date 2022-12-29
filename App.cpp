@@ -26,7 +26,10 @@ App::App()
 	);
 
 	mBaseLight = BaseLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
-	mDirectionalLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(2.0f, -1.0f, -2.0f), 1.0f);
+	mDirectionalLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-2.0f, 0.0f, 2.0f), 0.5f);
+
+	mShinyMaterial = Material(0.8f, 128.0f);
+	mDullMaterial = Material(0.3f, 4.0f);
 }
 
 App::~App()
@@ -64,7 +67,7 @@ int App::Run()
 		mCamera.KeyControl(mKeys, deltaTime);
 		mCamera.MouseControl(GetMouseChangeX(), GetMouseChangeY(), deltaTime);
 
-		Update(0.35f);
+		Update(0.5f);
 		Clear(0.0f, 0.0f, 0.0f, 1.0f);
 		Render();
 	}
@@ -81,8 +84,8 @@ bool App::Init()
 	}
 
 	CreateObject(true, 0.05f, 1.5f, 0.0005f);
-	CreateObject(false, 0.0f, 1.5f, 0.0005f);
-	CreateObject(true, -0.5f, 1.5f, 0.0005f);
+	/*CreateObject(false, 0.0f, 1.5f, 0.0005f);
+	CreateObject(true, -0.5f, 1.5f, 0.0005f);*/
 	CreateShader();
 
 	InitTextures();
@@ -146,19 +149,30 @@ void App::Render()
 		);
 		glUniform1f(mShaderList[0].GetDiffuseIntensityLocation(), mDirectionalLight.GetDiffuseIntensity());
 
+		// Material:
+		glUniform1f(mShaderList[0].GetSpecularIntensityLocation(), mShinyMaterial.GetSpecularIntensity());
+
+		// Matrix operations:
+		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(obj->GetProjection()));
+		glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
+		glUniform3f(
+			mShaderList[0].GetEyePositionLocation(),
+			mCamera.GetCameraPosition().x,
+			mCamera.GetCameraPosition().y,
+			mCamera.GetCameraPosition().z
+		);
+
 		// Mesh operations:
 		obj->SetModel(glm::mat4(1.0f));
 
-		obj->SetModel(glm::translate(obj->GetModel(), glm::vec3(obj->GetOffset(), (GLfloat)(i - 1), -3.0f)));
-		obj->SetModel(glm::rotate(obj->GetModel(), obj->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.5f, 0.5f, -0.3f)));
-		obj->SetModel(glm::scale(obj->GetModel(), glm::vec3(0.3f, 0.3f, 0.3f)));
+		obj->SetModel(glm::translate(obj->GetModel(), glm::vec3(0.0f, 0.0f, -5.0f)));
+		obj->SetModel(glm::rotate(obj->GetModel(), obj->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f)));
+		//obj->SetModel(glm::scale(obj->GetModel(), glm::vec3(0.3f, 0.3f, 0.3f)));
 
 		glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(obj->GetModel()));
-		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(obj->GetProjection()));
-		glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
-
 
 		mTextureList[i]->UseTexture();
+		mShinyMaterial.UseMaterial(mShaderList[0].GetSpecularIntensityLocation(), mShaderList[0].GetShininessLocation());
 		obj->RenderMesh();
 
 		glUseProgram(0);
@@ -272,7 +286,7 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 
 	ComputeAverageNormals(indices, indices.size(), vertices, vertices.size() / 8, 8, 5);
 
-	Mesh* obj = new Mesh(direction, offset, maxOffset, increment);
+	Mesh* obj = new Mesh();
 	obj->CreateMesh(vertices, indices, vertices.size(), indices.size());
 	mMeshList.push_back(obj);
 }
