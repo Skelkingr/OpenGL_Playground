@@ -10,12 +10,8 @@ public:
 	BaseLight(glm::vec3 colour, GLfloat ambientIntensity, GLfloat diffuseIntensity);
 	~BaseLight();
 
-	glm::vec3 GetColour() const { return mColour; }
-	GLfloat GetAmbientIntensity() const { return mAmbientIntensity; }
-	GLfloat GetDiffuseIntensity() const { return mDiffuseIntensity; }
-
 protected:
-	glm::vec3 mColour;
+	glm::vec3 mAmbientColour;
 	GLfloat mAmbientIntensity;
 	GLfloat mDiffuseIntensity;
 };

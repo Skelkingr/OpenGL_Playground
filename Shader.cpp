@@ -148,7 +148,6 @@ bool Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 	mUniformAmbientColour = glGetUniformLocation(mShaderID, "directionalLight.colour");
 	mUniformAmbientIntensity = glGetUniformLocation(mShaderID, "directionalLight.ambientIntensity");
 	mUniformDiffuseIntensity = glGetUniformLocation(mShaderID, "directionalLight.diffuseIntensity");
-	mUniformDiffuseColour = glGetUniformLocation(mShaderID, "directionalLight.colour");
 	mUniformDirection = glGetUniformLocation(mShaderID, "directionalLight.direction");
 
 	mUniformSpecularIntensity = glGetUniformLocation(mShaderID, "material.specularIntensity");
