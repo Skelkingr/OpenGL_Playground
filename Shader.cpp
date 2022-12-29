@@ -139,11 +139,15 @@ bool Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 	mUniformProjection = glGetUniformLocation(mShaderID, "projection");
 	mUniformView = glGetUniformLocation(mShaderID, "view");
 	mUniformModel = glGetUniformLocation(mShaderID, "model");
+
 	mUniformAmbientColour = glGetUniformLocation(mShaderID, "baseLight.colour");
 	mUniformAmbientIntensity = glGetUniformLocation(mShaderID, "baseLight.ambientIntensity");
 	mUniformDiffuseColour = glGetUniformLocation(mShaderID, "directionalLight.colour");
 	mUniformDirection = glGetUniformLocation(mShaderID, "directionalLight.direction");
 	mUniformDiffuseIntensity = glGetUniformLocation(mShaderID, "directionalLight.diffuseIntensity");
+
+	mUniformSpecularIntensity = glGetUniformLocation(mShaderID, "material.specularIntensity");
+	mUniformShininess = glGetUniformLocation(mShaderID, "material.shininess");
 		
 
 	return true;
