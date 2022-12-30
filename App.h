@@ -51,6 +51,8 @@ public:
 private:
 	bool InitMainWindow();
 
+	void LoadContent();
+
 	void CreateCallbacks();
 	static void HandleKeys(GLFWwindow* window, int key, int code, int action, int mode);
 	static void HandleMouse(GLFWwindow* window, double xPos, double yPos);
@@ -82,7 +84,6 @@ private:
 
 	DirectionalLight mMainLight;
 	std::vector<PointLight> mPointLights;
-
 
 	Material mShinyMaterial;
 	Material mDullMaterial;

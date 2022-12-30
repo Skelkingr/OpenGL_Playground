@@ -2,8 +2,8 @@
 
 App::App()
 	:
-	mClientWidth(800),
-	mClientHeight(600),
+	mClientWidth(1360),
+	mClientHeight(920),
 	mWindowName("Skelkingr"),
 	mMainWindow(nullptr),
 	mBufferWidth(0),
@@ -17,7 +17,7 @@ App::App()
 		mKeys[i] = false;
 
 	mCamera = Camera(
-		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 5.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f),
 		-90.0f,
 		0.0f,
@@ -25,15 +25,13 @@ App::App()
 		200.0f
 	);
 
-	mMainLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.2f, 0.7f, glm::vec3(2.0f, 0.0f, -2.0f));
+	mMainLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f, glm::vec3(2.0f, 0.0f, -2.0f));
 
-	PointLight pointLight1 = PointLight(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, 1.0f, glm::vec3(2.0f, 0.0f, -5.0f), 0.3f, 0.2f, 0.1f);
-	PointLight pointLight2 = PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 1.0f, glm::vec3(0.0f, 2.0f, -5.0f), 0.3f, 0.2f, 0.1f);
-	PointLight pointLight3 = PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.0f, 1.0f, glm::vec3(-2.0f, 0.0f, -5.0f), 0.3f, 0.2f, 0.1f);
+	mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.3f, 0.8f, glm::vec3(4.0f, 1.5f, 0.0f), 0.2f, 0.1f, 0.05f));
+	mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.3f, 0.8f, glm::vec3(-4.0f, 1.5f, 0.0f), 0.2f, 0.1f, 0.05f));
 
-	mPointLights.push_back(pointLight1);
-	mPointLights.push_back(pointLight2);
-	mPointLights.push_back(pointLight3);
+	mShinyMaterial = Material(0.8f, 128.0f);
+	mDullMaterial = Material(0.3f, 4.0f);
 }
 
 App::~App()
@@ -99,73 +97,68 @@ bool App::Init()
 }
 
 void App::Update(float deltaTime)
-{
-	for (Mesh* obj : mMeshList)
-	{
-		if (obj->GetDirection())
-		{
-			obj->SetOffset(obj->GetOffset() + obj->GetIncrement() * deltaTime);
-		}
-		else
-		{
-			obj->SetOffset(obj->GetOffset() - obj->GetIncrement() * deltaTime);
-		}
-		if (abs(obj->GetOffset()) >= obj->GetMaxOffset())
-			obj->SetDirection(!obj->GetDirection());
-
-		obj->SetCurrentAngle(obj->GetCurrentAngle() + 0.01f);
-		if (obj->GetCurrentAngle() >= 360.0f)
-			obj->SetCurrentAngle(obj->GetCurrentAngle() - 360.0f);
-	}
-}
+{}
 
 void App::Render()
 {
-	int i = 0;
+	mShaderList[0].UseShader();
+	mShaderList[0].SetDirectionalLight(&mMainLight);
+	mShaderList[0].SetPointLights(mPointLights, mPointLights.size());
 
-	for (Mesh* obj : mMeshList)
-	{
-		mShaderList[0].UseShader();
-		mShaderList[0].SetDirectionalLight(&mMainLight);
-		mShaderList[0].SetPointLights(mPointLights, mPointLights.size());
+	// Cube operations:
+	glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(mMeshList[0]->GetProjection()));
+	glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
+	glUniform3f(
+		mShaderList[0].GetEyePositionLocation(),
+		mCamera.GetCameraPosition().x,
+		mCamera.GetCameraPosition().y,
+		mCamera.GetCameraPosition().z
+	);
 
-		// Matrix operations:
-		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(obj->GetProjection()));
-		glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
-		glUniform3f(
-			mShaderList[0].GetEyePositionLocation(),
-			mCamera.GetCameraPosition().x,
-			mCamera.GetCameraPosition().y,
-			mCamera.GetCameraPosition().z
-		);
+	mMeshList[0]->SetModel(glm::mat4(1.0f));
 
-		// Mesh operations:
-		obj->SetModel(glm::mat4(1.0f));
+	mMeshList[0]->SetModel(glm::translate(mMeshList[0]->GetModel(), glm::vec3(0.0f, 1.0f, 0.0f)));
+	mMeshList[0]->SetModel(glm::rotate(mMeshList[0]->GetModel(), 45.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f)));
 
-		obj->SetModel(glm::translate(obj->GetModel(), glm::vec3(0.0f, 0.0f, -5.0f)));
-		obj->SetModel(glm::rotate(obj->GetModel(), obj->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f)));
+	glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(mMeshList[0]->GetModel()));
 
-		glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(obj->GetModel()));
+	mTextureList[0]->UseTexture();
+	mDullMaterial.UseMaterial(mShaderList[0].GetSpecularIntensityLocation(), mShaderList[0].GetShininessLocation());
+	mMeshList[0]->RenderMesh();
 
-		mTextureList[i]->UseTexture();
-		obj->RenderMesh();
+	// Floor operations:
+	glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(mMeshList[1]->GetProjection()));
+	glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
+	glUniform3f(
+		mShaderList[0].GetEyePositionLocation(),
+		mCamera.GetCameraPosition().x,
+		mCamera.GetCameraPosition().y,
+		mCamera.GetCameraPosition().z
+	);
 
-		glUseProgram(0);
+	mMeshList[1]->SetModel(glm::mat4(1.0f));
 
-		i++;
-	}
+	glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(mMeshList[1]->GetModel()));
+
+	mTextureList[1]->UseTexture();
+	mShinyMaterial.UseMaterial(mShaderList[0].GetSpecularIntensityLocation(), mShaderList[0].GetShininessLocation());
+	mMeshList[1]->RenderMesh();
+
+	glUseProgram(0);
 
 	glfwSwapBuffers(mMainWindow);
 }
 
 void App::CreateObject(bool direction, float offset, float maxOffset, float increment)
 {
-	std::vector<GLuint> indices = {};
+	std::vector<GLuint> cubeIndices = {};
+	std::vector<GLuint> floorIndices = {};
+
 	for (int i = 0; i < 72; i++)
-		indices.push_back(i);
+		cubeIndices.push_back(i);
 
 	// X, Y, Z		U, V	NX, NY, NZ
-	std::vector<GLfloat> vertices =
+	std::vector<GLfloat> cubeVertices =
 	{
 		//Front:
 		-1.0f, -1.0f,  1.0f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, // First triangle
@@ -259,11 +252,27 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 		-1.0f,  1.0f, -1.0f,	0.0f, 1.0f,		0.0f, 0.0f, 0.0f
 	};
 
-	ComputeAverageNormals(indices, indices.size(), vertices, vertices.size() / 8, 8, 5);
+	floorIndices = {
+		0, 2, 1,
+		1, 2, 3
+	};
 
-	Mesh* obj = new Mesh();
-	obj->CreateMesh(vertices, indices, vertices.size(), indices.size());
-	mMeshList.push_back(obj);
+	std::vector<GLfloat> floorVertices = {
+		-10.0f, 0.0f, -10.0f,	 0.0f,  0.0f,	0.0f, -1.0f, 0.0f,
+		 10.0f, 0.0f, -10.0f,	50.0f,  0.0f,	0.0f, -1.0f, 0.0f,
+		-10.0f, 0.0f,  10.0f,	 0.0f, 50.0f,	0.0f, -1.0f, 0.0f,
+		 10.0f, 0.0f,  10.0f,	50.0f, 50.0f,	0.0f, -1.0f, 0.0f
+	};
+
+	ComputeAverageNormals(cubeIndices, cubeIndices.size(), cubeVertices, cubeVertices.size() / 8, 8, 5);
+
+	Mesh* obj1 = new Mesh();
+	obj1->CreateMesh(cubeVertices, cubeIndices, cubeVertices.size(), cubeIndices.size());
+	mMeshList.push_back(obj1);
+	
+	Mesh* obj2 = new Mesh();
+	obj2->CreateMesh(floorVertices, floorIndices, floorVertices.size(), floorIndices.size());
+	mMeshList.push_back(obj2);
 }
 
 void App::CreateShader()
@@ -276,8 +285,7 @@ void App::CreateShader()
 void App::InitTextures()
 {
 	mTextureList.push_back(new Texture((char*)"Textures\\wood.png"));
-	mTextureList.push_back(new Texture((char*)"Textures\\brick.png"));
-	mTextureList.push_back(new Texture((char*)"Textures\\dirt.png"));
+	mTextureList.push_back(new Texture((char*)"Textures\\plain.png"));
 	
 
 	for (Texture* tex : mTextureList)
