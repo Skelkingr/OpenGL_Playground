@@ -18,6 +18,16 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+/* MACROS */
+#ifdef _DEBUG
+#define GL_CHECK(stmt) \
+            stmt; \
+            CheckOpenGLError(#stmt, __FILE__, __LINE__);
+
+#else
+#define GL_CHECK(stmt) stmt
+#endif
+
 
 /* CONSTANTS */
 
@@ -28,6 +38,16 @@ const float TO_RADIANS = 3.14159265f / 180.0f;
 
 namespace
 {
+	void CheckOpenGLError(const char* stmt, const char* fname, int line)
+	{
+		GLenum err = glGetError();
+		if (err != GL_NO_ERROR)
+		{
+			printf("OpenGL error %08x, at %s:%i - for %s\n", err, fname, line, stmt);
+			abort();
+		}
+	}
+
 	void ComputeAverageNormals(
 		std::vector<GLuint>& indices,
 		GLuint indicesCount,
