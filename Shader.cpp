@@ -3,6 +3,7 @@
 Shader::Shader()
 	:
 	mPointLightCount(0),
+	mUniformDirectionalLight(),
 	mShaderID(0),
 	mUniformModel(0),
 	mUniformProjection(0),
@@ -54,6 +55,16 @@ std::string Shader::ReadFile(const char* fileLocation)
 	fileStream.close();
 
 	return content;
+}
+
+void Shader::SetDirectionalLight(DirectionalLight* directionalLight)
+{
+	directionalLight->UseLight(
+		mUniformDirectionalLight.uniformColour,
+		mUniformDirectionalLight.uniformAmbientIntensity,
+		mUniformDirectionalLight.uniformDiffuseIntensity,
+		mUniformDirectionalLight.uniformDirection
+	);
 }
 
 void Shader::UseShader()

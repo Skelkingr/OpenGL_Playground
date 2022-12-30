@@ -25,7 +25,7 @@ App::App()
 		200.0f
 	);
 
-	mDirectionalLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.1f, 0.6f, glm::vec3(-2.0f, 0.0f, 2.0f));
+	mDirectionalLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.2f, 0.7f, glm::vec3(-2.0f, 0.0f, 2.0f));
 
 	mShinyMaterial = Material(0.8f, 128.0f);
 	mDullMaterial = Material(0.3f, 4.0f);
@@ -83,8 +83,6 @@ bool App::Init()
 	}
 
 	CreateObject(true, 0.05f, 1.5f, 0.0005f);
-	/*CreateObject(false, 0.0f, 1.5f, 0.0005f);
-	CreateObject(true, -0.5f, 1.5f, 0.0005f);*/
 	CreateShader();
 
 	InitTextures();
@@ -123,30 +121,7 @@ void App::Render()
 	for (Mesh* obj : mMeshList)
 	{
 		mShaderList[0].UseShader();
-
-		// Ambient light:
-		glUniform3f(
-			mShaderList[0].GetAmbientColourLocation(),
-			mDirectionalLight.GetColour().x,
-			mDirectionalLight.GetColour().y,
-			mDirectionalLight.GetColour().z
-		);
-		glUniform1f(mShaderList[0].GetAmbientIntensityLocation(), mDirectionalLight.GetAmbientIntensity());
-
-		// Directional light:
-		glUniform3f(
-			mShaderList[0].GetDiffuseColourLocation(),
-			mDirectionalLight.GetColour().x,
-			mDirectionalLight.GetColour().y,
-			mDirectionalLight.GetColour().z
-		);
-		glUniform3f(
-			mShaderList[0].GetDirectionLocation(),
-			mDirectionalLight.GetDirection().x,
-			mDirectionalLight.GetDirection().y,
-			mDirectionalLight.GetDirection().z	
-		);
-		glUniform1f(mShaderList[0].GetDiffuseIntensityLocation(), mDirectionalLight.GetDiffuseIntensity());
+		mShaderList[0].SetDirectionalLight(&mDirectionalLight);
 
 		// Material:
 		glUniform1f(mShaderList[0].GetSpecularIntensityLocation(), mShinyMaterial.GetSpecularIntensity());
@@ -293,7 +268,7 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 void App::CreateShader()
 {
 	Shader* shader = new Shader();
-	shader->CreateFromFiles("Shaders\\shader.vert", "Shaders\\shader.frag");
+	GL_CHECK(shader->CreateFromFiles("Shaders\\shader.vert", "Shaders\\shader.frag"));
 	mShaderList.push_back(*shader);
 }
 

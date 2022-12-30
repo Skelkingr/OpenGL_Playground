@@ -20,13 +20,10 @@ public:
 	GLuint GetModelLocation() const { return mUniformModel; }
 	GLuint GetEyePositionLocation() const { return mUniformEyePosition; }
 
-	GLuint GetAmbientColourLocation() const { return mUniformDirectionalLight.uniformColour; }
-	GLuint GetAmbientIntensityLocation() const { return mUniformDirectionalLight.uniformAmbientIntensity; }
-	GLuint GetDiffuseIntensityLocation() const { return mUniformDirectionalLight.uniformDiffuseIntensity; }
-	GLuint GetDirectionLocation() const { return mUniformDirectionalLight.uniformDirection; }
-
 	GLuint GetSpecularIntensityLocation() const { return mUniformSpecularIntensity; }
 	GLuint GetShininessLocation() const { return mUniformShininess; }
+
+	void SetDirectionalLight(DirectionalLight* directionalLight);
 
 	void UseShader();
 	void ClearShader();	
@@ -38,7 +35,7 @@ private:
 private:
 	int mPointLightCount;
 
-	struct
+	struct UniformDirectionalLight
 	{
 		GLuint uniformColour;
 		GLuint uniformAmbientIntensity;
