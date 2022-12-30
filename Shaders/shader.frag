@@ -59,7 +59,7 @@ vec4 CalcLightByDirection(BaseLight light, vec3 direction)
 	if (diffuseFactor > 0.0)
 	{
 		vec3 fragToEye = normalize(eyePosition - FragPos);
-		vec3 reflectedVertex = normalize(reflect(direction, normalize(Normal)));
+		vec3 reflectedVertex = normalize(reflect(-direction, normalize(Normal)));
 
 		float specularFactor = dot(fragToEye, reflectedVertex);
 		if (specularFactor > 0.0)
@@ -74,7 +74,7 @@ vec4 CalcLightByDirection(BaseLight light, vec3 direction)
 
 vec4 CalcDirectionalLight()
 {
-	return CalcLightByDirection(directionalLight.base, directionalLight.direction);
+	return CalcLightByDirection(directionalLight.base, -directionalLight.direction);
 }
 
 vec4 CalcPointLights()
