@@ -35,13 +35,28 @@ private:
 private:
 	int mPointLightCount;
 
-	struct UniformDirectionalLight
+	struct
 	{
 		GLuint uniformColour;
 		GLuint uniformAmbientIntensity;
 		GLuint uniformDiffuseIntensity;
+
 		GLuint uniformDirection;
 	} mUniformDirectionalLight;
+
+	GLuint mUniformPointLightCount;
+
+	struct
+	{
+		GLuint uniformColour;
+		GLuint uniformAmbientIntensity;
+		GLuint uniformDiffuseIntensity;
+
+		GLuint uniformPosition;
+		GLuint uniformExponent;
+		GLuint uniformLinear;
+		GLuint uniformConstant;
+	} mUniformPointLight[MAX_POINT_LIGHTS];
 
 	GLuint mShaderID;
 	GLuint mUniformProjection;
