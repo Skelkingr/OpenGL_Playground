@@ -81,7 +81,8 @@ private:
 	std::vector<Texture*> mTextureList;
 
 	DirectionalLight mMainLight;
-	PointLight mPointLights[MAX_POINT_LIGHTS];
+	std::vector<PointLight> mPointLights;
+
 
 	Material mShinyMaterial;
 	Material mDullMaterial;

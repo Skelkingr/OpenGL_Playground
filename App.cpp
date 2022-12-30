@@ -27,9 +27,13 @@ App::App()
 
 	mMainLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.2f, 0.7f, glm::vec3(2.0f, 0.0f, -2.0f));
 
-	mPointLights[0] = PointLight(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, 1.0f, glm::vec3(2.0f, 0.0f, -5.0f), 0.3f, 0.2f, 0.1f);
-	mPointLights[1] = PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 1.0f, glm::vec3(0.0f, 2.0f, -5.0f), 0.3f, 0.2f, 0.1f);
-	mPointLights[2] = PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.0f, 1.0f, glm::vec3(-2.0f, 0.0f, -5.0f), 0.3f, 0.2f, 0.1f);
+	PointLight pointLight1 = PointLight(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, 1.0f, glm::vec3(2.0f, 0.0f, -5.0f), 0.3f, 0.2f, 0.1f);
+	PointLight pointLight2 = PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 1.0f, glm::vec3(0.0f, 2.0f, -5.0f), 0.3f, 0.2f, 0.1f);
+	PointLight pointLight3 = PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.0f, 1.0f, glm::vec3(-2.0f, 0.0f, -5.0f), 0.3f, 0.2f, 0.1f);
+
+	mPointLights.push_back(pointLight1);
+	mPointLights.push_back(pointLight2);
+	mPointLights.push_back(pointLight3);
 }
 
 App::~App()
@@ -123,7 +127,7 @@ void App::Render()
 	{
 		mShaderList[0].UseShader();
 		mShaderList[0].SetDirectionalLight(&mMainLight);
-		mShaderList[0].SetPointLights(mPointLights, 3);
+		mShaderList[0].SetPointLights(mPointLights, mPointLights.size());
 
 		// Matrix operations:
 		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(obj->GetProjection()));

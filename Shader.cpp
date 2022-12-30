@@ -69,7 +69,7 @@ void Shader::SetDirectionalLight(DirectionalLight* directionalLight)
 	);
 }
 
-void Shader::SetPointLights(PointLight* pointLight, unsigned int lightCount)
+void Shader::SetPointLights(std::vector<PointLight> pointLight, unsigned int lightCount)
 {
 	if (lightCount > MAX_POINT_LIGHTS)
 		lightCount = MAX_POINT_LIGHTS;
@@ -77,7 +77,7 @@ void Shader::SetPointLights(PointLight* pointLight, unsigned int lightCount)
 	glUniform1i(mUniformPointLightCount, lightCount);
 
 	for (size_t i = 0; i < lightCount; i++)
-		pointLight->UseLight(
+		pointLight[i].UseLight(
 			mUniformPointLight[i].uniformColour,
 			mUniformPointLight[i].uniformAmbientIntensity,
 			mUniformPointLight[i].uniformDiffuseIntensity,
