@@ -20,7 +20,7 @@ void main()
 	
 	TexCoord = tex;
 		
-	Normal = mat3(inverse(model)) * norm;
+	Normal = mat3(transpose(inverse(model))) * norm;
 
 	FragPos = (model * vec4(pos, 1.0)).xyz;
 }
