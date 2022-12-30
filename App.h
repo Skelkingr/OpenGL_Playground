@@ -6,6 +6,7 @@
 #include "GameTimer.h"
 #include "Material.h"
 #include "Mesh.h"
+#include "PointLight.h"
 #include "Shader.h"
 #include "Util.h"
 #include "Texture.h"
@@ -79,7 +80,8 @@ private:
 
 	std::vector<Texture*> mTextureList;
 
-	DirectionalLight mDirectionalLight;
+	DirectionalLight mMainLight;
+	PointLight mPointLights[MAX_POINT_LIGHTS];
 
 	Material mShinyMaterial;
 	Material mDullMaterial;

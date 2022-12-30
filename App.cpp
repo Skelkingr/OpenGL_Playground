@@ -25,10 +25,11 @@ App::App()
 		200.0f
 	);
 
-	mDirectionalLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.2f, 0.7f, glm::vec3(-2.0f, 0.0f, 2.0f));
+	mMainLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.2f, 0.7f, glm::vec3(2.0f, 0.0f, -2.0f));
 
-	mShinyMaterial = Material(0.8f, 128.0f);
-	mDullMaterial = Material(0.3f, 4.0f);
+	mPointLights[0] = PointLight(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, 1.0f, glm::vec3(2.0f, 0.0f, -5.0f), 0.3f, 0.2f, 0.1f);
+	mPointLights[1] = PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 1.0f, glm::vec3(0.0f, 2.0f, -5.0f), 0.3f, 0.2f, 0.1f);
+	mPointLights[2] = PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.0f, 1.0f, glm::vec3(-2.0f, 0.0f, -5.0f), 0.3f, 0.2f, 0.1f);
 }
 
 App::~App()
@@ -121,10 +122,8 @@ void App::Render()
 	for (Mesh* obj : mMeshList)
 	{
 		mShaderList[0].UseShader();
-		mShaderList[0].SetDirectionalLight(&mDirectionalLight);
-
-		// Material:
-		glUniform1f(mShaderList[0].GetSpecularIntensityLocation(), mShinyMaterial.GetSpecularIntensity());
+		mShaderList[0].SetDirectionalLight(&mMainLight);
+		mShaderList[0].SetPointLights(mPointLights, 3);
 
 		// Matrix operations:
 		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(obj->GetProjection()));
@@ -141,12 +140,10 @@ void App::Render()
 
 		obj->SetModel(glm::translate(obj->GetModel(), glm::vec3(0.0f, 0.0f, -5.0f)));
 		obj->SetModel(glm::rotate(obj->GetModel(), obj->GetCurrentAngle() * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f)));
-		//obj->SetModel(glm::scale(obj->GetModel(), glm::vec3(0.3f, 0.3f, 0.3f)));
 
 		glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(obj->GetModel()));
 
 		mTextureList[i]->UseTexture();
-		mShinyMaterial.UseMaterial(mShaderList[0].GetSpecularIntensityLocation(), mShaderList[0].GetShininessLocation());
 		obj->RenderMesh();
 
 		glUseProgram(0);
