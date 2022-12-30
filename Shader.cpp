@@ -69,6 +69,25 @@ void Shader::SetDirectionalLight(DirectionalLight* directionalLight)
 	);
 }
 
+void Shader::SetPointLights(PointLight* pointLight, unsigned int lightCount)
+{
+	if (lightCount > MAX_POINT_LIGHTS)
+		lightCount = MAX_POINT_LIGHTS;
+
+	glUniform1i(mUniformPointLightCount, lightCount);
+
+	for (size_t i = 0; i < lightCount; i++)
+		pointLight->UseLight(
+			mUniformPointLight[i].uniformColour,
+			mUniformPointLight[i].uniformAmbientIntensity,
+			mUniformPointLight[i].uniformDiffuseIntensity,
+			mUniformPointLight[i].uniformPosition,
+			mUniformPointLight[i].uniformExponent,
+			mUniformPointLight[i].uniformLinear,
+			mUniformPointLight[i].uniformConstant
+		);
+}
+
 void Shader::UseShader()
 {
 	glUseProgram(mShaderID);

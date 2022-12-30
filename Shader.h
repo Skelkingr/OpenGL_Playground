@@ -24,6 +24,7 @@ public:
 	GLuint GetShininessLocation() const { return mUniformShininess; }
 
 	void SetDirectionalLight(DirectionalLight* directionalLight);
+	void SetPointLights(PointLight* pointLight, unsigned int lightCount);
 
 	void UseShader();
 	void ClearShader();	
