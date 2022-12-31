@@ -3,8 +3,10 @@
 
 /* INCLUDES */ 
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <iterator>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -83,6 +85,70 @@ namespace
 			vec = glm::normalize(vec);
 			vertices[nOffset] = vec.x; vertices[nOffset + 1] = vec.y; vertices[nOffset + 2] = vec.z;
 		}
+	}
+
+	bool GetFloatFileContent(std::string fileLocation, std::vector<GLfloat>& vec)
+	{
+		std::ifstream is(fileLocation.c_str());
+
+		if (!is)
+		{
+			printf("[ERR] Cannot open file: %s", fileLocation.c_str());
+			return false;
+		}
+
+		std::string str;
+		while (std::getline(is, str))
+		{
+			if (str.size() <= 0)
+				continue;
+
+			size_t pos = 0;
+			std::string delimiter = ",";
+			
+			std::string value;
+
+			while ((pos = str.find(delimiter)) != std::string::npos)
+			{
+				value = str.substr(0, pos);
+				vec.push_back(std::stof(value));
+				str.erase(0, pos + delimiter.length());
+			}
+		}
+
+		return true;
+	}
+
+	bool GetIntFileContent(std::string fileLocation, std::vector<GLuint>& vec)
+	{
+		std::ifstream is(fileLocation.c_str());
+
+		if (!is)
+		{
+			printf("[ERR] Cannot open file: %s", fileLocation.c_str());
+			return false;
+		}
+
+		std::string str;
+		while (std::getline(is, str))
+		{
+			if (str.at(0) == '\\' || str.at(0) == '\0')
+				continue;
+
+			size_t pos = 0;
+			std::string delimiter = ",";
+
+			std::string value;
+
+			while ((pos = str.find(delimiter)) != std::string::npos)
+			{
+				value = str.substr(0, pos);
+				vec.push_back(std::stoi(value));
+				str.erase(0, pos + delimiter.length());
+			}
+		}
+
+		return true;
 	}
 }
 

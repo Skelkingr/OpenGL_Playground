@@ -69,6 +69,49 @@ void Mesh::CreateMesh(std::vector<GLfloat>& vertices, std::vector<GLuint>& indic
 	glBindVertexArray(0);
 }
 
+void Mesh::CreateMeshFromFile(const char* vFileLocation, std::vector<GLuint> indices, bool computeNormals)
+{
+	std::vector<GLfloat> vertices;
+
+	bool vResult = GetFloatFileContent(vFileLocation, vertices);
+
+	if (!vResult)
+	{
+		printf("[ERR] Could not create mesh from vertices file: %s", vFileLocation);
+		return;
+	}
+
+	if (computeNormals)
+		ComputeAverageNormals(indices, indices.size(), vertices, vertices.size() / 8, 8, 5);
+
+	CreateMesh(vertices, indices, vertices.size(), indices.size());
+}
+
+void Mesh::CreateMeshFromFile(const char* vFileLocation, const char* iFileLocation, bool computeNormals)
+{
+	std::vector<GLfloat> vertices;
+	std::vector<GLuint> indices;
+
+	bool vResult = GetFloatFileContent(vFileLocation, vertices);
+	bool iResult = GetIntFileContent(iFileLocation, indices);
+
+	if (!vResult)
+	{
+		printf("[ERR] Could not create mesh from vertices file: %s", vFileLocation);
+		return;
+	}
+	if (!iResult)
+	{
+		printf("[ERR] Could not create mesh from indices file: %s", iFileLocation);
+		return;
+	}
+
+	if (computeNormals)
+		ComputeAverageNormals(indices, indices.size(), vertices, vertices.size() / 8, 8, 5);
+
+	CreateMesh(vertices, indices, vertices.size(), indices.size());
+}
+
 void Mesh::RenderMesh()
 {
 	glBindVertexArray(mVAO);
