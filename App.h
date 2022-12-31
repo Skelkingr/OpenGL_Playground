@@ -6,7 +6,7 @@
 #include "GameTimer.h"
 #include "Material.h"
 #include "Mesh.h"
-#include "PointLight.h"
+#include "SpotLight.h"
 #include "Shader.h"
 #include "Util.h"
 #include "Texture.h"

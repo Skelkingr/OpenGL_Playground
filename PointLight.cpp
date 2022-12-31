@@ -10,9 +10,14 @@ PointLight::PointLight()
 	
 {}
 
-PointLight::PointLight(glm::vec3 colour, GLfloat ambientIntensity, GLfloat diffuseIntensity, glm::vec3 position, GLfloat exponent, GLfloat linear, GLfloat constant)
-	:
-	BaseLight(colour, ambientIntensity, diffuseIntensity)
+PointLight::PointLight(
+	glm::vec3 colour, 
+	GLfloat ambientIntensity,
+	GLfloat diffuseIntensity,
+	glm::vec3 position,
+	GLfloat exponent,
+	GLfloat linear,
+	GLfloat constant) :	BaseLight(colour, ambientIntensity, diffuseIntensity)
 {
 	mPosition = position;
 	mExponent = exponent;
@@ -24,19 +29,20 @@ PointLight::~PointLight()
 {}
 
 void PointLight::UseLight(
-	GLfloat ambientColourLocation,
-	GLfloat ambientIntensityLocation,
-	GLfloat diffuseIntensityLocation,
-	GLfloat positionLocation,
-	GLfloat exponentLocation,
-	GLfloat linearLocation,
-	GLfloat constantLocation
-)
+	GLuint ambientColourLocation,
+	GLuint ambientIntensityLocation,
+	GLuint diffuseIntensityLocation,
+	GLuint positionLocation,
+	GLuint exponentLocation,
+	GLuint linearLocation,
+	GLuint constantLocation)
 {
 	glUniform3f(ambientColourLocation, mAmbientColour.x, mAmbientColour.y, mAmbientColour.z);
 	glUniform1f(ambientIntensityLocation, mAmbientIntensity);
 	glUniform1f(diffuseIntensityLocation, mDiffuseIntensity);
+
 	glUniform3f(positionLocation, mPosition.x, mPosition.y, mPosition.z);
+
 	glUniform1f(exponentLocation, mExponent);
 	glUniform1f(linearLocation, mLinear);
 	glUniform1f(constantLocation, mConstant);

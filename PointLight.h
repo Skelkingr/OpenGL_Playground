@@ -6,20 +6,28 @@ class PointLight : public BaseLight
 {
 public:
 	PointLight();
-	PointLight(glm::vec3 colour, GLfloat ambientIntensity, GLfloat diffuseIntensity, glm::vec3 position, GLfloat exponent, GLfloat linear, GLfloat constant);
+	PointLight(
+		glm::vec3 colour, 
+		GLfloat ambientIntensity,
+		GLfloat diffuseIntensity,
+		glm::vec3 position,
+		GLfloat exponent,
+		GLfloat linear,
+		GLfloat constant
+	);
 	~PointLight();
 
 	void UseLight(
-		GLfloat ambientColourLocation,
-		GLfloat ambientIntensityLocation,
-		GLfloat diffuseIntensityLocation,
-		GLfloat positionLocation,
-		GLfloat exponentLocation,
-		GLfloat linearLocation,
-		GLfloat constantLocation
+		GLuint ambientColourLocation,
+		GLuint ambientIntensityLocation,
+		GLuint diffuseIntensityLocation,
+		GLuint positionLocation,
+		GLuint exponentLocation,
+		GLuint linearLocation,
+		GLuint constantLocation
 	);
 	
-private:
+protected:
 	glm::vec3 mPosition;
 
 	GLfloat mExponent;

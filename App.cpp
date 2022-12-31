@@ -27,10 +27,10 @@ App::App()
 
 	mMainLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f, glm::vec3(2.0f, 0.0f, -2.0f));
 
-	mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.3f, 0.8f, glm::vec3(4.0f, 1.5f, 0.0f), 0.2f, 0.1f, 0.05f));
-	mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.3f, 0.8f, glm::vec3(-4.0f, 1.5f, 0.0f), 0.2f, 0.1f, 0.05f));
+	mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.3f, 0.8f, glm::vec3(4.0f, 2.0f, 0.0f), 0.2f, 0.1f, 0.05f));
+	mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.3f, 0.8f, glm::vec3(-4.0f, 2.0f, 0.0f), 0.2f, 0.1f, 0.05f));
 
-	mShinyMaterial = Material(0.8f, 128.0f);
+	mShinyMaterial = Material(0.8f, 64.0f);
 	mDullMaterial = Material(0.3f, 4.0f);
 }
 
