@@ -17,7 +17,7 @@ App::App()
 		mKeys[i] = false;
 
 	mCamera = Camera(
-		glm::vec3(0.0f, 1.0f, 5.0f),
+		glm::vec3(0.0f, 1.5f, 7.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f),
 		-90.0f,
 		0.0f,
@@ -25,10 +25,10 @@ App::App()
 		200.0f
 	);
 
-	mMainLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f, glm::vec3(2.0f, 0.0f, -2.0f));
+	mMainLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.1f, 0.5f, glm::vec3(0.0f, 0.0f, -.0f));
 
-	mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.3f, 0.8f, glm::vec3(4.0f, 2.0f, 0.0f), 0.2f, 0.1f, 0.05f));
-	mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.3f, 0.8f, glm::vec3(-4.0f, 2.0f, 0.0f), 0.2f, 0.1f, 0.05f));
+	mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
+	mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));
 
 	mShinyMaterial = Material(0.8f, 64.0f);
 	mDullMaterial = Material(0.3f, 4.0f);
@@ -85,7 +85,7 @@ bool App::Init()
 		return false;
 	}
 
-	CreateObject(true, 0.05f, 1.5f, 0.0005f);
+	CreateObjects(true, 0.05f, 1.5f, 0.0005f);
 	CreateShader();
 
 	InitTextures();
@@ -144,12 +144,31 @@ void App::Render()
 	mShinyMaterial.UseMaterial(mShaderList[0].GetSpecularIntensityLocation(), mShaderList[0].GetShininessLocation());
 	mMeshList[1]->RenderMesh();
 
+	// Walls operations:
+	for (size_t i = 2; i < mMeshList.size(); i++)
+	{
+		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(mMeshList[i]->GetProjection()));
+		glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
+		glUniform3f(
+			mShaderList[0].GetEyePositionLocation(),
+			mCamera.GetCameraPosition().x,
+			mCamera.GetCameraPosition().y,
+			mCamera.GetCameraPosition().z
+		);
+
+		glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(mMeshList[i]->GetModel()));
+
+		mTextureList[2]->UseTexture();
+		mDullMaterial.UseMaterial(mShaderList[0].GetSpecularIntensityLocation(), mShaderList[0].GetShininessLocation());
+		mMeshList[i]->RenderMesh();
+	}
+
 	glUseProgram(0);
 
 	glfwSwapBuffers(mMainWindow);
 }
 
-void App::CreateObject(bool direction, float offset, float maxOffset, float increment)
+void App::CreateObjects(bool direction, float offset, float maxOffset, float increment)
 {
 	std::vector<GLuint> cubeIndices = {};
 
@@ -161,8 +180,31 @@ void App::CreateObject(bool direction, float offset, float maxOffset, float incr
 	mMeshList.push_back(cube);
 	
 	Mesh* floor = new Mesh();
-	floor->CreateMeshFromFile("Meshes\\Floor\\vertices.txt", "Meshes\\Floor\\indices.txt", false);
+	floor->CreateMeshFromFile("Meshes\\Plain\\vertices.txt", "Meshes\\Plain\\indices.txt", false);
 	mMeshList.push_back(floor);
+
+	Mesh* wall1 = new Mesh();
+	wall1->CreateMeshFromFile("Meshes\\Wall\\vertices.txt", "Meshes\\Wall\\indices.txt", false);
+	wall1->SetModel(glm::mat4(1.0f));
+	mMeshList.push_back(wall1);
+
+	Mesh* wall2= new Mesh();
+	wall2->CreateMeshFromFile("Meshes\\Wall\\vertices.txt", "Meshes\\Wall\\indices.txt", false);
+	wall2->SetModel(glm::mat4(1.0f));
+	wall2->SetModel(glm::rotate(wall2->GetModel(), -90.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f)));
+	mMeshList.push_back(wall2);
+
+	Mesh* wall3 = new Mesh();
+	wall3->CreateMeshFromFile("Meshes\\Wall\\vertices.txt", "Meshes\\Wall\\indices.txt", false);
+	wall3->SetModel(glm::mat4(1.0f));
+	wall3->SetModel(glm::rotate(wall3->GetModel(), 180.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f)));
+	mMeshList.push_back(wall3);
+
+	Mesh* wall4 = new Mesh();
+	wall4->CreateMeshFromFile("Meshes\\Wall\\vertices.txt", "Meshes\\Wall\\indices.txt", false);
+	wall4->SetModel(glm::mat4(1.0f));
+	wall4->SetModel(glm::rotate(wall4->GetModel(), 90.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f)));
+	mMeshList.push_back(wall4);
 }
 
 void App::CreateShader()
@@ -176,7 +218,7 @@ void App::InitTextures()
 {
 	mTextureList.push_back(new Texture((char*)"Textures\\wood.png"));
 	mTextureList.push_back(new Texture((char*)"Textures\\plain.png"));
-	
+	mTextureList.push_back(new Texture((char*)"Textures\\brick.png"));
 
 	for (Texture* tex : mTextureList)
 		tex->LoadTexture();

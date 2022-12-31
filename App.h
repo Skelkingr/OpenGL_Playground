@@ -38,7 +38,7 @@ public:
 	void Update(float deltaTime);
 	void Render();
 
-	void CreateObject(bool direction, float offset, float maxOffset, float increment);
+	void CreateObjects(bool direction, float offset, float maxOffset, float increment);
 	void CreateShader();
 
 	void InitTextures();
@@ -50,8 +50,6 @@ public:
 
 private:
 	bool InitMainWindow();
-
-	void LoadContent();
 
 	void CreateCallbacks();
 	static void HandleKeys(GLFWwindow* window, int key, int code, int action, int mode);
