@@ -32,6 +32,8 @@
 /* CONSTANTS */
 
 const int MAX_POINT_LIGHTS = 4;
+const int MAX_SPOT_LIGHTS = 4;
+
 const float TO_RADIANS = 3.14159265f / 180.0f;
 
 

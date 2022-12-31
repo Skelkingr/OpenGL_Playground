@@ -2,7 +2,7 @@
 #define SHADER_H
 
 #include "DirectionalLight.h"
-#include "PointLight.h"
+#include "SpotLight.h"
 
 class Shader
 {
@@ -25,6 +25,7 @@ public:
 
 	void SetDirectionalLight(DirectionalLight* directionalLight);
 	void SetPointLights(std::vector<PointLight> pointLight, unsigned int lightCount);
+	void SetSpotLights(std::vector<SpotLight> pointLight, unsigned int lightCount);
 
 	void UseShader();
 	void ClearShader();	
@@ -35,6 +36,7 @@ private:
 
 private:
 	int mPointLightCount;
+	int mSpotLightCount;
 
 	struct
 	{
@@ -46,6 +48,7 @@ private:
 	} mUniformDirectionalLight;
 
 	GLuint mUniformPointLightCount;
+	GLuint mUniformSpotLightCount;
 
 	struct
 	{
@@ -58,6 +61,21 @@ private:
 		GLuint uniformLinear;
 		GLuint uniformConstant;
 	} mUniformPointLight[MAX_POINT_LIGHTS];
+
+	struct
+	{
+		GLuint uniformColour;
+		GLuint uniformAmbientIntensity;
+		GLuint uniformDiffuseIntensity;
+
+		GLuint uniformPosition;
+		GLuint uniformExponent;
+		GLuint uniformLinear;
+		GLuint uniformConstant;
+
+		GLuint uniformDirection;
+		GLuint uniformEdge;
+	} mUniformSpotLight[MAX_SPOT_LIGHTS];
 
 	GLuint mShaderID;
 	GLuint mUniformProjection;
