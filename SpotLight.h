@@ -32,6 +32,8 @@ public:
 		GLuint edgeLocation
 	);
 
+	void SetFlash(glm::vec3 pos, glm::vec3 dir);
+
 private:
 	glm::vec3 mDirection;
 
