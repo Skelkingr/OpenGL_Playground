@@ -25,10 +25,25 @@ App::App()
 		200.0f
 	);
 
-	mMainLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.1f, 0.5f, glm::vec3(0.0f, 0.0f, -.0f));
+	mMainLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.03f, 0.03f, glm::vec3(0.0f, 0.0f, 0.0f));
 
-	mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
-	mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));
+	//mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
+	//mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));
+
+	mSpotLights.push_back(
+		SpotLight(
+			glm::vec3(1.0f, 1.0f, 1.0f),
+			0.5f,
+			2.0f,
+			glm::vec3(0.0f, 2.5f, 5.0f),
+			glm::vec3(0.0f, -1.0f, 0.0f),
+			0.2f,
+			0.1f,
+			0.05f,
+			20.0f
+		)
+	);
+	
 
 	mShinyMaterial = Material(0.8f, 64.0f);
 	mDullMaterial = Material(0.3f, 4.0f);
@@ -104,6 +119,11 @@ void App::Render()
 	mShaderList[0].UseShader();
 	mShaderList[0].SetDirectionalLight(&mMainLight);
 	mShaderList[0].SetPointLights(mPointLights, mPointLights.size());
+	mShaderList[0].SetSpotLights(mSpotLights, mSpotLights.size());
+
+	glm::vec3 lowerLight = mCamera.GetCameraPosition();
+	lowerLight.y -= 0.3f;
+	mSpotLights[0].SetFlash(lowerLight, mCamera.GetCameraDirection());
 
 	// Cube operations:
 	glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(mMeshList[0]->GetProjection()));

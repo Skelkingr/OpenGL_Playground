@@ -82,6 +82,7 @@ private:
 
 	DirectionalLight mMainLight;
 	std::vector<PointLight> mPointLights;
+	std::vector<SpotLight> mSpotLights;
 
 	Material mShinyMaterial;
 	Material mDullMaterial;
