@@ -10,7 +10,7 @@ public:
 	Mesh(bool direction, float offset, float maxOffset, float increment);
 	~Mesh();
 		
-	void CreateMesh(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, GLuint numOfVertices, GLuint numOfIndices);
+	void CreateMesh(GLfloat* vertices, GLuint* indices, GLuint numOfVertices, GLuint numOfIndices);
 	void CreateMeshFromFile(const char* vFileLocation, std::vector<GLuint> indices, bool computeNormals);
 	void CreateMeshFromFile(const char* vFileLocation, const char* iFileLocation, bool computeNormals);
 	void RenderMesh();

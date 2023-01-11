@@ -36,36 +36,31 @@ Mesh::~Mesh()
 	ClearMesh();
 }
 
-void Mesh::CreateMesh(std::vector<GLfloat>& vertices, std::vector<GLuint>& indices, GLuint numOfVertices, GLuint numOfIndices)
+void Mesh::CreateMesh(GLfloat* vertices, GLuint* indices, GLuint numOfVertices, GLuint numOfIndices)
 {
 	mIndexCount = numOfIndices;
 
 	glGenVertexArrays(1, &mVAO);
 	glBindVertexArray(mVAO);
 
-	// Index buffer
 	glGenBuffers(1, &mIBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * numOfIndices, indices, GL_STATIC_DRAW);
 
-	// Vertex buffer
 	glGenBuffers(1, &mVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * numOfVertices, vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 8, (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, 0);
 	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 8, (void*)(sizeof(vertices[0]) * 3));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, (void*)(sizeof(vertices[0]) * 3));
 	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 8, (void*)(sizeof(vertices[0]) * 5));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, (void*)(sizeof(vertices[0]) * 5));
 	glEnableVertexAttribArray(2);
 
-	// Unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	
+
 	glBindVertexArray(0);
 }
 
@@ -84,7 +79,7 @@ void Mesh::CreateMeshFromFile(const char* vFileLocation, std::vector<GLuint> ind
 	if (computeNormals)
 		ComputeAverageNormals(indices, indices.size(), vertices, vertices.size() / 8, 8, 5);
 
-	CreateMesh(vertices, indices, vertices.size(), indices.size());
+	CreateMesh(&vertices[0], &indices[0], vertices.size(), indices.size());
 }
 
 void Mesh::CreateMeshFromFile(const char* vFileLocation, const char* iFileLocation, bool computeNormals)
@@ -109,7 +104,7 @@ void Mesh::CreateMeshFromFile(const char* vFileLocation, const char* iFileLocati
 	if (computeNormals)
 		ComputeAverageNormals(indices, indices.size(), vertices, vertices.size() / 8, 8, 5);
 
-	CreateMesh(vertices, indices, vertices.size(), indices.size());
+	CreateMesh(&vertices[0], &indices[0], vertices.size(), indices.size());
 }
 
 void Mesh::RenderMesh()
