@@ -8,7 +8,7 @@ class Texture
 {
 public:
 	Texture();
-	Texture(char* fileLocation); 
+	Texture(const char* fileLocation); 
 	~Texture();
 
 	bool LoadTexture();
@@ -24,7 +24,7 @@ private:
 	int mHeight;
 	int mBitDepth;
 
-	char* mFileLocation;
+	const char* mFileLocation;
 };
 
 #endif

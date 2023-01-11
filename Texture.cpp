@@ -9,14 +9,14 @@ Texture::Texture()
 	mFileLocation((char*)"")
 {}
 
-Texture::Texture(char* fileLocation)
+Texture::Texture(const char* fileLocation)
 	:
 	mTextureID(0),
 	mWidth(0),
 	mHeight(0),
 	mBitDepth(0)
 {
-	mFileLocation = (char*)fileLocation;
+	mFileLocation = fileLocation;
 }
 
 Texture::~Texture()
