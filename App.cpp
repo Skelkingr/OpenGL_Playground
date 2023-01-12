@@ -27,14 +27,14 @@ App::App()
 
 	mMainLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.06f, 0.1f, glm::vec3(0.0f, 0.0f, 0.0f));
 
-	/*mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
-	mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));*/
+	//mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
+	//mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));
 
 	mSpotLights.push_back(
 		SpotLight(
 			glm::vec3(1.0f, 1.0f, 1.0f),
 			1.0f,
-			5.0f,
+			4.0f,
 			glm::vec3(0.0f, 2.5f, 5.0f),
 			glm::vec3(0.0f, -1.0f, 0.0f),
 			0.2f,
@@ -137,6 +137,7 @@ void App::Render()
 	model = glm::translate(model, glm::vec3(0.0f, 1.95f, -5.0f));
 	model = glm::scale(model, glm::vec3(0.006f, 0.006f, 0.006f));
 	glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(model));
+	mDullMaterial.UseMaterial(mShaderList[0].GetSpecularIntensityLocation(), mShaderList[0].GetShininessLocation());
 	mSlenderman.RenderModel();
 
 	// Floor operations:
