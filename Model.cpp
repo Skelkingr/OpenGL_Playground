@@ -1,14 +1,12 @@
 #include "Model.h"
 
 Model::Model()
-	:
-	mMeshList({}),
-	mTextureList({}),
-	mMeshToTex({})
 {}
 
 Model::~Model()
-{}
+{
+	ClearModel();
+}
 
 void Model::LoadModel(const std::string& fileName)
 {
@@ -122,11 +120,11 @@ void Model::LoadMaterials(const aiScene* scene)
 				int idx = std::string(path.data).rfind("\\");
 				std::string fileName = std::string(path.data).substr(idx + 1);
 
-				std::string texPath = std::string("Texture\\") + fileName;
+				std::string texPath = std::string("Textures\\") + fileName;
 
 				mTextureList[i] = new Texture(texPath.c_str());
 
-				if (!mTextureList[i]->LoadTexture())
+				if (!mTextureList[i]->LoadTextureA())
 				{
 					printf("[ERR] Failed to load texture at: %s\n", texPath.c_str());
 					delete mTextureList[i];
