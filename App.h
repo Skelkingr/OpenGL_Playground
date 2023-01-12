@@ -5,11 +5,10 @@
 #include "DirectionalLight.h"
 #include "GameTimer.h"
 #include "Material.h"
-#include "Mesh.h"
+#include "Model.h"
 #include "SpotLight.h"
 #include "Shader.h"
 #include "Util.h"
-#include "Texture.h"
 
 struct LastMousePos
 {
@@ -86,6 +85,8 @@ private:
 
 	Material mShinyMaterial;
 	Material mDullMaterial;
+
+	Model mSlenderman;
 };
 
 #endif

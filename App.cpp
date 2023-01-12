@@ -25,16 +25,16 @@ App::App()
 		200.0f
 	);
 
-	mMainLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.03f, 0.03f, glm::vec3(0.0f, 0.0f, 0.0f));
+	mMainLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.06f, 0.1f, glm::vec3(0.0f, 0.0f, 0.0f));
 
-	//mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
-	//mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));
+	/*mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
+	mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));*/
 
 	mSpotLights.push_back(
 		SpotLight(
 			glm::vec3(1.0f, 1.0f, 1.0f),
-			0.5f,
-			2.0f,
+			1.0f,
+			5.0f,
 			glm::vec3(0.0f, 2.5f, 5.0f),
 			glm::vec3(0.0f, -1.0f, 0.0f),
 			0.2f,
@@ -47,6 +47,8 @@ App::App()
 
 	mShinyMaterial = Material(0.8f, 64.0f);
 	mDullMaterial = Material(0.3f, 4.0f);
+
+	mSlenderman = Model();
 }
 
 App::~App()
@@ -55,12 +57,14 @@ App::~App()
 	{
 		texture->ClearTexture();
 		delete texture;
+		texture = nullptr;
 	}
 
 	for (Mesh* obj : mMeshList)
 	{
 		obj->ClearMesh();
 		delete obj;
+		obj = nullptr;
 	}
 
 	glfwDestroyWindow(mMainWindow);
@@ -100,6 +104,8 @@ bool App::Init()
 		return false;
 	}
 
+	mSlenderman.LoadModel("Models\\slenderman.obj");
+
 	CreateObjects(true, 0.05f, 1.5f, 0.0005f);
 	CreateShader();
 
@@ -125,26 +131,13 @@ void App::Render()
 	lowerLight.y -= 0.3f;
 	mSpotLights[0].SetFlash(lowerLight, mCamera.GetCameraDirection());
 
-	// Cube operations:
-	glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(mMeshList[0]->GetProjection()));
-	glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
-	glUniform3f(
-		mShaderList[0].GetEyePositionLocation(),
-		mCamera.GetCameraPosition().x,
-		mCamera.GetCameraPosition().y,
-		mCamera.GetCameraPosition().z
-	);
-
-	mMeshList[0]->SetModel(glm::mat4(1.0f));
-
-	mMeshList[0]->SetModel(glm::translate(mMeshList[0]->GetModel(), glm::vec3(0.0f, 1.0f, 0.0f)));
-	mMeshList[0]->SetModel(glm::rotate(mMeshList[0]->GetModel(), 45.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f)));
-
-	glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(mMeshList[0]->GetModel()));
-
-	mTextureList[0]->UseTexture();
-	mDullMaterial.UseMaterial(mShaderList[0].GetSpecularIntensityLocation(), mShaderList[0].GetShininessLocation());
-	mMeshList[0]->RenderMesh();
+	// Slenderman:
+	glm::mat4 model(1.0f);
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(0.0f, 1.95f, -5.0f));
+	model = glm::scale(model, glm::vec3(0.006f, 0.006f, 0.006f));
+	glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(model));
+	mSlenderman.RenderModel();
 
 	// Floor operations:
 	glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(mMeshList[1]->GetProjection()));
@@ -241,7 +234,7 @@ void App::InitTextures()
 	mTextureList.push_back(new Texture((char*)"Textures\\brick.png"));
 
 	for (Texture* tex : mTextureList)
-		tex->LoadTexture();
+		tex->LoadTextureA();
 }
 
 GLfloat App::GetMouseChangeX()
