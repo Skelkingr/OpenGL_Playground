@@ -15,6 +15,8 @@ public:
 
 	std::string ReadFile(const char* fileLocation);
 
+	GLuint GetUniformModel() const { return mUniformModel; }
+
 	GLuint GetProjectionLocation() const { return mUniformProjection; }
 	GLuint GetViewLocation() const { return mUniformView; }
 	GLuint GetModelLocation() const { return mUniformModel; }
@@ -22,6 +24,8 @@ public:
 
 	GLuint GetSpecularIntensityLocation() const { return mUniformSpecularIntensity; }
 	GLuint GetShininessLocation() const { return mUniformShininess; }
+
+	void SetUniformModel(GLuint uniformModel) { mUniformModel = uniformModel; }
 
 	void SetDirectionalLight(DirectionalLight* directionalLight);
 	void SetPointLights(std::vector<PointLight> pointLight, unsigned int lightCount);
