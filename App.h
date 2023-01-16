@@ -37,10 +37,13 @@ public:
 	void Update(float deltaTime);
 	void Render();
 
+	void CreateLights();
 	void CreateObjects(bool direction, float offset, float maxOffset, float increment);
 	void CreateShader();
 
 	void InitTextures();
+
+	void DirectionalShadowMapPass(DirectionalLight* light);
 	
 	bool* GetKeys() { return mKeys; }
 
@@ -66,6 +69,7 @@ private:
 
 	std::vector<Mesh*> mMeshList;
 	std::vector<Shader> mShaderList;
+	Shader mDirectionalShadowShader;
 
 	bool mKeys[1024];
 

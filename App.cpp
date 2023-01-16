@@ -24,27 +24,7 @@ App::App()
 		5.0f,
 		200.0f
 	);
-
-	mMainLight = DirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), 0.06f, 0.1f, glm::vec3(0.0f, 0.0f, 0.0f));
-
-	//mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
-	//mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));
-
-	mSpotLights.push_back(
-		SpotLight(
-			glm::vec3(1.0f, 1.0f, 1.0f),
-			1.0f,
-			4.0f,
-			glm::vec3(0.0f, 2.5f, 5.0f),
-			glm::vec3(0.0f, -1.0f, 0.0f),
-			0.2f,
-			0.1f,
-			0.05f,
-			20.0f
-		)
-	);
 	
-
 	mShinyMaterial = Material(0.8f, 64.0f);
 	mDullMaterial = Material(0.3f, 4.0f);
 
@@ -88,7 +68,6 @@ int App::Run()
 		mCamera.KeyControl(mKeys, deltaTime);
 		mCamera.MouseControl(GetMouseChangeX(), GetMouseChangeY(), deltaTime);
 
-		Update(0.5f);
 		Clear(0.0f, 0.0f, 0.0f, 1.0f);
 		Render();
 	}
@@ -103,9 +82,10 @@ bool App::Init()
 		printf("[ERR] Failed to initialize the main window.");
 		return false;
 	}
-
+	
 	mSlenderman.LoadModel("Models\\slenderman.obj");
 
+	CreateLights();
 	CreateObjects(true, 0.05f, 1.5f, 0.0005f);
 	CreateShader();
 
@@ -182,6 +162,28 @@ void App::Render()
 	glfwSwapBuffers(mMainWindow);
 }
 
+void App::CreateLights()
+{
+	mMainLight = DirectionalLight(1024, 1024, glm::vec3(1.0f, 1.0f, 1.0f), 0.3f, 0.6f, glm::vec3(0.0f, 0.0f, 0.0f));
+
+	/*mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
+	mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));*/
+
+	mSpotLights.push_back(
+		SpotLight(
+			glm::vec3(1.0f, 1.0f, 1.0f),
+			1.0f,
+			4.0f,
+			glm::vec3(0.0f, 2.5f, 5.0f),
+			glm::vec3(0.0f, -1.0f, 0.0f),
+			0.2f,
+			0.1f,
+			0.05f,
+			20.0f
+		)
+	);
+}
+
 void App::CreateObjects(bool direction, float offset, float maxOffset, float increment)
 {
 	std::vector<GLuint> cubeIndices = {};
@@ -226,6 +228,9 @@ void App::CreateShader()
 	Shader* shader = new Shader();
 	GL_CHECK(shader->CreateFromFiles("Shaders\\shader.vert", "Shaders\\shader.frag"));
 	mShaderList.push_back(*shader);
+
+	mDirectionalShadowShader = Shader();
+	mDirectionalShadowShader.CreateFromFiles("Shaders\\directional_shadow_map.vert", "Shaders\\directional_shadow_map.frag");
 }
 
 void App::InitTextures()
@@ -236,6 +241,25 @@ void App::InitTextures()
 
 	for (Texture* tex : mTextureList)
 		tex->LoadTextureA();
+}
+
+void App::DirectionalShadowMapPass(DirectionalLight* light)
+{
+	mDirectionalShadowShader.UseShader();
+
+	glViewport(0, 0, light->GetShadowMap()->GetShadowWidth(), light->GetShadowMap()->GetShadowHeight());
+
+	light->GetShadowMap()->Write();
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	mDirectionalShadowShader.SetUniformModel(mDirectionalShadowShader.GetModelLocation());
+
+	glm::mat4 lightTransform = light->CalculateLightTransform();
+	mDirectionalShadowShader.SetDirectionalLightTransform(&lightTransform);
+
+	Render();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 GLfloat App::GetMouseChangeX()

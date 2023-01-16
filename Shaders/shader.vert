@@ -11,8 +11,8 @@ out vec3 FragPos;
 out vec4 DirectionalLightSpacePos;
 
 uniform mat4 model;
-uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 view;
 uniform mat4 directionalLightSpaceTransform;
 
 void main()
