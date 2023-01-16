@@ -7,8 +7,11 @@ BaseLight::BaseLight()
 	mDiffuseIntensity(0.0f)
 {}
 
-BaseLight::BaseLight(glm::vec3 ambientColour, GLfloat ambientIntensity, GLfloat diffuseIntensity)
+BaseLight::BaseLight(GLfloat shadowWidth, GLfloat shadowHeight, glm::vec3 ambientColour, GLfloat ambientIntensity, GLfloat diffuseIntensity)
 {
+	mShadowMap = new ShadowMap();
+	mShadowMap->Init(shadowWidth, shadowHeight);
+
 	mAmbientColour = ambientColour;
 	mAmbientIntensity = ambientIntensity;
 	mDiffuseIntensity = diffuseIntensity;

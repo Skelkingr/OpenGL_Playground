@@ -17,7 +17,7 @@ PointLight::PointLight(
 	glm::vec3 position,
 	GLfloat exponent,
 	GLfloat linear,
-	GLfloat constant) :	BaseLight(colour, ambientIntensity, diffuseIntensity)
+	GLfloat constant) :	BaseLight(1024, 1024, colour, ambientIntensity, diffuseIntensity)
 {
 	mPosition = position;
 	mExponent = exponent;
