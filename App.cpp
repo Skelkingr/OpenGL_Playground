@@ -2,8 +2,8 @@
 
 App::App()
 	:
-	mClientWidth(1360),
-	mClientHeight(920),
+	mClientWidth(1366),
+	mClientHeight(768),
 	mWindowName("Skelkingr"),
 	mMainWindow(nullptr),
 	mBufferWidth(0),
@@ -69,6 +69,8 @@ bool App::Init()
 
 int App::Run()
 {
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f);
+
 	while (!glfwWindowShouldClose(mMainWindow))
 	{
 		glfwPollEvents();
@@ -78,16 +80,17 @@ int App::Run()
 		mCamera.KeyControl(mKeys, deltaTime);
 		mCamera.MouseControl(GetMouseChangeX(), GetMouseChangeY(), deltaTime);
 
-		Render();
+		DirectionalShadowMapPass(&mMainLight);
+		RenderPass(mCamera.CalculateViewMatrix(), projection);
+
+		glfwSwapBuffers(mMainWindow);
 	}
 
 	return 0;
 }
 
-void App::Render()
+void App::RenderScene()
 {
-	Clear(0.0f, 0.0f, 0.0f, 1.0f);
-
 	mShaderList[0].UseShader();
 	GLuint uniformModel = mShaderList[0].GetModelLocation();
 	GLuint uniformProjection = mShaderList[0].GetProjectionLocation();
@@ -95,20 +98,6 @@ void App::Render()
 	GLuint uniformEyePosition = mShaderList[0].GetEyePositionLocation();
 	GLuint uniformSpecularIntensity = mShaderList[0].GetSpecularIntensityLocation();
 	GLuint uniformShininess = mShaderList[0].GetShininessLocation();
-
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f),(GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f);
-
-	glm::vec3 lowerLight = mCamera.GetCameraPosition();
-	lowerLight.y -= 0.3f;
-	mSpotLights[0].SetFlash(lowerLight, mCamera.GetCameraDirection());
-
-	mShaderList[0].SetDirectionalLight(&mMainLight);
-	mShaderList[0].SetPointLights(mPointLights, mPointLights.size());
-	mShaderList[0].SetSpotLights(mSpotLights, mSpotLights.size());
-
-	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
-	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
-	glUniform3f(uniformEyePosition, mCamera.GetCameraPosition().x, mCamera.GetCameraPosition().y, mCamera.GetCameraPosition().z);
 
 	// Slenderman:
 	glm::mat4 model(1.0f);
@@ -156,10 +145,43 @@ void App::Render()
 	mTextureList[2]->UseTexture();
 	mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	mMeshList[1]->RenderMesh();
+}
 
-	glUseProgram(0);
+void App::RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
+{
+	mShaderList[0].UseShader();
 
-	glfwSwapBuffers(mMainWindow);
+	GLuint uniformModel = mShaderList[0].GetModelLocation();
+	GLuint uniformProjection = mShaderList[0].GetProjectionLocation();
+	GLuint uniformView = mShaderList[0].GetViewLocation();
+	GLuint uniformEyePosition = mShaderList[0].GetEyePositionLocation();
+	GLuint uniformSpecularIntensity = mShaderList[0].GetSpecularIntensityLocation();
+	GLuint uniformShininess = mShaderList[0].GetShininessLocation();
+
+	glViewport(0, 0, mClientWidth, mClientHeight);
+
+	Clear(0.0f, 0.0f, 0.0f, 1.0f);
+
+	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+	glUniform3f(uniformEyePosition,mCamera.GetCameraPosition().x, mCamera.GetCameraPosition().y, mCamera.GetCameraPosition().z);
+
+	mShaderList[0].SetDirectionalLight(&mMainLight);
+	mShaderList[0].SetPointLights(mPointLights, mPointLights.size());
+	mShaderList[0].SetSpotLights(mSpotLights, mSpotLights.size());
+
+	glm::mat4 lightTransform = mMainLight.CalculateLightTransform();
+	mShaderList[0].SetDirectionalLightTransform(&lightTransform);
+
+	mMainLight.GetShadowMap()->Read(GL_TEXTURE1);
+	mShaderList[0].SetTexture(0);
+	mShaderList[0].SetDirectionalShadowMap(1);
+
+	glm::vec3 lowerLight = mCamera.GetCameraPosition();
+	lowerLight.y -= 0.3f;
+	//mSpotLights[0].SetFlash(lowerLight, mCamera.GetCameraDirection());
+
+	RenderScene();
 }
 
 void App::CreateObjects(bool direction, float offset, float maxOffset, float increment)
@@ -227,7 +249,7 @@ void App::InitLights()
 {
 	InitDirectionalLight();
 	//InitPointLights();
-	InitSpotLights();
+	//InitSpotLights();
 }
 
 void App::InitMaterials()
@@ -266,7 +288,7 @@ void App::DirectionalShadowMapPass(DirectionalLight* light)
 	glm::mat4 lightTransform = light->CalculateLightTransform();
 	mDirectionalShadowShader.SetDirectionalLightTransform(&lightTransform);
 
-	Render();
+	RenderScene();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

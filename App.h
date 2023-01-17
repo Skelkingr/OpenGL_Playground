@@ -33,7 +33,8 @@ public:
 	bool Init();
 	int Run();
 
-	void Render();
+	void RenderScene();
+	void RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix);
 
 	void CreateObjects(bool direction, float offset, float maxOffset, float increment);
 	void CreateShader();
