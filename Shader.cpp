@@ -15,7 +15,10 @@ Shader::Shader()
 	mUniformView(0),
 	mUniformEyePosition(0),
 	mUniformSpecularIntensity(0),
-	mUniformShininess(0)
+	mUniformShininess(0),
+	mUniformTexture(0),
+	mUniformDirectionalLightTransform(0),
+	mUniformDirectionalShadowMap(0)
 {}
 
 Shader::~Shader()
