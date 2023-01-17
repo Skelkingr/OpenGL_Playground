@@ -15,13 +15,10 @@ public:
 
 	std::string ReadFile(const char* fileLocation);
 
-	GLuint GetUniformModel() const { return mUniformModel; }
-
 	GLuint GetProjectionLocation() const { return mUniformProjection; }
 	GLuint GetViewLocation() const { return mUniformView; }
 	GLuint GetModelLocation() const { return mUniformModel; }
 	GLuint GetEyePositionLocation() const { return mUniformEyePosition; }
-
 	GLuint GetSpecularIntensityLocation() const { return mUniformSpecularIntensity; }
 	GLuint GetShininessLocation() const { return mUniformShininess; }
 

@@ -1,5 +1,9 @@
 #include "App.h"
 
+GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformEyePosition = 0,
+uniformSpecularIntensity = 0, uniformShininess = 0,
+uniformDirectionalLightTransform = 0;
+
 App::App()
 	:
 	mClientWidth(1366),
@@ -57,7 +61,7 @@ bool App::Init()
 	InitModels();
 
 	CreateObjects(true, 0.05f, 1.5f, 0.0005f);
-	CreateShader();
+	CreateShaders();
 
 	InitTextures();
 
@@ -91,14 +95,6 @@ int App::Run()
 
 void App::RenderScene()
 {
-	mShaderList[0].UseShader();
-	GLuint uniformModel = mShaderList[0].GetModelLocation();
-	GLuint uniformProjection = mShaderList[0].GetProjectionLocation();
-	GLuint uniformView = mShaderList[0].GetViewLocation();
-	GLuint uniformEyePosition = mShaderList[0].GetEyePositionLocation();
-	GLuint uniformSpecularIntensity = mShaderList[0].GetSpecularIntensityLocation();
-	GLuint uniformShininess = mShaderList[0].GetShininessLocation();
-
 	// Slenderman:
 	glm::mat4 model(1.0f);
 	model = glm::mat4(1.0f);
@@ -123,40 +119,41 @@ void App::RenderScene()
 	mMeshList[1]->RenderMesh();
 
 	// Wall 2:
-	model = glm::mat4(1.0f);
-	model = glm::rotate(model, -90.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	mTextureList[2]->UseTexture();
-	mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
-	mMeshList[1]->RenderMesh();
+	//model = glm::mat4(1.0f);
+	//model = glm::rotate(model, -90.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f));
+	//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	//mTextureList[2]->UseTexture();
+	//mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+	//mMeshList[1]->RenderMesh();
 
-	// Wall 3:
-	model = glm::mat4(1.0f);
-	model = glm::rotate(model, 180.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	mTextureList[2]->UseTexture();
-	mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
-	mMeshList[1]->RenderMesh();
+	//// Wall 3:
+	//model = glm::mat4(1.0f);
+	//model = glm::rotate(model, 180.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f));
+	//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	//mTextureList[2]->UseTexture();
+	//mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+	//mMeshList[1]->RenderMesh();
 
-	// Wall 4:
-	model = glm::mat4(1.0f);
-	model = glm::rotate(model, 90.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	mTextureList[2]->UseTexture();
-	mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
-	mMeshList[1]->RenderMesh();
+	//// Wall 4:
+	//model = glm::mat4(1.0f);
+	//model = glm::rotate(model, 90.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f));
+	//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	//mTextureList[2]->UseTexture();
+	//mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+	//mMeshList[1]->RenderMesh();
 }
 
 void App::RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 {
 	mShaderList[0].UseShader();
 
-	GLuint uniformModel = mShaderList[0].GetModelLocation();
-	GLuint uniformProjection = mShaderList[0].GetProjectionLocation();
-	GLuint uniformView = mShaderList[0].GetViewLocation();
-	GLuint uniformEyePosition = mShaderList[0].GetEyePositionLocation();
-	GLuint uniformSpecularIntensity = mShaderList[0].GetSpecularIntensityLocation();
-	GLuint uniformShininess = mShaderList[0].GetShininessLocation();
+	uniformModel = mShaderList[0].GetModelLocation();
+	uniformProjection = mShaderList[0].GetProjectionLocation();
+	uniformView = mShaderList[0].GetViewLocation();
+	uniformModel = mShaderList[0].GetModelLocation();
+	uniformEyePosition = mShaderList[0].GetEyePositionLocation();
+	uniformSpecularIntensity = mShaderList[0].GetSpecularIntensityLocation();
+	uniformShininess = mShaderList[0].GetShininessLocation();
 
 	glViewport(0, 0, mClientWidth, mClientHeight);
 
@@ -177,15 +174,12 @@ void App::RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 	mShaderList[0].SetTexture(0);
 	mShaderList[0].SetDirectionalShadowMap(1);
 
-	glm::vec3 lowerLight = mCamera.GetCameraPosition();
-	lowerLight.y -= 0.3f;
-	//mSpotLights[0].SetFlash(lowerLight, mCamera.GetCameraDirection());
-
 	RenderScene();
 }
 
 void App::CreateObjects(bool direction, float offset, float maxOffset, float increment)
 {	
+
 	Mesh* floor = new Mesh();
 	floor->CreateMeshFromFile("Meshes\\Plain\\vertices.txt", "Meshes\\Plain\\indices.txt", false);
 	mMeshList.push_back(floor);
@@ -195,13 +189,12 @@ void App::CreateObjects(bool direction, float offset, float maxOffset, float inc
 	mMeshList.push_back(wall);
 }
 
-void App::CreateShader()
+void App::CreateShaders()
 {
 	Shader* shader = new Shader();
 	shader->CreateFromFiles("Shaders\\shader.vert", "Shaders\\shader.frag");
 	mShaderList.push_back(*shader);
 
-	mDirectionalShadowShader = Shader();
 	mDirectionalShadowShader.CreateFromFiles("Shaders\\directional_shadow_map.vert", "Shaders\\directional_shadow_map.frag");
 }
 
@@ -219,7 +212,7 @@ void App::InitCamera()
 
 void App::InitDirectionalLight()
 {
-	mMainLight = DirectionalLight(1024, 1024, glm::vec3(1.0f, 1.0f, 1.0f), 0.3f, 0.6f, glm::vec3(0.0f, 0.0f, 0.0f));
+	mMainLight = DirectionalLight(2048, 2048, glm::vec3(1.0f, 1.0f, 1.0f), 0.3f, 0.6f, glm::vec3(0.0f, 0.0f, -10.0f));
 }
 
 void App::InitPointLights()
@@ -243,6 +236,10 @@ void App::InitSpotLights()
 			20.0f
 		)
 	);
+
+	glm::vec3 lowerLight = mCamera.GetCameraPosition();
+	lowerLight.y -= 0.3f;
+	mSpotLights[0].SetFlash(lowerLight, mCamera.GetCameraDirection());
 }
 
 void App::InitLights()
@@ -283,7 +280,9 @@ void App::DirectionalShadowMapPass(DirectionalLight* light)
 	light->GetShadowMap()->Write();
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	mDirectionalShadowShader.SetUniformModel(mDirectionalShadowShader.GetModelLocation());
+	//mDirectionalShadowShader.SetUniformModel(mDirectionalShadowShader.GetModelLocation());
+
+	uniformModel = mDirectionalShadowShader.GetModelLocation();
 
 	glm::mat4 lightTransform = light->CalculateLightTransform();
 	mDirectionalShadowShader.SetDirectionalLightTransform(&lightTransform);
@@ -388,7 +387,7 @@ void App::HandleKeys(GLFWwindow* window, int key, int code, int action, int mode
 		else if (action == GLFW_RELEASE)
 		{
 			theApp->mKeys[key] = false;
-		}
+		}	
 	}
 }
 

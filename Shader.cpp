@@ -19,9 +19,7 @@ Shader::Shader()
 {}
 
 Shader::~Shader()
-{
-	ClearShader();
-}
+{}
 
 void Shader::CreateFromString(const char* vertexCode, const char* fragmentCode)
 {

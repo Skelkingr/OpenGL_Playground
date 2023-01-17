@@ -8,8 +8,8 @@ class DirectionalLight : public BaseLight
 public:
 	DirectionalLight();
 	DirectionalLight(
-		GLfloat shadowWidth,
-		GLfloat shadowHeight,
+		GLuint shadowWidth,
+		GLuint shadowHeight,
 		glm::vec3 colour,
 		GLfloat ambientIntensity,
 		GLfloat diffuseIntensity,

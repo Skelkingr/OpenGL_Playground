@@ -8,7 +8,7 @@ class BaseLight
 {
 public:
 	BaseLight();
-	BaseLight(GLfloat shadowWidth, GLfloat shadowHeight, glm::vec3 colour, GLfloat ambientIntensity, GLfloat diffuseIntensity);
+	BaseLight(GLuint shadowWidth, GLuint shadowHeight, glm::vec3 colour, GLfloat ambientIntensity, GLfloat diffuseIntensity);
 	~BaseLight();
 
 	glm::vec3 GetColour() const { return mAmbientColour; }
