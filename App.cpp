@@ -14,21 +14,7 @@ App::App()
 	mTextureList({})
 {
 	for (size_t i = 0; i < 1024; i++)
-		mKeys[i] = false;
-
-	mCamera = Camera(
-		glm::vec3(0.0f, 1.5f, 7.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		-90.0f,
-		0.0f,
-		5.0f,
-		200.0f
-	);
-	
-	mShinyMaterial = Material(0.8f, 64.0f);
-	mDullMaterial = Material(0.3f, 4.0f);
-
-	mSlenderman = Model();
+		mKeys[i] = false;	
 }
 
 App::~App()
@@ -57,24 +43,6 @@ void App::Clear(float r, float g, float b, float a)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-int App::Run()
-{
-	while (!glfwWindowShouldClose(mMainWindow))
-	{
-		glfwPollEvents();
-
-		GLfloat deltaTime = mTimer.DeltaTime();
-
-		mCamera.KeyControl(mKeys, deltaTime);
-		mCamera.MouseControl(GetMouseChangeX(), GetMouseChangeY(), deltaTime);
-
-		Clear(0.0f, 0.0f, 0.0f, 1.0f);
-		Render();
-	}
-
-	return 0;
-}
-
 bool App::Init()
 {
 	if (!InitMainWindow())
@@ -82,10 +50,12 @@ bool App::Init()
 		printf("[ERR] Failed to initialize the main window.");
 		return false;
 	}
-	
-	mSlenderman.LoadModel("Models\\slenderman.obj");
 
-	CreateLights();
+	InitCamera();
+	InitLights();
+	InitMaterials();
+	InitModels();
+
 	CreateObjects(true, 0.05f, 1.5f, 0.0005f);
 	CreateShader();
 
@@ -97,78 +67,147 @@ bool App::Init()
 	return true;
 }
 
-void App::Update(float deltaTime)
-{}
+int App::Run()
+{
+	while (!glfwWindowShouldClose(mMainWindow))
+	{
+		glfwPollEvents();
+
+		GLfloat deltaTime = mTimer.DeltaTime();
+
+		mCamera.KeyControl(mKeys, deltaTime);
+		mCamera.MouseControl(GetMouseChangeX(), GetMouseChangeY(), deltaTime);
+
+		Render();
+	}
+
+	return 0;
+}
 
 void App::Render()
 {
+	Clear(0.0f, 0.0f, 0.0f, 1.0f);
+
 	mShaderList[0].UseShader();
-	mShaderList[0].SetDirectionalLight(&mMainLight);
-	mShaderList[0].SetPointLights(mPointLights, mPointLights.size());
-	mShaderList[0].SetSpotLights(mSpotLights, mSpotLights.size());
+	GLuint uniformModel = mShaderList[0].GetModelLocation();
+	GLuint uniformProjection = mShaderList[0].GetProjectionLocation();
+	GLuint uniformView = mShaderList[0].GetViewLocation();
+	GLuint uniformEyePosition = mShaderList[0].GetEyePositionLocation();
+	GLuint uniformSpecularIntensity = mShaderList[0].GetSpecularIntensityLocation();
+	GLuint uniformShininess = mShaderList[0].GetShininessLocation();
+
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f),(GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f);
 
 	glm::vec3 lowerLight = mCamera.GetCameraPosition();
 	lowerLight.y -= 0.3f;
 	mSpotLights[0].SetFlash(lowerLight, mCamera.GetCameraDirection());
+
+	mShaderList[0].SetDirectionalLight(&mMainLight);
+	mShaderList[0].SetPointLights(mPointLights, mPointLights.size());
+	mShaderList[0].SetSpotLights(mSpotLights, mSpotLights.size());
+
+	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
+	glUniform3f(uniformEyePosition, mCamera.GetCameraPosition().x, mCamera.GetCameraPosition().y, mCamera.GetCameraPosition().z);
 
 	// Slenderman:
 	glm::mat4 model(1.0f);
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(0.0f, 1.95f, -5.0f));
 	model = glm::scale(model, glm::vec3(0.006f, 0.006f, 0.006f));
-	glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(model));
-	mDullMaterial.UseMaterial(mShaderList[0].GetSpecularIntensityLocation(), mShaderList[0].GetShininessLocation());
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	mSlenderman.RenderModel();
 
-	// Floor operations:
-	glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(mMeshList[1]->GetProjection()));
-	glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
-	glUniform3f(
-		mShaderList[0].GetEyePositionLocation(),
-		mCamera.GetCameraPosition().x,
-		mCamera.GetCameraPosition().y,
-		mCamera.GetCameraPosition().z
-	);
-
-	mMeshList[1]->SetModel(glm::mat4(1.0f));
-
-	glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(mMeshList[1]->GetModel()));
-
+	// Floor:
+	model = glm::mat4(1.0f);
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	mTextureList[1]->UseTexture();
-	mShinyMaterial.UseMaterial(mShaderList[0].GetSpecularIntensityLocation(), mShaderList[0].GetShininessLocation());
+	mShinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+	mMeshList[0]->RenderMesh();
+
+	// Wall 1:
+	model = glm::mat4(1.0f);
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	mTextureList[2]->UseTexture();
+	mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	mMeshList[1]->RenderMesh();
 
-	// Walls operations:
-	for (size_t i = 2; i < mMeshList.size(); i++)
-	{
-		glUniformMatrix4fv(mShaderList[0].GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(mMeshList[i]->GetProjection()));
-		glUniformMatrix4fv(mShaderList[0].GetViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.CalculateViewMatrix()));
-		glUniform3f(
-			mShaderList[0].GetEyePositionLocation(),
-			mCamera.GetCameraPosition().x,
-			mCamera.GetCameraPosition().y,
-			mCamera.GetCameraPosition().z
-		);
+	// Wall 2:
+	model = glm::mat4(1.0f);
+	model = glm::rotate(model, -90.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	mTextureList[2]->UseTexture();
+	mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+	mMeshList[1]->RenderMesh();
 
-		glUniformMatrix4fv(mShaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(mMeshList[i]->GetModel()));
+	// Wall 3:
+	model = glm::mat4(1.0f);
+	model = glm::rotate(model, 180.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	mTextureList[2]->UseTexture();
+	mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+	mMeshList[1]->RenderMesh();
 
-		mTextureList[2]->UseTexture();
-		mDullMaterial.UseMaterial(mShaderList[0].GetSpecularIntensityLocation(), mShaderList[0].GetShininessLocation());
-		mMeshList[i]->RenderMesh();
-	}
+	// Wall 4:
+	model = glm::mat4(1.0f);
+	model = glm::rotate(model, 90.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	mTextureList[2]->UseTexture();
+	mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+	mMeshList[1]->RenderMesh();
 
 	glUseProgram(0);
 
 	glfwSwapBuffers(mMainWindow);
 }
 
-void App::CreateLights()
+void App::CreateObjects(bool direction, float offset, float maxOffset, float increment)
+{	
+	Mesh* floor = new Mesh();
+	floor->CreateMeshFromFile("Meshes\\Plain\\vertices.txt", "Meshes\\Plain\\indices.txt", false);
+	mMeshList.push_back(floor);
+
+	Mesh* wall = new Mesh();
+	wall->CreateMeshFromFile("Meshes\\Wall\\vertices.txt", "Meshes\\Wall\\indices.txt", false);
+	mMeshList.push_back(wall);
+}
+
+void App::CreateShader()
+{
+	Shader* shader = new Shader();
+	shader->CreateFromFiles("Shaders\\shader.vert", "Shaders\\shader.frag");
+	mShaderList.push_back(*shader);
+
+	mDirectionalShadowShader = Shader();
+	mDirectionalShadowShader.CreateFromFiles("Shaders\\directional_shadow_map.vert", "Shaders\\directional_shadow_map.frag");
+}
+
+void App::InitCamera()
+{
+	mCamera = Camera(
+		glm::vec3(0.0f, 1.5f, 7.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		-90.0f,
+		0.0f,
+		5.0f,
+		200.0f
+	);
+}
+
+void App::InitDirectionalLight()
 {
 	mMainLight = DirectionalLight(1024, 1024, glm::vec3(1.0f, 1.0f, 1.0f), 0.3f, 0.6f, glm::vec3(0.0f, 0.0f, 0.0f));
+}
 
-	/*mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
-	mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));*/
+void App::InitPointLights()
+{
+	mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
+	mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));
+}
 
+void App::InitSpotLights()
+{
 	mSpotLights.push_back(
 		SpotLight(
 			glm::vec3(1.0f, 1.0f, 1.0f),
@@ -184,53 +223,17 @@ void App::CreateLights()
 	);
 }
 
-void App::CreateObjects(bool direction, float offset, float maxOffset, float increment)
+void App::InitLights()
 {
-	std::vector<GLuint> cubeIndices = {};
-
-	for (int i = 0; i < 72; i++)
-		cubeIndices.push_back(i);
-
-	Mesh* cube = new Mesh();
-	cube->CreateMeshFromFile("Meshes\\Cube\\vertices.txt", cubeIndices, true);
-	mMeshList.push_back(cube);
-	
-	Mesh* floor = new Mesh();
-	floor->CreateMeshFromFile("Meshes\\Plain\\vertices.txt", "Meshes\\Plain\\indices.txt", false);
-	mMeshList.push_back(floor);
-
-	Mesh* wall1 = new Mesh();
-	wall1->CreateMeshFromFile("Meshes\\Wall\\vertices.txt", "Meshes\\Wall\\indices.txt", false);
-	wall1->SetModel(glm::mat4(1.0f));
-	mMeshList.push_back(wall1);
-
-	Mesh* wall2= new Mesh();
-	wall2->CreateMeshFromFile("Meshes\\Wall\\vertices.txt", "Meshes\\Wall\\indices.txt", false);
-	wall2->SetModel(glm::mat4(1.0f));
-	wall2->SetModel(glm::rotate(wall2->GetModel(), -90.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f)));
-	mMeshList.push_back(wall2);
-
-	Mesh* wall3 = new Mesh();
-	wall3->CreateMeshFromFile("Meshes\\Wall\\vertices.txt", "Meshes\\Wall\\indices.txt", false);
-	wall3->SetModel(glm::mat4(1.0f));
-	wall3->SetModel(glm::rotate(wall3->GetModel(), 180.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f)));
-	mMeshList.push_back(wall3);
-
-	Mesh* wall4 = new Mesh();
-	wall4->CreateMeshFromFile("Meshes\\Wall\\vertices.txt", "Meshes\\Wall\\indices.txt", false);
-	wall4->SetModel(glm::mat4(1.0f));
-	wall4->SetModel(glm::rotate(wall4->GetModel(), 90.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f)));
-	mMeshList.push_back(wall4);
+	InitDirectionalLight();
+	//InitPointLights();
+	InitSpotLights();
 }
 
-void App::CreateShader()
+void App::InitMaterials()
 {
-	Shader* shader = new Shader();
-	GL_CHECK(shader->CreateFromFiles("Shaders\\shader.vert", "Shaders\\shader.frag"));
-	mShaderList.push_back(*shader);
-
-	mDirectionalShadowShader = Shader();
-	mDirectionalShadowShader.CreateFromFiles("Shaders\\directional_shadow_map.vert", "Shaders\\directional_shadow_map.frag");
+	mShinyMaterial = Material(0.8f, 64.0f);
+	mDullMaterial = Material(0.3f, 4.0f);
 }
 
 void App::InitTextures()
@@ -241,6 +244,12 @@ void App::InitTextures()
 
 	for (Texture* tex : mTextureList)
 		tex->LoadTextureA();
+}
+
+void App::InitModels()
+{
+	mSlenderman = Model();
+	mSlenderman.LoadModel("Models\\slenderman.obj");
 }
 
 void App::DirectionalShadowMapPass(DirectionalLight* light)

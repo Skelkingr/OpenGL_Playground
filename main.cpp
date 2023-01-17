@@ -4,7 +4,7 @@
 
 int main()
 {
-	App theApp;
+	App theApp = App();
 
 	if (!theApp.Init())
 		return 1;

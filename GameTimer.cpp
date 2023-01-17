@@ -6,7 +6,6 @@ GameTimer::GameTimer()
 	mLastTime(0.0f)
 {}
 
-
 GameTimer::~GameTimer()
 {}
 

@@ -30,18 +30,25 @@ public:
 
 	void Clear(float r, float g, float b, float a);
 
+	bool Init();
 	int Run();
 
-	bool Init();
-
-	void Update(float deltaTime);
 	void Render();
 
-	void CreateLights();
 	void CreateObjects(bool direction, float offset, float maxOffset, float increment);
 	void CreateShader();
 
+	void InitCamera();
+	
+	void InitDirectionalLight();
+	void InitPointLights();
+	void InitSpotLights();
+	void InitLights();
+	
+	void InitMaterials();
 	void InitTextures();
+
+	void InitModels();
 
 	void DirectionalShadowMapPass(DirectionalLight* light);
 	
