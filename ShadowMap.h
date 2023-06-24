@@ -7,11 +7,11 @@ class ShadowMap
 {
 public:
 	ShadowMap();
-	~ShadowMap();
+	~ShadowMap();	
 
-	virtual bool Init(GLuint width, GLuint height);
-	virtual void Write();
-	virtual void Read(GLenum textureUnit);
+	virtual GLboolean Init(GLfloat width, GLfloat height);
+	virtual GLvoid Write();
+	virtual GLvoid Read(GLenum textureUnit);
 
 	GLuint GetShadowWidth() const { return mShadowWidth; }
 	GLuint GetShadowHeight() const { return mShadowHeight; }
