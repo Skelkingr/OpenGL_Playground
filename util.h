@@ -33,17 +33,17 @@
 
 /* CONSTANTS */
 
-const int MAX_POINT_LIGHTS = 4;
-const int MAX_SPOT_LIGHTS = 4;
+const GLint MAX_POINT_LIGHTS = 4;
+const GLint MAX_SPOT_LIGHTS = 4;
 
-const float TO_RADIANS = 3.14159265f / 180.0f;
+const GLfloat TO_RADIANS = 3.14159265f / 180.0f;
 
 
 /* HELPER FUNCTIONS */
 
 namespace
 {
-	void CheckOpenGLError(const char* stmt, const char* fname, int line)
+	GLvoid CheckOpenGLError(const char* stmt, const char* fname, GLint line)
 	{
 		GLenum err = glGetError();
 		if (err != GL_NO_ERROR)
@@ -53,7 +53,7 @@ namespace
 		}
 	}
 
-	void ComputeAverageNormals(
+	GLvoid ComputeAverageNormals(
 		std::vector<GLuint>& indices,
 		GLuint indicesCount,
 		std::vector<GLfloat>& vertices,
@@ -64,9 +64,9 @@ namespace
 	{
 		for (size_t i = 0; i < indicesCount; i += 6)
 		{
-			unsigned int in0 = indices[i] * vLength;
-			unsigned int in1 = indices[i + 1] * vLength;
-			unsigned int in2 = indices[i + 2] * vLength;
+			GLuint in0 = indices[i] * vLength;
+			GLuint in1 = indices[i + 1] * vLength;
+			GLuint in2 = indices[i + 2] * vLength;
 			glm::vec3 v1(vertices[in1] - vertices[in0], vertices[in1 + 1] - vertices[in0 + 1], vertices[in1 + 2] - vertices[in0 + 2]);
 			glm::vec3 v2(vertices[in2] - vertices[in0], vertices[in2 + 1] - vertices[in0 + 1], vertices[in2 + 2] - vertices[in0 + 2]);
 			glm::vec3 normal = glm::cross(v1, v2);
@@ -80,14 +80,14 @@ namespace
 
 		for (size_t i = 0; i < verticesCount / vLength; i++)
 		{
-			unsigned int nOffset = i * vLength + normalOffset;
+			GLuint nOffset = i * vLength + normalOffset;
 			glm::vec3 vec(vertices[nOffset], vertices[nOffset + 1], vertices[nOffset + 2]);
 			vec = glm::normalize(vec);
 			vertices[nOffset] = vec.x; vertices[nOffset + 1] = vec.y; vertices[nOffset + 2] = vec.z;
 		}
 	}
 
-	bool GetFloatFileContent(std::string fileLocation, std::vector<GLfloat>& vec)
+	GLboolean GetFloatFileContent(std::string fileLocation, std::vector<GLfloat>& vec)
 	{
 		std::ifstream is(fileLocation.c_str());
 
@@ -119,7 +119,7 @@ namespace
 		return true;
 	}
 
-	bool GetIntFileContent(std::string fileLocation, std::vector<GLuint>& vec)
+	GLboolean GetIntFileContent(std::string fileLocation, std::vector<GLuint>& vec)
 	{
 		std::ifstream is(fileLocation.c_str());
 
