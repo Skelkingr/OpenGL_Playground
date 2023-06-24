@@ -10,10 +10,10 @@ public:
 	Camera(glm::vec3 position, glm::vec3 worldUp, GLfloat yaw, GLfloat pitch, GLfloat movementSpeed, GLfloat turnSpeed);
 	~Camera();
 
-	void Update();
+	GLvoid Update();
 
-	void KeyControl(bool* keys, GLfloat deltaTime);
-	void MouseControl(GLfloat xChange, GLfloat yChange, GLfloat deltaTime);
+	GLvoid KeyControl(GLboolean* keys, GLfloat deltaTime);
+	GLvoid MouseControl(GLfloat xChange, GLfloat yChange, GLfloat deltaTime);
 
 	glm::vec3 GetCameraPosition() const { return mPosition; }
 	glm::vec3 GetCameraDirection() const { return glm::normalize(mFront); }
