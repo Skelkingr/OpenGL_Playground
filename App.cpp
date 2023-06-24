@@ -41,13 +41,13 @@ App::~App()
 	glfwTerminate();
 }
 
-void App::Clear(float r, float g, float b, float a)
+GLvoid App::Clear(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 {
 	glClearColor(r, g, b, a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-bool App::Init()
+GLboolean App::Init()
 {
 	if (!InitMainWindow())
 	{
@@ -71,7 +71,7 @@ bool App::Init()
 	return true;
 }
 
-int App::Run()
+GLint App::Run()
 {
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f);
 
@@ -85,7 +85,9 @@ int App::Run()
 		mCamera.MouseControl(GetMouseChangeX(), GetMouseChangeY(), deltaTime);
 
 		DirectionalShadowMapPass(&mMainLight);
-		RenderPass(mCamera.CalculateViewMatrix(), projection);
+		RenderPass(projection, mCamera.CalculateViewMatrix());
+
+		glUseProgram(0);
 
 		glfwSwapBuffers(mMainWindow);
 	}
@@ -93,7 +95,7 @@ int App::Run()
 	return 0;
 }
 
-void App::RenderScene()
+GLvoid App::RenderScene()
 {
 	// Slenderman:
 	glm::mat4 model(1.0f);
@@ -143,7 +145,7 @@ void App::RenderScene()
 	//mMeshList[1]->RenderMesh();
 }
 
-void App::RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
+GLvoid App::RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 {
 	mShaderList[0].UseShader();
 
@@ -161,7 +163,7 @@ void App::RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 
 	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-	glUniform3f(uniformEyePosition,mCamera.GetCameraPosition().x, mCamera.GetCameraPosition().y, mCamera.GetCameraPosition().z);
+	glUniform3f(uniformEyePosition, mCamera.GetCameraPosition().x, mCamera.GetCameraPosition().y, mCamera.GetCameraPosition().z);
 
 	mShaderList[0].SetDirectionalLight(&mMainLight);
 	mShaderList[0].SetPointLights(mPointLights, mPointLights.size());
@@ -177,7 +179,7 @@ void App::RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 	RenderScene();
 }
 
-void App::CreateObjects(bool direction, float offset, float maxOffset, float increment)
+GLvoid App::CreateObjects(GLboolean direction, GLfloat offset, GLfloat maxOffset, GLfloat increment)
 {	
 
 	Mesh* floor = new Mesh();
@@ -189,16 +191,17 @@ void App::CreateObjects(bool direction, float offset, float maxOffset, float inc
 	mMeshList.push_back(wall);
 }
 
-void App::CreateShaders()
+GLvoid App::CreateShaders()
 {
 	Shader* shader = new Shader();
 	shader->CreateFromFiles("Shaders\\shader.vert", "Shaders\\shader.frag");
 	mShaderList.push_back(*shader);
 
+	mDirectionalShadowShader = Shader();
 	mDirectionalShadowShader.CreateFromFiles("Shaders\\directional_shadow_map.vert", "Shaders\\directional_shadow_map.frag");
 }
 
-void App::InitCamera()
+GLvoid App::InitCamera()
 {
 	mCamera = Camera(
 		glm::vec3(0.0f, 1.5f, 7.0f),
@@ -210,18 +213,18 @@ void App::InitCamera()
 	);
 }
 
-void App::InitDirectionalLight()
+GLvoid App::InitDirectionalLight()
 {
-	mMainLight = DirectionalLight(2048, 2048, glm::vec3(1.0f, 1.0f, 1.0f), 0.3f, 0.6f, glm::vec3(0.0f, 0.0f, -10.0f));
+	mMainLight = DirectionalLight(1024.0f, 1024.0f, glm::vec3(1.0f, 1.0f, 1.0f), 0.3f, 0.6f, 0.0f, 0.0f, -1.0f);
 }
 
-void App::InitPointLights()
+GLvoid App::InitPointLights()
 {
 	mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
 	mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));
 }
 
-void App::InitSpotLights()
+GLvoid App::InitSpotLights()
 {
 	mSpotLights.push_back(
 		SpotLight(
@@ -242,20 +245,20 @@ void App::InitSpotLights()
 	mSpotLights[0].SetFlash(lowerLight, mCamera.GetCameraDirection());
 }
 
-void App::InitLights()
+GLvoid App::InitLights()
 {
 	InitDirectionalLight();
-	//InitPointLights();
-	//InitSpotLights();
+	/*InitPointLights();
+	InitSpotLights();*/
 }
 
-void App::InitMaterials()
+GLvoid App::InitMaterials()
 {
 	mShinyMaterial = Material(0.8f, 64.0f);
 	mDullMaterial = Material(0.3f, 4.0f);
 }
 
-void App::InitTextures()
+GLvoid App::InitTextures()
 {
 	mTextureList.push_back(new Texture((char*)"Textures\\wood.png"));
 	mTextureList.push_back(new Texture((char*)"Textures\\plain.png"));
@@ -265,13 +268,13 @@ void App::InitTextures()
 		tex->LoadTextureA();
 }
 
-void App::InitModels()
+GLvoid App::InitModels()
 {
 	mSlenderman = Model();
 	mSlenderman.LoadModel("Models\\slenderman.obj");
 }
 
-void App::DirectionalShadowMapPass(DirectionalLight* light)
+GLvoid App::DirectionalShadowMapPass(DirectionalLight* light)
 {
 	mDirectionalShadowShader.UseShader();
 
@@ -280,11 +283,9 @@ void App::DirectionalShadowMapPass(DirectionalLight* light)
 	light->GetShadowMap()->Write();
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	//mDirectionalShadowShader.SetUniformModel(mDirectionalShadowShader.GetModelLocation());
-
 	uniformModel = mDirectionalShadowShader.GetModelLocation();
 
-	glm::mat4 lightTransform = light->CalculateLightTransform();
+	glm::mat4 lightTransform = mMainLight.CalculateLightTransform();
 	mDirectionalShadowShader.SetDirectionalLightTransform(&lightTransform);
 
 	RenderScene();
@@ -310,7 +311,7 @@ GLfloat App::GetMouseChangeY()
 	return theChange;
 }
 
-bool App::InitMainWindow()
+GLboolean App::InitMainWindow()
 {
 	if (!glfwInit())
 	{
@@ -362,13 +363,13 @@ bool App::InitMainWindow()
 	return true;
 }
 
-void App::CreateCallbacks()
+GLvoid App::CreateCallbacks()
 {
 	glfwSetKeyCallback(mMainWindow, HandleKeys);
 	glfwSetCursorPosCallback(mMainWindow, HandleMouse);
 }
 
-void App::HandleKeys(GLFWwindow* window, int key, int code, int action, int mode)
+GLvoid App::HandleKeys(GLFWwindow* window, GLint key, GLint code, GLint action, GLint mode)
 {
 
 	App* theApp = static_cast<App*>(glfwGetWindowUserPointer(window));
@@ -391,7 +392,7 @@ void App::HandleKeys(GLFWwindow* window, int key, int code, int action, int mode
 	}
 }
 
-void App::HandleMouse(GLFWwindow* window, double xPos, double yPos)
+GLvoid App::HandleMouse(GLFWwindow* window, GLdouble xPos, GLdouble yPos)
 {
 	App* theApp = static_cast<App*>(glfwGetWindowUserPointer(window));
 

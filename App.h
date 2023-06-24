@@ -28,42 +28,42 @@ public:
 	App();
 	~App();
 
-	void Clear(float r, float g, float b, float a);
+	GLvoid Clear(GLfloat r, GLfloat g, GLfloat b, GLfloat a);
 
-	bool Init();
-	int Run();
+	GLboolean Init();
+	GLint Run();
 
-	void RenderScene();
-	void RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix);
+	GLvoid RenderScene();
+	GLvoid RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix);
 
-	void CreateObjects(bool direction, float offset, float maxOffset, float increment);
-	void CreateShaders();
+	GLvoid CreateObjects(GLboolean direction, GLfloat offset, GLfloat maxOffset, GLfloat increment);
+	GLvoid CreateShaders();
 
-	void InitCamera();
+	GLvoid InitCamera();
 	
-	void InitDirectionalLight();
-	void InitPointLights();
-	void InitSpotLights();
-	void InitLights();
+	GLvoid InitDirectionalLight();
+	GLvoid InitPointLights();
+	GLvoid InitSpotLights();
+	GLvoid InitLights();
 	
-	void InitMaterials();
-	void InitTextures();
+	GLvoid InitMaterials();
+	GLvoid InitTextures();
 
-	void InitModels();
+	GLvoid InitModels();
 
-	void DirectionalShadowMapPass(DirectionalLight* light);
+	GLvoid DirectionalShadowMapPass(DirectionalLight* light);
 	
-	bool* GetKeys() { return mKeys; }
+	GLboolean* GetKeys() { return mKeys; }
 
 	GLfloat GetMouseChangeX();
 	GLfloat GetMouseChangeY();
 
 private:
-	bool InitMainWindow();
+	GLboolean InitMainWindow();
 
-	void CreateCallbacks();
-	static void HandleKeys(GLFWwindow* window, int key, int code, int action, int mode);
-	static void HandleMouse(GLFWwindow* window, double xPos, double yPos);
+	GLvoid CreateCallbacks();
+	static GLvoid HandleKeys(GLFWwindow* window, GLint key, GLint code, GLint action, GLint mode);
+	static GLvoid HandleMouse(GLFWwindow* window, double xPos, double yPos);
 
 private:
 	GLint mClientWidth;
@@ -72,19 +72,19 @@ private:
 
 	GLFWwindow* mMainWindow;
 
-	int mBufferWidth;
-	int mBufferHeight;
+	GLint mBufferWidth;
+	GLint mBufferHeight;
 
 	std::vector<Mesh*> mMeshList;
 	std::vector<Shader> mShaderList;
 	Shader mDirectionalShadowShader;
 
-	bool mKeys[1024];
+	GLboolean mKeys[1024];
 
 	LastMousePos mLastMousePosition;
 	MouseChange mMouseChange;
 
-	bool mMouseFirstMoved;
+	GLboolean mMouseFirstMoved;
 
 	Camera mCamera;
 	GameTimer mTimer;
