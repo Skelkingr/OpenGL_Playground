@@ -24,7 +24,7 @@ Texture::~Texture()
 	ClearTexture();
 }
 
-bool Texture::LoadTexture()
+GLboolean Texture::LoadTexture()
 {
 	unsigned char* textureData = stbi_load(mFileLocation, &mWidth, &mHeight, &mBitDepth, 0);
 	if (!textureData)
@@ -51,7 +51,7 @@ bool Texture::LoadTexture()
 	return true;
 }
 
-bool Texture::LoadTextureA()
+GLboolean Texture::LoadTextureA()
 {
 	unsigned char* textureData = stbi_load(mFileLocation, &mWidth, &mHeight, &mBitDepth, 0);
 	if (!textureData)
@@ -78,19 +78,19 @@ bool Texture::LoadTextureA()
 	return true;
 }
 
-void Texture::UseTexture()
+GLvoid Texture::UseTexture()
 {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mTextureID);
 }
 
-void Texture::ClearTexture()
+GLvoid Texture::ClearTexture()
 {
 	glDeleteTextures(1, &mTextureID);
 	ResetTexture();
 }
 
-void Texture::ResetTexture()
+GLvoid Texture::ResetTexture()
 {
 	mTextureID = 0;
 	mWidth = 0;

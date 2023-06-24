@@ -11,18 +11,18 @@ public:
 	Texture(const char* fileLocation); 
 	~Texture();
 
-	bool LoadTexture();
-	bool LoadTextureA();
+	GLboolean LoadTexture();
+	GLboolean LoadTextureA();
 
-	void UseTexture();
-	void ClearTexture();
-	void ResetTexture();
+	GLvoid UseTexture();
+	GLvoid ClearTexture();
+	GLvoid ResetTexture();
 
 private:
 	GLuint mTextureID;
-	int mWidth;
-	int mHeight;
-	int mBitDepth;
+	GLint mWidth;
+	GLint mHeight;
+	GLint mBitDepth;
 
 	const char* mFileLocation;
 };
