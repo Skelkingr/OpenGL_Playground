@@ -10,8 +10,8 @@ public:
 	Shader();
 	~Shader();
 
-	void CreateFromString(const char* vertexCode, const char* fragmentCode);
-	void CreateFromFiles(const char* vertexShaderLocation, const char* fragmentShaderLocation);
+	GLvoid CreateFromString(const char* vertexCode, const char* fragmentCode);
+	GLvoid CreateFromFiles(const char* vertexShaderLocation, const char* fragmentShaderLocation);
 
 	std::string ReadFile(const char* fileLocation);
 
@@ -22,25 +22,25 @@ public:
 	GLuint GetSpecularIntensityLocation() const { return mUniformSpecularIntensity; }
 	GLuint GetShininessLocation() const { return mUniformShininess; }
 
-	void SetUniformModel(GLuint uniformModel) { mUniformModel = uniformModel; }
+	GLvoid SetUniformModel(GLuint uniformModel) { mUniformModel = uniformModel; }
 
-	void SetDirectionalLight(DirectionalLight* directionalLight);
-	void SetPointLights(std::vector<PointLight> pointLight, unsigned int lightCount);
-	void SetSpotLights(std::vector<SpotLight> pointLight, unsigned int lightCount);
-	void SetTexture(GLuint textureUnit);
-	void SetDirectionalShadowMap(GLuint textureUnit);
-	void SetDirectionalLightTransform(glm::mat4* lTransform);
+	GLvoid SetDirectionalLight(DirectionalLight* directionalLight);
+	GLvoid SetPointLights(std::vector<PointLight> pointLight, GLuint lightCount);
+	GLvoid SetSpotLights(std::vector<SpotLight> pointLight, GLuint lightCount);
+	GLvoid SetTexture(GLuint textureUnit);
+	GLvoid SetDirectionalShadowMap(GLuint textureUnit);
+	GLvoid SetDirectionalLightTransform(glm::mat4* lTransform);
 
-	void UseShader();
-	void ClearShader();	
-
-private:
-	bool AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
-	bool CompileShader(const char* vertexCode, const char* fragmentCode);
+	GLvoid UseShader();
+	GLvoid ClearShader();	
 
 private:
-	int mPointLightCount;
-	int mSpotLightCount;
+	GLboolean AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
+	GLboolean CompileShader(const char* vertexCode, const char* fragmentCode);
+
+private:
+	GLint mPointLightCount;
+	GLint mSpotLightCount;
 
 	struct
 	{

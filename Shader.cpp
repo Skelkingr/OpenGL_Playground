@@ -24,12 +24,12 @@ Shader::Shader()
 Shader::~Shader()
 {}
 
-void Shader::CreateFromString(const char* vertexCode, const char* fragmentCode)
+GLvoid Shader::CreateFromString(const char* vertexCode, const char* fragmentCode)
 {
 	CompileShader(vertexCode, fragmentCode);
 }
 
-void Shader::CreateFromFiles(const char* vertexShaderLocation, const char* fragmentShaderLocation)
+GLvoid Shader::CreateFromFiles(const char* vertexShaderLocation, const char* fragmentShaderLocation)
 {
 	std::string vertexString = ReadFile(vertexShaderLocation);
 	std::string fragmentString = ReadFile(fragmentShaderLocation);
@@ -63,7 +63,7 @@ std::string Shader::ReadFile(const char* fileLocation)
 	return content;
 }
 
-void Shader::SetDirectionalLight(DirectionalLight* directionalLight)
+GLvoid Shader::SetDirectionalLight(DirectionalLight* directionalLight)
 {
 	directionalLight->UseLight(
 		mUniformDirectionalLight.uniformColour,
@@ -73,7 +73,7 @@ void Shader::SetDirectionalLight(DirectionalLight* directionalLight)
 	);
 }
 
-void Shader::SetPointLights(std::vector<PointLight> pointLight, unsigned int lightCount)
+GLvoid Shader::SetPointLights(std::vector<PointLight> pointLight, GLuint lightCount)
 {
 	if (lightCount > MAX_POINT_LIGHTS)
 		lightCount = MAX_POINT_LIGHTS;
@@ -93,7 +93,7 @@ void Shader::SetPointLights(std::vector<PointLight> pointLight, unsigned int lig
 }
 
 
-void Shader::SetSpotLights(std::vector<SpotLight> spotLight, unsigned int lightCount)
+GLvoid Shader::SetSpotLights(std::vector<SpotLight> spotLight, GLuint lightCount)
 {
 	if (lightCount > MAX_SPOT_LIGHTS)
 		lightCount = MAX_SPOT_LIGHTS;
@@ -114,27 +114,27 @@ void Shader::SetSpotLights(std::vector<SpotLight> spotLight, unsigned int lightC
 		);
 }
 
-void Shader::SetTexture(GLuint textureUnit)
+GLvoid Shader::SetTexture(GLuint textureUnit)
 {
 	glUniform1i(mUniformTexture, textureUnit);
 }
 
-void Shader::SetDirectionalShadowMap(GLuint textureUnit)
+GLvoid Shader::SetDirectionalShadowMap(GLuint textureUnit)
 {
 	glUniform1i(mUniformDirectionalShadowMap, textureUnit);
 }
 
-void Shader::SetDirectionalLightTransform(glm::mat4* lTransform)
+GLvoid Shader::SetDirectionalLightTransform(glm::mat4* lTransform)
 {
 	glUniformMatrix4fv(mUniformDirectionalLightTransform, 1, GL_FALSE, glm::value_ptr(*lTransform));
 }
 
-void Shader::UseShader()
+GLvoid Shader::UseShader()
 {
 	glUseProgram(mShaderID);
 }
 
-void Shader::ClearShader()
+GLvoid Shader::ClearShader()
 {
 	if (mShaderID != 0)
 	{
@@ -146,7 +146,7 @@ void Shader::ClearShader()
 	mUniformProjection = 0;
 }
 
-bool Shader::AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType)
+GLboolean Shader::AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType)
 {
 	GLuint theShader = glCreateShader(shaderType);
 
@@ -175,7 +175,7 @@ bool Shader::AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderT
 	return true;
 }
 
-bool Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
+GLboolean Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 {
 	mShaderID = glCreateProgram();
 
