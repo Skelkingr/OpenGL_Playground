@@ -8,16 +8,18 @@ class DirectionalLight : public BaseLight
 public:
 	DirectionalLight();
 	DirectionalLight(
-		GLuint shadowWidth,
-		GLuint shadowHeight,
+		GLfloat shadowWidth,
+		GLfloat shadowHeight,
 		glm::vec3 colour,
 		GLfloat ambientIntensity,
 		GLfloat diffuseIntensity,
-		glm::vec3 direction
+		GLfloat xDir,
+		GLfloat yDir,
+		GLfloat zDir
 		);
 	~DirectionalLight();
 
-	void UseLight(GLuint ambientColourLocation, GLuint ambientIntensityLocation, GLuint diffuseIntensityLocation, GLuint directionLocation);
+	GLvoid UseLight(GLuint ambientColourLocation, GLuint ambientIntensityLocation, GLuint diffuseIntensityLocation, GLuint directionLocation);
 
 	glm::vec3 GetDirection() const { return mDirection; }
 
