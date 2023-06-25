@@ -48,7 +48,7 @@ namespace
 		GLenum err = glGetError();
 		if (err != GL_NO_ERROR)
 		{
-			printf("OpenGL error %08x, at %s:%i - for %s\n", err, fname, line, stmt);
+			std::cout << "OpenGL error " << err << ", at " << fname << ":" << line << " - for " << stmt << std::endl;
 			abort();
 		}
 	}
@@ -93,7 +93,7 @@ namespace
 
 		if (!is)
 		{
-			printf("[ERR] Cannot open file: %s", fileLocation.c_str());
+			std::cout << "[ERR] Cannot open file: " << fileLocation << std::endl;
 			return false;
 		}
 
@@ -125,7 +125,7 @@ namespace
 
 		if (!is)
 		{
-			printf("[ERR] Cannot open file: %s", fileLocation.c_str());
+			std::cout << "[ERR] Cannot open file: " << fileLocation << std::endl;
 			return false;
 		}
 

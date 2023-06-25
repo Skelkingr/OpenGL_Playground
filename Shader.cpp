@@ -47,7 +47,7 @@ std::string Shader::ReadFile(const char* fileLocation)
 
 	if (!fileStream.is_open())
 	{
-		printf("[ERR] Failed to read %s. File doesn't exist.", fileLocation);
+		std::cout << "[ERR] Failed to read " << fileLocation << ". File doesn't exist." << std::endl;
 		return "";
 	}
 
@@ -166,7 +166,7 @@ GLboolean Shader::AddShader(GLuint theProgram, const char* shaderCode, GLenum sh
 	if (!result)
 	{
 		glGetProgramInfoLog(theShader, sizeof(eLog), nullptr, eLog);
-		printf("[ERR] Error compiling the %d shader: '%s' \n", shaderType, eLog);
+		std::cout << "[ERR] Error compiling the " << shaderType << " shader: " << eLog << std::endl;
 		return false;
 	}
 
@@ -181,7 +181,7 @@ GLboolean Shader::CompileShader(const char* vertexCode, const char* fragmentCode
 
 	if (!mShaderID)
 	{
-		printf("[ERR] Error creating shader program.");
+		std::cout << "[ERR] Error creating shader program." << std::endl;
 		return false;
 	}
 
@@ -196,7 +196,7 @@ GLboolean Shader::CompileShader(const char* vertexCode, const char* fragmentCode
 	if (!result)
 	{
 		glGetProgramInfoLog(mShaderID, sizeof(eLog), nullptr, eLog);
-		printf("[ERR] Error linking program: '%s' \n", eLog);
+		std::cout << "[ERR] Error linking program: " << eLog << std::endl;
 		return false;
 	}
 
@@ -205,7 +205,7 @@ GLboolean Shader::CompileShader(const char* vertexCode, const char* fragmentCode
 	if (!result)
 	{
 		glGetProgramInfoLog(mShaderID, sizeof(eLog), nullptr, eLog);
-		printf("[ERR] Error validating program: '%s' \n", eLog);
+		std::cout << "[ERR] Error validating program: " << eLog << std::endl;
 		return false;
 	}
 

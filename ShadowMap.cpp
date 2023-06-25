@@ -51,7 +51,7 @@ GLboolean ShadowMap::Init(GLuint width, GLuint height)
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status != GL_FRAMEBUFFER_COMPLETE)
 	{
-		printf("[ERR] Framebuffer error: %i\n", status);
+		std::cout << "[ERR] Framebuffer error: " << status << std::endl;
 		return false;
 	}
 

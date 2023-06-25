@@ -72,7 +72,7 @@ void Mesh::CreateMeshFromFile(const char* vFileLocation, std::vector<GLuint> ind
 
 	if (!vResult)
 	{
-		printf("[ERR] Could not create mesh from vertices file: %s", vFileLocation);
+		std::cout << "[ERR] Could not create mesh from vertices file: " << vFileLocation << std::endl;
 		return;
 	}
 
@@ -92,12 +92,12 @@ void Mesh::CreateMeshFromFile(const char* vFileLocation, const char* iFileLocati
 
 	if (!vResult)
 	{
-		printf("[ERR] Could not create mesh from vertices file: %s", vFileLocation);
+		std::cout << "[ERR] Could not create mesh from vertices file: " << vFileLocation << std::endl;
 		return;
 	}
 	if (!iResult)
 	{
-		printf("[ERR] Could not create mesh from indices file: %s", iFileLocation);
+		std::cout << "[ERR] Could not create mesh from indices file: " << iFileLocation << std::endl;
 		return;
 	}
 

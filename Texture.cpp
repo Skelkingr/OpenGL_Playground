@@ -29,7 +29,7 @@ GLboolean Texture::LoadTexture()
 	unsigned char* textureData = stbi_load(mFileLocation, &mWidth, &mHeight, &mBitDepth, 0);
 	if (!textureData)
 	{
-		printf("[ERR] Failed to retrieve: %s\n", mFileLocation);
+		std::cout << "[ERR] Failed to retrieve: " << mFileLocation << std::endl;
 		return false;
 	}
 
@@ -56,7 +56,7 @@ GLboolean Texture::LoadTextureA()
 	unsigned char* textureData = stbi_load(mFileLocation, &mWidth, &mHeight, &mBitDepth, 0);
 	if (!textureData)
 	{
-		printf("[ERR] Failed to retrieve: %s\n", mFileLocation);
+		std::cout << "[ERR] Failed to retrieve: " << mFileLocation << std::endl;
 		return false;
 	}
 
@@ -96,5 +96,5 @@ GLvoid Texture::ResetTexture()
 	mWidth = 0;
 	mHeight = 0;
 	mBitDepth = 0;
-	mFileLocation = (char*)"";
+	mFileLocation = (GLchar*)"";
 }

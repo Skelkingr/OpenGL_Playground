@@ -54,7 +54,7 @@ GLboolean App::Init()
 {
 	if (!InitMainWindow())
 	{
-		printf("[ERR] Failed to initialize the main window.");
+		std::cout << "[ERR] Failed to initialize the main window." << std::endl;
 		return false;
 	}
 
@@ -318,7 +318,7 @@ GLboolean App::InitMainWindow()
 {
 	if (!glfwInit())
 	{
-		printf("[ERR] GLFW initialisation failed.");
+		std::cout << "[ERR] GLFW initialisation failed." << std::endl;
 		glfwTerminate();
 		return false;
 	}
@@ -331,7 +331,7 @@ GLboolean App::InitMainWindow()
 	mMainWindow = glfwCreateWindow(mClientWidth, mClientHeight, mWindowName, nullptr, nullptr);
 	if (!mMainWindow)
 	{
-		printf("[ERR] GLFW window creation failed.");
+		std::cout << "[ERR] GLFW window creation failed." << std::endl;
 		glfwTerminate();
 		return false;
 	}
@@ -349,7 +349,7 @@ GLboolean App::InitMainWindow()
 
 	if (glewInit() != GLEW_OK)
 	{
-		printf("[ERR] Glew initialisation failed.");
+		std::cout << "[ERR] Glew initialisation failed." << std::endl;
 		glfwDestroyWindow(mMainWindow);
 		glfwTerminate();
 		return false;
