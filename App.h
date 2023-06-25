@@ -63,7 +63,7 @@ private:
 
 	GLvoid CreateCallbacks();
 	static GLvoid HandleKeys(GLFWwindow* window, GLint key, GLint code, GLint action, GLint mode);
-	static GLvoid HandleMouse(GLFWwindow* window, double xPos, double yPos);
+	static GLvoid HandleMouse(GLFWwindow* window, GLdouble xPos, GLdouble yPos);
 
 private:
 	GLint mClientWidth;
