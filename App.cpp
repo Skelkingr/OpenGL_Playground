@@ -1,9 +1,5 @@
 #include "App.h"
 
-GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformEyePosition = 0,
-uniformSpecularIntensity = 0, uniformShininess = 0,
-uniformDirectionalLightTransform = 0;
-
 App::App()
 	:
 	mClientWidth(1366),
@@ -12,6 +8,13 @@ App::App()
 	mMainWindow(nullptr),
 	mBufferWidth(0),
 	mBufferHeight(0),
+	mUniformProjection(0),
+	mUniformModel(0),
+	mUniformView(0),
+	mUniformEyePosition(0),
+	mUniformSpecularIntensity(0),
+	mUniformShininess(0),
+	mUniformDirectionalLightTransform(0),
 	mLastMousePosition({ 0.0f, 0.0f }),
 	mMouseChange({ 0.0f, 0.0f }),
 	mMouseFirstMoved(true),
@@ -102,46 +105,46 @@ GLvoid App::RenderScene()
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(0.0f, 1.95f, -7.0f));
 	model = glm::scale(model, glm::vec3(0.006f, 0.006f, 0.006f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+	glUniformMatrix4fv(mUniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	mDullMaterial.UseMaterial(mUniformSpecularIntensity, mUniformShininess);
 	mSlenderman.RenderModel();
 
 	// Floor:
 	model = glm::mat4(1.0f);
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(mUniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	mTextureList[1]->UseTexture();
-	mShinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+	mShinyMaterial.UseMaterial(mUniformSpecularIntensity, mUniformShininess);
 	mMeshList[0]->RenderMesh();
 
 	// Wall 1:
 	model = glm::mat4(1.0f);
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(mUniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	mTextureList[2]->UseTexture();
-	mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+	mDullMaterial.UseMaterial(mUniformSpecularIntensity, mUniformShininess);
 	mMeshList[1]->RenderMesh();
 
 	// Wall 2:
 	//model = glm::mat4(1.0f);
 	//model = glm::rotate(model, -90.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f));
-	//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	//glUniformMatrix4fv(mUniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	//mTextureList[2]->UseTexture();
-	//mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+	//mDullMaterial.UseMaterial(mUniformSpecularIntensity, mUniformShininess);
 	//mMeshList[1]->RenderMesh();
 
 	//// Wall 3:
 	//model = glm::mat4(1.0f);
 	//model = glm::rotate(model, 180.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f));
-	//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	//glUniformMatrix4fv(mUniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	//mTextureList[2]->UseTexture();
-	//mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+	//mDullMaterial.UseMaterial(mUniformSpecularIntensity, mUniformShininess);
 	//mMeshList[1]->RenderMesh();
 
 	//// Wall 4:
 	//model = glm::mat4(1.0f);
 	//model = glm::rotate(model, 90.0f * TO_RADIANS, glm::vec3(0.0f, 1.0f, 0.0f));
-	//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	//glUniformMatrix4fv(mUniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	//mTextureList[2]->UseTexture();
-	//mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+	//mDullMaterial.UseMaterial(mUniformSpecularIntensity, mUniformShininess);
 	//mMeshList[1]->RenderMesh();
 }
 
@@ -149,21 +152,21 @@ GLvoid App::RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 {
 	mShaderList[0].UseShader();
 
-	uniformModel = mShaderList[0].GetModelLocation();
-	uniformProjection = mShaderList[0].GetProjectionLocation();
-	uniformView = mShaderList[0].GetViewLocation();
-	uniformModel = mShaderList[0].GetModelLocation();
-	uniformEyePosition = mShaderList[0].GetEyePositionLocation();
-	uniformSpecularIntensity = mShaderList[0].GetSpecularIntensityLocation();
-	uniformShininess = mShaderList[0].GetShininessLocation();
+	mUniformModel = mShaderList[0].GetModelLocation();
+	mUniformProjection = mShaderList[0].GetProjectionLocation();
+	mUniformView = mShaderList[0].GetViewLocation();
+	mUniformModel = mShaderList[0].GetModelLocation();
+	mUniformEyePosition = mShaderList[0].GetEyePositionLocation();
+	mUniformSpecularIntensity = mShaderList[0].GetSpecularIntensityLocation();
+	mUniformShininess = mShaderList[0].GetShininessLocation();
 
 	glViewport(0, 0, mClientWidth, mClientHeight);
 
 	Clear(0.0f, 0.0f, 0.0f, 1.0f);
 
-	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-	glUniform3f(uniformEyePosition, mCamera.GetCameraPosition().x, mCamera.GetCameraPosition().y, mCamera.GetCameraPosition().z);
+	glUniformMatrix4fv(mUniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+	glUniformMatrix4fv(mUniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+	glUniform3f(mUniformEyePosition, mCamera.GetCameraPosition().x, mCamera.GetCameraPosition().y, mCamera.GetCameraPosition().z);
 
 	mShaderList[0].SetDirectionalLight(&mMainLight);
 	mShaderList[0].SetPointLights(mPointLights, mPointLights.size());
@@ -283,7 +286,7 @@ GLvoid App::DirectionalShadowMapPass(DirectionalLight* light)
 	light->GetShadowMap()->Write();
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	uniformModel = mDirectionalShadowShader.GetModelLocation();
+	mUniformModel = mDirectionalShadowShader.GetModelLocation();
 
 	glm::mat4 lightTransform = mMainLight.CalculateLightTransform();
 	mDirectionalShadowShader.SetDirectionalLightTransform(&lightTransform);

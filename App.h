@@ -75,6 +75,14 @@ private:
 	GLint mBufferWidth;
 	GLint mBufferHeight;
 
+	GLuint mUniformProjection;
+	GLuint mUniformModel;
+	GLuint mUniformView;
+	GLuint mUniformEyePosition;
+	GLuint mUniformSpecularIntensity;
+	GLuint mUniformShininess;
+	GLuint mUniformDirectionalLightTransform;
+
 	std::vector<Mesh*> mMeshList;
 	std::vector<Shader> mShaderList;
 	Shader mDirectionalShadowShader;
