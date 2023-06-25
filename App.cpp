@@ -190,22 +190,22 @@ GLvoid App::CreateObjects(GLboolean direction, GLfloat offset, GLfloat maxOffset
 {	
 
 	Mesh* floor = new Mesh();
-	floor->CreateMeshFromFile("Meshes\\Plain\\vertices.txt", "Meshes\\Plain\\indices.txt", false);
+	floor->CreateMeshFromFile("meshes\\plain\\vertices.txt", "meshes\\plain\\indices.txt", false);
 	mMeshList.push_back(floor);
 
 	Mesh* wall = new Mesh();
-	wall->CreateMeshFromFile("Meshes\\Wall\\vertices.txt", "Meshes\\Wall\\indices.txt", false);
+	wall->CreateMeshFromFile("meshes\\wall\\vertices.txt", "meshes\\wall\\indices.txt", false);
 	mMeshList.push_back(wall);
 }
 
 GLvoid App::CreateShaders()
 {
 	Shader* shader = new Shader();
-	shader->CreateFromFiles("Shaders\\shader.vert", "Shaders\\shader.frag");
+	shader->CreateFromFiles("shaders\\shader.vert", "shaders\\shader.frag");
 	mShaderList.push_back(*shader);
 
 	mDirectionalShadowShader = Shader();
-	mDirectionalShadowShader.CreateFromFiles("Shaders\\directional_shadow_map.vert", "Shaders\\directional_shadow_map.frag");
+	mDirectionalShadowShader.CreateFromFiles("shaders\\directional_shadow_map.vert", "shaders\\directional_shadow_map.frag");
 }
 
 GLvoid App::InitCamera()
@@ -263,9 +263,9 @@ GLvoid App::InitMaterials()
 
 GLvoid App::InitTextures()
 {
-	mTextureList.push_back(new Texture((char*)"Textures\\wood.png"));
-	mTextureList.push_back(new Texture((char*)"Textures\\plain.png"));
-	mTextureList.push_back(new Texture((char*)"Textures\\brick.png"));
+	mTextureList.push_back(new Texture((char*)"textures\\wood.png"));
+	mTextureList.push_back(new Texture((char*)"textures\\plain.png"));
+	mTextureList.push_back(new Texture((char*)"textures\\brick.png"));
 
 	for (Texture* tex : mTextureList)
 		tex->LoadTextureA();
@@ -274,7 +274,7 @@ GLvoid App::InitTextures()
 GLvoid App::InitModels()
 {
 	mSlenderman = Model();
-	mSlenderman.LoadModel("Models\\slenderman.obj");
+	mSlenderman.LoadModel("models\\slenderman.obj");
 }
 
 GLvoid App::DirectionalShadowMapPass(DirectionalLight* light)
