@@ -179,6 +179,10 @@ GLvoid App::RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 	mShaderList[0].SetTexture(0);
 	mShaderList[0].SetDirectionalShadowMap(1);
 
+	glm::vec3 lowerLight = mCamera.GetCameraPosition();
+	lowerLight.y -= 0.3f;
+	mSpotLights[0].SetFlash(lowerLight, mCamera.GetCameraDirection());
+
 	RenderScene();
 }
 
@@ -242,17 +246,13 @@ GLvoid App::InitSpotLights()
 			20.0f
 		)
 	);
-
-	glm::vec3 lowerLight = mCamera.GetCameraPosition();
-	lowerLight.y -= 0.3f;
-	mSpotLights[0].SetFlash(lowerLight, mCamera.GetCameraDirection());
 }
 
 GLvoid App::InitLights()
 {
 	InitDirectionalLight();
-	/*InitPointLights();
-	InitSpotLights();*/
+	//InitPointLights();
+	InitSpotLights();
 }
 
 GLvoid App::InitMaterials()
