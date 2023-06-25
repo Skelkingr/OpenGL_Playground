@@ -9,7 +9,7 @@ BaseLight::BaseLight()
 	mShadowMap(nullptr)
 {}
 
-BaseLight::BaseLight(GLfloat shadowWidth, GLfloat shadowHeight, glm::vec3 ambientColour, GLfloat ambientIntensity, GLfloat diffuseIntensity)
+BaseLight::BaseLight(GLuint shadowWidth, GLuint shadowHeight, glm::vec3 ambientColour, GLfloat ambientIntensity, GLfloat diffuseIntensity)
 	:
 	mLightProj({ 0.0f })
 {
