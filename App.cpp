@@ -274,7 +274,7 @@ GLvoid App::InitTextures()
 GLvoid App::InitModels()
 {
 	mSlenderman = Model();
-	mSlenderman.LoadModel("models\\slenderman.obj");
+	mSlenderman.LoadModel("models\\slenderman\\slenderman.obj");
 }
 
 GLvoid App::DirectionalShadowMapPass(DirectionalLight* light)
