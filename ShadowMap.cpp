@@ -21,7 +21,7 @@ ShadowMap::~ShadowMap()
 	}
 }
 
-GLboolean ShadowMap::Init(GLfloat width, GLfloat height)
+GLboolean ShadowMap::Init(GLuint width, GLuint height)
 {
 	mShadowWidth = width;
 	mShadowHeight = height;

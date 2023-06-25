@@ -9,7 +9,7 @@ public:
 	ShadowMap();
 	~ShadowMap();	
 
-	virtual GLboolean Init(GLfloat width, GLfloat height);
+	virtual GLboolean Init(GLuint width, GLuint height);
 	virtual GLvoid Write();
 	virtual GLvoid Read(GLenum textureUnit);
 
