@@ -100,7 +100,7 @@ GLvoid App::RenderScene()
 	// Slenderman:
 	glm::mat4 model(1.0f);
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0.0f, 1.95f, -5.0f));
+	model = glm::translate(model, glm::vec3(0.0f, 1.95f, -7.0f));
 	model = glm::scale(model, glm::vec3(0.006f, 0.006f, 0.006f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	mDullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
@@ -215,7 +215,7 @@ GLvoid App::InitCamera()
 
 GLvoid App::InitDirectionalLight()
 {
-	mMainLight = DirectionalLight(1024.0f, 1024.0f, glm::vec3(1.0f, 1.0f, 1.0f), 0.3f, 0.6f, 0.0f, 0.0f, -1.0f);
+	mMainLight = DirectionalLight(2048.0f, 2048.0f, glm::vec3(1.0f, 1.0f, 1.0f), 0.1f, 0.6f, 0.0f, -1.0f, -7.0f);
 }
 
 GLvoid App::InitPointLights()
