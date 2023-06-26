@@ -16,7 +16,7 @@ SpotLight::SpotLight(
 	GLfloat far,
 	glm::vec3 colour, 
 	GLfloat ambientIntensity, 
-	GLfloat diffuseIntensity, 
+	GLfloat diffuseIntensity,
 	glm::vec3 position,
 	glm::vec3 direction,
 	GLfloat exponent, 
