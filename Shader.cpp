@@ -57,6 +57,21 @@ GLvoid Shader::CreateFromFiles(const char* vertexShaderLocation, const char* geo
 	CompileShader(vertexCode, geometryCode, fragmentCode);
 }
 
+GLvoid Shader::Validate()
+{
+	GLint result = 0;
+	GLchar eLog[1024] = { 0 };
+
+	glValidateProgram(mShaderID);
+	glGetProgramiv(mShaderID, GL_VALIDATE_STATUS, &result);
+	if (!result)
+	{
+		glGetProgramInfoLog(mShaderID, sizeof(eLog), nullptr, eLog);
+		std::cout << "[ERR] Error validating program: " << eLog << std::endl;
+		return;
+	}
+}
+
 std::string Shader::ReadFile(const char* fileLocation)
 {
 	std::string content;
@@ -255,15 +270,6 @@ GLvoid Shader::CompileProgram()
 	{
 		glGetProgramInfoLog(mShaderID, sizeof(eLog), nullptr, eLog);
 		std::cout << "[ERR] Error linking program: " << eLog << std::endl;
-		return;
-	}
-
-	glValidateProgram(mShaderID);
-	glGetProgramiv(mShaderID, GL_VALIDATE_STATUS, &result);
-	if (!result)
-	{
-		glGetProgramInfoLog(mShaderID, sizeof(eLog), nullptr, eLog);
-		std::cout << "[ERR] Error validating program: " << eLog << std::endl;
 		return;
 	}
 

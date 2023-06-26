@@ -14,6 +14,8 @@ public:
 	GLvoid CreateFromFiles(const char* vertexShaderLocation, const char* fragmentShaderLocation);
 	GLvoid CreateFromFiles(const char* vertexShaderLocation, const char* geometryShaderLocation, const char* fragmentShaderLocation);
 
+	GLvoid Validate();
+
 	std::string ReadFile(const char* fileLocation);
 
 	GLuint GetProjectionLocation() const { return mUniformProjection; }
