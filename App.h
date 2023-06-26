@@ -52,6 +52,7 @@ public:
 	GLvoid InitModels();
 
 	GLvoid DirectionalShadowMapPass(DirectionalLight* light);
+	GLvoid OmniShadowMapPass(PointLight* light);
 	
 	GLboolean* GetKeys() { return mKeys; }
 
@@ -82,10 +83,14 @@ private:
 	GLuint mUniformSpecularIntensity;
 	GLuint mUniformShininess;
 	GLuint mUniformDirectionalLightTransform;
+	GLuint mUniformOmniLightPos;
+	GLuint mUniformFarPlane;
 
 	std::vector<Mesh*> mMeshList;
+	
 	std::vector<Shader> mShaderList;
 	Shader mDirectionalShadowShader;
+	Shader mOmniShadowShader;
 
 	GLboolean mKeys[1024];
 

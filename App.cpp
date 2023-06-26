@@ -15,6 +15,8 @@ App::App()
 	mUniformSpecularIntensity(0),
 	mUniformShininess(0),
 	mUniformDirectionalLightTransform(0),
+	mUniformOmniLightPos(0),
+	mUniformFarPlane(0),
 	mLastMousePosition({ 0.0f, 0.0f }),
 	mMouseChange({ 0.0f, 0.0f }),
 	mMouseFirstMoved(true),
@@ -88,7 +90,18 @@ GLint App::Run()
 		mCamera.MouseControl(GetMouseChangeX(), GetMouseChangeY(), deltaTime);
 
 		DirectionalShadowMapPass(&mMainLight);
-		RenderPass(projection, mCamera.CalculateViewMatrix());
+		
+		for (size_t i = 0; i < mPointLights.size(); i++)
+		{
+			OmniShadowMapPass(&mPointLights[i]);
+		}
+
+		for (size_t i = 0; i < mSpotLights.size(); i++)
+		{
+			OmniShadowMapPass(&mSpotLights[i]);
+		}
+
+		RenderPass(mCamera.CalculateViewMatrix(), projection);
 
 		glUseProgram(0);
 
@@ -148,7 +161,7 @@ GLvoid App::RenderScene()
 	//mMeshList[1]->RenderMesh();
 }
 
-GLvoid App::RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
+GLvoid App::RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 {
 	mShaderList[0].UseShader();
 
@@ -204,8 +217,8 @@ GLvoid App::CreateShaders()
 	shader->CreateFromFiles("shaders\\shader.vert", "shaders\\shader.frag");
 	mShaderList.push_back(*shader);
 
-	mDirectionalShadowShader = Shader();
 	mDirectionalShadowShader.CreateFromFiles("shaders\\directional_shadow_map.vert", "shaders\\directional_shadow_map.frag");
+	mOmniShadowShader.CreateFromFiles("shaders\\omni_shadow_map.vert", "shaders\\omni_shadow_map.geom", "shaders\\omni_shadow_map.frag");
 }
 
 GLvoid App::InitCamera()
@@ -227,14 +240,18 @@ GLvoid App::InitDirectionalLight()
 
 GLvoid App::InitPointLights()
 {
-	mPointLights.push_back(PointLight(glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
-	mPointLights.push_back(PointLight(glm::vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));
+	mPointLights.push_back(PointLight(1024, 1024, 0.01f, 100.0f, glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
+	mPointLights.push_back(PointLight(1024, 1024, 0.01f, 100.0f, glm::vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));
 }
 
 GLvoid App::InitSpotLights()
 {
 	mSpotLights.push_back(
 		SpotLight(
+			1024,
+			1024,
+			0.01f,
+			100.0f,
 			glm::vec3(1.0f, 1.0f, 1.0f),
 			1.0f,
 			4.0f,
@@ -251,7 +268,7 @@ GLvoid App::InitSpotLights()
 GLvoid App::InitLights()
 {
 	InitDirectionalLight();
-	//InitPointLights();
+	InitPointLights();
 	InitSpotLights();
 }
 
@@ -290,6 +307,29 @@ GLvoid App::DirectionalShadowMapPass(DirectionalLight* light)
 
 	glm::mat4 lightTransform = mMainLight.CalculateLightTransform();
 	mDirectionalShadowShader.SetDirectionalLightTransform(&lightTransform);
+
+	RenderScene();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+GLvoid App::OmniShadowMapPass(PointLight* light)
+{
+	mOmniShadowShader.UseShader();
+
+	glViewport(0, 0, light->GetShadowMap()->GetShadowWidth(), light->GetShadowMap()->GetShadowHeight());
+
+	light->GetShadowMap()->Write();
+	glClear(GL_DEPTH_BUFFER_BIT);
+	
+	mUniformModel = mOmniShadowShader.GetModelLocation();
+	mUniformOmniLightPos = mOmniShadowShader.GetOmniLightPosLocation();
+	mUniformFarPlane = mOmniShadowShader.GetFarPlaneLocation();
+
+	glUniform3f(mUniformOmniLightPos, light->GetPosition().x, light->GetPosition().y, light->GetPosition().z);
+	glUniform1f(mUniformFarPlane, light->GetFarPlane());
+
+	mOmniShadowShader.SetLightMatrices(light->CalculateLightTransform());
 
 	RenderScene();
 
