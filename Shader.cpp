@@ -21,7 +21,8 @@ Shader::Shader()
 	mUniformDirectionalShadowMap(0),
 	mUniformOmniLightPos(0),
 	mUniformFarPlane(0),
-	mUniformLightMatrices()
+	mUniformLightMatrices(),
+	mUniformOmniShadowMap()
 {}
 
 Shader::~Shader()
@@ -89,7 +90,7 @@ GLvoid Shader::SetDirectionalLight(DirectionalLight* directionalLight)
 	);
 }
 
-GLvoid Shader::SetPointLights(std::vector<PointLight> pointLight, GLuint lightCount)
+GLvoid Shader::SetPointLights(std::vector<PointLight> pointLight, GLuint lightCount, GLuint textureUnit, GLuint offset)
 {
 	if (lightCount > MAX_POINT_LIGHTS)
 		lightCount = MAX_POINT_LIGHTS;
@@ -97,6 +98,7 @@ GLvoid Shader::SetPointLights(std::vector<PointLight> pointLight, GLuint lightCo
 	glUniform1i(mUniformPointLightCount, lightCount);
 
 	for (size_t i = 0; i < lightCount; i++)
+	{
 		pointLight[i].UseLight(
 			mUniformPointLight[i].uniformColour,
 			mUniformPointLight[i].uniformAmbientIntensity,
@@ -106,10 +108,15 @@ GLvoid Shader::SetPointLights(std::vector<PointLight> pointLight, GLuint lightCo
 			mUniformPointLight[i].uniformLinear,
 			mUniformPointLight[i].uniformConstant
 		);
+
+		pointLight[i].GetShadowMap()->Read(GL_TEXTURE0 + textureUnit + i);
+		glUniform1i(mUniformOmniShadowMap[i + offset].shadowMap, textureUnit + i);
+		glUniform1f(mUniformOmniShadowMap[i + offset].farPlane, pointLight[i].GetFarPlane());
+	}
 }
 
 
-GLvoid Shader::SetSpotLights(std::vector<SpotLight> spotLight, GLuint lightCount)
+GLvoid Shader::SetSpotLights(std::vector<SpotLight> spotLight, GLuint lightCount, GLuint textureUnit, GLuint offset)
 {
 	if (lightCount > MAX_SPOT_LIGHTS)
 		lightCount = MAX_SPOT_LIGHTS;
@@ -117,6 +124,7 @@ GLvoid Shader::SetSpotLights(std::vector<SpotLight> spotLight, GLuint lightCount
 	glUniform1i(mUniformSpotLightCount, lightCount);
 
 	for (size_t i = 0; i < lightCount; i++)
+	{
 		spotLight[i].UseLight(
 			mUniformSpotLight[i].uniformColour,
 			mUniformSpotLight[i].uniformAmbientIntensity,
@@ -128,6 +136,11 @@ GLvoid Shader::SetSpotLights(std::vector<SpotLight> spotLight, GLuint lightCount
 			mUniformSpotLight[i].uniformConstant,
 			mUniformSpotLight[i].uniformEdge
 		);
+		
+		spotLight[i].GetShadowMap()->Read(GL_TEXTURE0 + textureUnit + i);
+		glUniform1i(mUniformOmniShadowMap[i + offset].shadowMap, textureUnit + i);
+		glUniform1f(mUniformOmniShadowMap[i + offset].farPlane, spotLight[i].GetFarPlane());
+	}
 }
 
 GLvoid Shader::SetTexture(GLuint textureUnit)
@@ -340,5 +353,16 @@ GLvoid Shader::CompileProgram()
 
 		snprintf(locBuff, sizeof(locBuff), "lightMatrices[%d]", i);
 		mUniformLightMatrices[i] = glGetUniformLocation(mShaderID, locBuff);
+	}
+
+	for (size_t i = 0; i < MAX_POINT_LIGHTS + MAX_SPOT_LIGHTS; i++)
+	{
+		char locBuff[100] = { '\0' };
+
+		snprintf(locBuff, sizeof(locBuff), "omniShadowMaps[%d].shadowMap", i);
+		mUniformOmniShadowMap[i].shadowMap = glGetUniformLocation(mShaderID, locBuff);
+
+		snprintf(locBuff, sizeof(locBuff), "omniShadowMaps[%d].farPlane", i);
+		mUniformOmniShadowMap[i].farPlane = glGetUniformLocation(mShaderID, locBuff);
 	}
 }

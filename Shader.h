@@ -28,8 +28,8 @@ public:
 	GLvoid SetUniformModel(GLuint uniformModel) { mUniformModel = uniformModel; }
 
 	GLvoid SetDirectionalLight(DirectionalLight* directionalLight);
-	GLvoid SetPointLights(std::vector<PointLight> pointLight, GLuint lightCount);
-	GLvoid SetSpotLights(std::vector<SpotLight> pointLight, GLuint lightCount);
+	GLvoid SetPointLights(std::vector<PointLight> pointLight, GLuint lightCount, GLuint textureUnit, GLuint offset);
+	GLvoid SetSpotLights(std::vector<SpotLight> pointLight, GLuint lightCount, GLuint textureUnit, GLuint offset);
 	GLvoid SetTexture(GLuint textureUnit);
 	GLvoid SetDirectionalShadowMap(GLuint textureUnit);
 	GLvoid SetDirectionalLightTransform(glm::mat4* lTransform);
@@ -104,6 +104,12 @@ private:
 	GLuint mUniformFarPlane;
 
 	GLuint mUniformLightMatrices[6];
+
+	struct
+	{
+		GLuint shadowMap;
+		GLuint farPlane;
+	} mUniformOmniShadowMap[MAX_POINT_LIGHTS + MAX_SPOT_LIGHTS];
 };
 
 #endif
