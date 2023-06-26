@@ -13,9 +13,7 @@ public:
 		glm::vec3 colour,
 		GLfloat ambientIntensity,
 		GLfloat diffuseIntensity,
-		GLfloat xDir,
-		GLfloat yDir,
-		GLfloat zDir
+		glm::vec3 direction
 		);
 	~DirectionalLight();
 

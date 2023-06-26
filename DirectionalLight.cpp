@@ -14,14 +14,12 @@ DirectionalLight::DirectionalLight(
 	glm::vec3 colour,
 	GLfloat ambientIntensity,
 	GLfloat diffuseIntensity,
-	GLfloat xDir,
-	GLfloat yDir,
-	GLfloat zDir
+	glm::vec3 direction
 )
 	:
 	BaseLight(shadowWidth, shadowHeight, colour, ambientIntensity, diffuseIntensity)
 {
-	mDirection = glm::vec3(xDir, yDir, zDir);
+	mDirection = direction;
 	mLightProj = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 0.1f, 100.0f);
 }
 

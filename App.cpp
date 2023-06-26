@@ -222,7 +222,7 @@ GLvoid App::InitCamera()
 
 GLvoid App::InitDirectionalLight()
 {
-	mMainLight = DirectionalLight(2048, 2048, glm::vec3(1.0f, 1.0f, 1.0f), 0.1f, 0.6f, 0.0f, -1.0f, -7.0f);
+	mMainLight = DirectionalLight(2048, 2048, glm::vec3(1.0f, 1.0f, 1.0f), 0.1f, 0.6f, glm::vec3(0.0f, -1.0f, -7.0f));
 }
 
 GLvoid App::InitPointLights()
