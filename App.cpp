@@ -69,14 +69,14 @@ GLboolean App::Init()
 	InitTextures();
 
 	for (Mesh* obj : mMeshList)
-		obj->SetProjection(glm::perspective(45.0f, (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f));
+		obj->SetProjection(glm::perspective(glm::radians(60.f), (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f));
 
 	return true;
 }
 
 GLint App::Run()
 {
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(60.0f), (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f);
 
 	while (!glfwWindowShouldClose(mMainWindow))
 	{
