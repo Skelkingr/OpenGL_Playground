@@ -3,7 +3,7 @@
 
 #include "ShadowMap.h"
 
-class OmniShadowMap : ShadowMap
+class OmniShadowMap : public ShadowMap
 {
 public:
 	OmniShadowMap();
