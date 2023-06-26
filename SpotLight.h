@@ -8,6 +8,10 @@ class SpotLight : public PointLight
 public:
 	SpotLight();
 	SpotLight(
+		GLuint shadowWidth,
+		GLuint shadowHeight,
+		GLfloat near,
+		GLfloat far,
 		glm::vec3 colour,
 		GLfloat ambientIntensity,
 		GLfloat diffuseIntensity,
