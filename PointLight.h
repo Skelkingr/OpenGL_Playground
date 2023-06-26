@@ -34,8 +34,9 @@ public:
 
 	std::vector<glm::mat4> CalculateLightTransform();
 
+	glm::vec3 GetPosition() const { return mPosition; }
 	GLfloat GetFarPlane() const { return mFarPlane; }
-	
+
 protected:
 	glm::vec3 mPosition;
 
