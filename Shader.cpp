@@ -43,6 +43,19 @@ GLvoid Shader::CreateFromFiles(const char* vertexShaderLocation, const char* fra
 	CompileShader(vertexCode, fragmentCode);
 }
 
+GLvoid Shader::CreateFromFiles(const char* vertexShaderLocation, const char* geometryShaderLocation, const char* fragmentShaderLocation)
+{
+	std::string vertexString = ReadFile(vertexShaderLocation);
+	std::string geometryString = ReadFile(geometryShaderLocation);
+	std::string fragmentString = ReadFile(fragmentShaderLocation);
+
+	const char* vertexCode = vertexString.c_str();
+	const char* geometryCode = geometryString.c_str();
+	const char* fragmentCode = fragmentString.c_str();
+
+	CompileShader(vertexCode, geometryCode, fragmentCode);
+}
+
 std::string Shader::ReadFile(const char* fileLocation)
 {
 	std::string content;
@@ -157,7 +170,7 @@ GLvoid Shader::ClearShader()
 	mUniformProjection = 0;
 }
 
-GLboolean Shader::AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType)
+GLvoid Shader::AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType)
 {
 	GLuint theShader = glCreateShader(shaderType);
 
@@ -178,27 +191,48 @@ GLboolean Shader::AddShader(GLuint theProgram, const char* shaderCode, GLenum sh
 	{
 		glGetProgramInfoLog(theShader, sizeof(eLog), nullptr, eLog);
 		std::cout << "[ERR] Error compiling the " << shaderType << " shader: " << eLog << std::endl;
-		return false;
+		return;
 	}
 
 	glAttachShader(theProgram, theShader);
-
-	return true;
 }
 
-GLboolean Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
+GLvoid Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 {
 	mShaderID = glCreateProgram();
 
 	if (!mShaderID)
 	{
 		std::cout << "[ERR] Error creating shader program." << std::endl;
-		return false;
+		return;
 	}
 
 	AddShader(mShaderID, vertexCode, GL_VERTEX_SHADER);
 	AddShader(mShaderID, fragmentCode, GL_FRAGMENT_SHADER);
 
+	CompileProgram();
+}
+
+GLvoid Shader::CompileShader(const char* vertexCode, const char* geometryCode, const char* fragmentCode)
+{
+
+	mShaderID = glCreateProgram();
+
+	if (!mShaderID)
+	{
+		std::cout << "[ERR] Error creating shader program." << std::endl;
+		return;
+	}
+
+	AddShader(mShaderID, vertexCode, GL_VERTEX_SHADER);
+	AddShader(mShaderID, geometryCode, GL_GEOMETRY_SHADER);
+	AddShader(mShaderID, fragmentCode, GL_FRAGMENT_SHADER);
+
+	CompileProgram();
+}
+
+GLvoid Shader::CompileProgram()
+{
 	GLint result = 0;
 	GLchar eLog[1024] = { 0 };
 
@@ -208,7 +242,7 @@ GLboolean Shader::CompileShader(const char* vertexCode, const char* fragmentCode
 	{
 		glGetProgramInfoLog(mShaderID, sizeof(eLog), nullptr, eLog);
 		std::cout << "[ERR] Error linking program: " << eLog << std::endl;
-		return false;
+		return;
 	}
 
 	glValidateProgram(mShaderID);
@@ -217,7 +251,7 @@ GLboolean Shader::CompileShader(const char* vertexCode, const char* fragmentCode
 	{
 		glGetProgramInfoLog(mShaderID, sizeof(eLog), nullptr, eLog);
 		std::cout << "[ERR] Error validating program: " << eLog << std::endl;
-		return false;
+		return;
 	}
 
 	mUniformProjection = glGetUniformLocation(mShaderID, "projection");
@@ -232,7 +266,7 @@ GLboolean Shader::CompileShader(const char* vertexCode, const char* fragmentCode
 
 	mUniformSpecularIntensity = glGetUniformLocation(mShaderID, "material.specularIntensity");
 	mUniformShininess = glGetUniformLocation(mShaderID, "material.shininess");
-	
+
 	mUniformPointLightCount = glGetUniformLocation(mShaderID, "pointLightCount");
 	for (size_t i = 0; i < MAX_POINT_LIGHTS; i++)
 	{
@@ -299,7 +333,7 @@ GLboolean Shader::CompileShader(const char* vertexCode, const char* fragmentCode
 
 	mUniformOmniLightPos = glGetUniformLocation(mShaderID, "lightPos");
 	mUniformFarPlane = glGetUniformLocation(mShaderID, "farPlane");
-	
+
 	for (size_t i = 0; i < 6; i++)
 	{
 		char locBuff[100] = { '\0' };
@@ -307,6 +341,4 @@ GLboolean Shader::CompileShader(const char* vertexCode, const char* fragmentCode
 		snprintf(locBuff, sizeof(locBuff), "lightMatrices[%d]", i);
 		mUniformLightMatrices[i] = glGetUniformLocation(mShaderID, locBuff);
 	}
-
-	return true;
 }

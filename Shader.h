@@ -12,6 +12,7 @@ public:
 
 	GLvoid CreateFromString(const char* vertexCode, const char* fragmentCode);
 	GLvoid CreateFromFiles(const char* vertexShaderLocation, const char* fragmentShaderLocation);
+	GLvoid CreateFromFiles(const char* vertexShaderLocation, const char* geometryShaderLocation, const char* fragmentShaderLocation);
 
 	std::string ReadFile(const char* fileLocation);
 
@@ -38,8 +39,11 @@ public:
 	GLvoid ClearShader();	
 
 private:
-	GLboolean AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
-	GLboolean CompileShader(const char* vertexCode, const char* fragmentCode);
+	GLvoid AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
+	GLvoid CompileShader(const char* vertexCode, const char* fragmentCode);
+	GLvoid CompileShader(const char* vertexCode, const char* geometryCode, const char* fragmentCode);
+
+	GLvoid CompileProgram();
 
 private:
 	GLint mPointLightCount;
