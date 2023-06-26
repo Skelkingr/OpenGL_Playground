@@ -21,7 +21,9 @@ public:
 	GLuint GetEyePositionLocation() const { return mUniformEyePosition; }
 	GLuint GetSpecularIntensityLocation() const { return mUniformSpecularIntensity; }
 	GLuint GetShininessLocation() const { return mUniformShininess; }
-
+	GLuint GetOmniLightPosLocation() const { return mUniformOmniLightPos; }
+	GLuint GetFarPlaneLocation() const { return mUniformFarPlane; }
+		
 	GLvoid SetUniformModel(GLuint uniformModel) { mUniformModel = uniformModel; }
 
 	GLvoid SetDirectionalLight(DirectionalLight* directionalLight);
@@ -30,6 +32,7 @@ public:
 	GLvoid SetTexture(GLuint textureUnit);
 	GLvoid SetDirectionalShadowMap(GLuint textureUnit);
 	GLvoid SetDirectionalLightTransform(glm::mat4* lTransform);
+	GLvoid SetLightMatrices(std::vector<glm::mat4> lightMatrices);
 
 	GLvoid UseShader();
 	GLvoid ClearShader();	
@@ -93,6 +96,10 @@ private:
 	GLuint mUniformTexture;
 	GLuint mUniformDirectionalLightTransform;
 	GLuint mUniformDirectionalShadowMap;
+	GLuint mUniformOmniLightPos;
+	GLuint mUniformFarPlane;
+
+	GLuint mUniformLightMatrices[6];
 };
 
 #endif
