@@ -173,7 +173,7 @@ GLvoid Shader::SetDirectionalLightTransform(glm::mat4* lTransform)
 	glUniformMatrix4fv(mUniformDirectionalLightTransform, 1, GL_FALSE, glm::value_ptr(*lTransform));
 }
 
-GLvoid Shader::SetLightMatrices(std::vector<glm::mat4> lightMatrices)
+GLvoid Shader::SetOmniLightMatrices(std::vector<glm::mat4> lightMatrices)
 {
 	for (size_t i = 0; i < 6; i++)
 	{

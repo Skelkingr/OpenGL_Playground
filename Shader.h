@@ -35,7 +35,7 @@ public:
 	GLvoid SetTexture(GLuint textureUnit);
 	GLvoid SetDirectionalShadowMap(GLuint textureUnit);
 	GLvoid SetDirectionalLightTransform(glm::mat4* lTransform);
-	GLvoid SetLightMatrices(std::vector<glm::mat4> lightMatrices);
+	GLvoid SetOmniLightMatrices(std::vector<glm::mat4> lightMatrices);
 
 	GLvoid UseShader();
 	GLvoid ClearShader();	
