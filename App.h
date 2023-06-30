@@ -28,8 +28,6 @@ public:
 	App();
 	~App();
 
-	GLvoid Clear(GLfloat r, GLfloat g, GLfloat b, GLfloat a);
-
 	GLboolean Init();
 	GLint Run();
 
@@ -40,13 +38,11 @@ public:
 	GLvoid CreateShaders();
 
 	GLvoid InitCamera();
-	
 	GLvoid InitDirectionalLight();
 	GLvoid InitPointLights();
 	GLvoid InitSpotLights();
 	GLvoid InitMaterials();
 	GLvoid InitTextures();
-
 	GLvoid InitModels();
 
 	GLvoid DirectionalShadowMapPass(DirectionalLight* light);

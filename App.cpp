@@ -2,12 +2,10 @@
 
 App::App()
 	:
-	mClientWidth(1366),
-	mClientHeight(768),
+	mDeltaTime(0.0f),
+	mLastTime(0.0f),
 	mWindowName("Skelkingr"),
-	mMainWindow(nullptr),
-	mBufferWidth(0),
-	mBufferHeight(0),
+	mMainWindow(),
 	mUniformProjection(0),
 	mUniformModel(0),
 	mUniformView(0),
@@ -19,12 +17,8 @@ App::App()
 	mUniformFarPlane(0),
 	mLastMousePosition({ 0.0f, 0.0f }),
 	mMouseChange({ 0.0f, 0.0f }),
-	mMouseFirstMoved(true),
 	mTextureList({})
-{
-	for (size_t i = 0; i < 1024; i++)
-		mKeys[i] = false;	
-}
+{}
 
 App::~App()
 {
@@ -41,57 +35,57 @@ App::~App()
 		delete obj;
 		obj = nullptr;
 	}
-
-	glfwDestroyWindow(mMainWindow);
-	glfwTerminate();
-}
-
-GLvoid App::Clear(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
-{
-	glClearColor(r, g, b, a);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 GLboolean App::Init()
 {
-	if (!InitMainWindow())
+	mMainWindow = Window(1366, 768);
+
+	if (!mMainWindow.Initialize())
 	{
 		std::cout << "[ERR] Failed to initialize the main window." << std::endl;
 		return false;
 	}
 
 	InitCamera();
-	InitLights();
+	InitDirectionalLight();
+	InitPointLights();
+	InitSpotLights();
 	InitMaterials();
+	InitTextures();
 	InitModels();
 
 	CreateObjects(true, 0.05f, 1.5f, 0.0005f);
 	CreateShaders();
 
-	InitTextures();
-
 	for (Mesh* obj : mMeshList)
-		obj->SetProjection(glm::perspective(glm::radians(60.f), (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f));
+		obj->SetProjection(glm::perspective(glm::radians(60.f), (GLfloat)mMainWindow.GetBufferWidth() / (GLfloat)mMainWindow.GetBufferHeight(), 0.1f, 100.0f));
 
 	return true;
 }
 
 GLint App::Run()
 {
-	glm::mat4 projection = glm::perspective(glm::radians(60.0f), (GLfloat)mBufferWidth / (GLfloat)mBufferHeight, 0.1f, 100.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(60.0f), (GLfloat)mMainWindow.GetBufferWidth() / (GLfloat)mMainWindow.GetBufferHeight(), 0.1f, 100.0f);
 
-	while (!glfwWindowShouldClose(mMainWindow))
+	while (!mMainWindow.GetShouldClose())
 	{
+		GLfloat now = (GLfloat)glfwGetTime();
+		mDeltaTime = now - mLastTime;
+		mLastTime = now;
+
 		glfwPollEvents();
 
-		GLfloat deltaTime = mTimer.DeltaTime();
+		mCamera.KeyControl(mMainWindow.GetKeys(), mDeltaTime);
+		mCamera.MouseControl(mMainWindow.GetXChange(), mMainWindow.GetYChange(), mDeltaTime);
 
-		mCamera.KeyControl(mKeys, deltaTime);
-		mCamera.MouseControl(GetMouseChangeX(), GetMouseChangeY(), deltaTime);
+		if (mMainWindow.GetKeys()[GLFW_KEY_L])
+		{
+			mSpotLights[0].Toggle();
+			mMainWindow.GetKeys()[GLFW_KEY_L] = false;
+		}	
 
 		DirectionalShadowMapPass(&mMainLight);
-
-		
 		for (size_t i = 0; i < mPointLights.size(); i++)
 		{
 			OmniShadowMapPass(&mPointLights[i]);
@@ -101,12 +95,11 @@ GLint App::Run()
 		{
 			OmniShadowMapPass(&mSpotLights[i]);
 		}
-
-		RenderPass(mCamera.CalculateViewMatrix(), projection);
+		RenderPass(projection, mCamera.CalculateViewMatrix());
 
 		glUseProgram(0);
 
-		glfwSwapBuffers(mMainWindow);
+		mMainWindow.SwapBuffers();
 	}
 
 	return 0;
@@ -162,7 +155,7 @@ GLvoid App::RenderScene()
 	//mMeshList[1]->RenderMesh();
 }
 
-GLvoid App::RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
+GLvoid App::RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 {
 	mShaderList[0].UseShader();
 
@@ -174,9 +167,10 @@ GLvoid App::RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 	mUniformSpecularIntensity = mShaderList[0].GetSpecularIntensityLocation();
 	mUniformShininess = mShaderList[0].GetShininessLocation();
 
-	glViewport(0, 0, mClientWidth, mClientHeight);
+	glViewport(0, 0, mMainWindow.GetWidth(), mMainWindow.GetHeight());
 
-	Clear(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUniformMatrix4fv(mUniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 	glUniformMatrix4fv(mUniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
@@ -193,20 +187,23 @@ GLvoid App::RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 	mShaderList[0].SetTexture(1);
 	mShaderList[0].SetDirectionalShadowMap(2);
 
+	glm::vec3 lowerLight = mCamera.GetCameraPosition();
+	lowerLight.y -= 0.3f;
+	mSpotLights[0].SetFlash(lowerLight, mCamera.GetCameraDirection());	
+
 	mShaderList[0].Validate();
 
 	RenderScene();
 }
 
 GLvoid App::CreateObjects(GLboolean direction, GLfloat offset, GLfloat maxOffset, GLfloat increment)
-{	
-
+{
 	Mesh* floor = new Mesh();
-	floor->CreateMeshFromFile("meshes\\plain\\vertices.txt", "meshes\\plain\\indices.txt", false);
+	floor->CreateMeshFromFile("meshes\\plain\\vertices.txt", "meshes\\plain\\indices.txt", true);
 	mMeshList.push_back(floor);
 
 	Mesh* wall = new Mesh();
-	wall->CreateMeshFromFile("meshes\\wall\\vertices.txt", "meshes\\wall\\indices.txt", false);
+	wall->CreateMeshFromFile("meshes\\wall\\vertices.txt", "meshes\\wall\\indices.txt", true);
 	mMeshList.push_back(wall);
 }
 
@@ -265,17 +262,6 @@ GLvoid App::InitSpotLights()
 			20.0f
 		)
 	);
-
-	glm::vec3 lowerLight = mCamera.GetCameraPosition();
-	lowerLight.y -= 0.3f;
-	mSpotLights[0].SetFlash(lowerLight, mCamera.GetCameraDirection());
-}
-
-GLvoid App::InitLights()
-{
-	InitDirectionalLight();
-	InitPointLights();
-	//InitSpotLights();
 }
 
 GLvoid App::InitMaterials()
@@ -343,122 +329,4 @@ GLvoid App::OmniShadowMapPass(PointLight* light)
 	RenderScene();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-GLfloat App::GetMouseChangeX()
-{
-	GLfloat theChange = mMouseChange.x;
-
-	mMouseChange.x = 0.0f;
-
-	return theChange;
-}
-
-GLfloat App::GetMouseChangeY()
-{
-	GLfloat theChange = mMouseChange.y;
-
-	mMouseChange.y = 0.0f;
-
-	return theChange;
-}
-
-GLboolean App::InitMainWindow()
-{
-	if (!glfwInit())
-	{
-		std::cout << "[ERR] GLFW initialisation failed." << std::endl;
-		glfwTerminate();
-		return false;
-	}
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-	mMainWindow = glfwCreateWindow(mClientWidth, mClientHeight, mWindowName, nullptr, nullptr);
-	if (!mMainWindow)
-	{
-		std::cout << "[ERR] GLFW window creation failed." << std::endl;
-		glfwTerminate();
-		return false;
-	}
-
-	glfwGetFramebufferSize(mMainWindow, &mBufferWidth, &mBufferHeight);
-
-	// Bind context to window
-	glfwMakeContextCurrent(mMainWindow);
-
-	// Handle key + mouse input
-	CreateCallbacks();
-	glfwSetInputMode(mMainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	glewExperimental = GL_TRUE;
-
-	if (glewInit() != GLEW_OK)
-	{
-		std::cout << "[ERR] Glew initialisation failed." << std::endl;
-		glfwDestroyWindow(mMainWindow);
-		glfwTerminate();
-		return false;
-	}
-
-	// Enable depth
-	glEnable(GL_DEPTH_TEST);
-
-	// Setup viewport size
-	glViewport(0, 0, mBufferWidth, mBufferHeight);
-
-	glfwSetWindowUserPointer(mMainWindow, this);
-
-	return true;
-}
-
-GLvoid App::CreateCallbacks()
-{
-	glfwSetKeyCallback(mMainWindow, HandleKeys);
-	glfwSetCursorPosCallback(mMainWindow, HandleMouse);
-}
-
-GLvoid App::HandleKeys(GLFWwindow* window, GLint key, GLint code, GLint action, GLint mode)
-{
-
-	App* theApp = static_cast<App*>(glfwGetWindowUserPointer(window));
-
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-	{
-		glfwSetWindowShouldClose(window, GL_TRUE);
-	}
-
-	if (key >= 0 && key <= 1024)
-	{
-		if (action == GLFW_PRESS)
-		{
-			theApp->mKeys[key] = true;
-		}
-		else if (action == GLFW_RELEASE)
-		{
-			theApp->mKeys[key] = false;
-		}	
-	}
-}
-
-GLvoid App::HandleMouse(GLFWwindow* window, GLdouble xPos, GLdouble yPos)
-{
-	App* theApp = static_cast<App*>(glfwGetWindowUserPointer(window));
-
-	if (theApp->mMouseFirstMoved)
-	{
-		theApp->mLastMousePosition.x = (GLfloat)xPos;
-		theApp->mLastMousePosition.y = (GLfloat)yPos;
-
-		theApp->mMouseFirstMoved = false;
-	}
-
-	theApp->mMouseChange.x = (GLfloat)xPos - theApp->mLastMousePosition.x;
-	theApp->mMouseChange.y = theApp->mLastMousePosition.y - (GLfloat)yPos;
-
-	theApp->mLastMousePosition.x = (GLfloat)xPos;
-	theApp->mLastMousePosition.y = (GLfloat)yPos;
 }
