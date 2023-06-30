@@ -104,15 +104,31 @@ float CalcDirectionalShadowFactor(DirectionalLight light)
 float CalcOmniShadowFactor(PointLight light, int shadowIndex)
 {
 	vec3 fragToLight = FragPos - light.position;
-	float closest = texture(omniShadowMaps[shadowIndex].shadowMap, fragToLight).r;
-
-	closest *= omniShadowMaps[shadowIndex].farPlane;
-
 	float currentDepth = length(fragToLight);
 
+	float shadow = 0.0;
 	float bias = 0.05;
-	float shadow = currentDepth - bias > closest ? 1.0 : 0.0;
+	float samples = 4.0;
+	float offset = 0.1;
 
+	for(float x = -offset; x < offset; x += offset / (samples * 0.5))
+	{
+		for(float y = -offset; y < offset; y += offset / (samples * 0.5))
+		{
+			for(float z = -offset; z < offset; z += offset / (samples * 0.5))
+			{
+				float closestDepth = texture(omniShadowMaps[shadowIndex].shadowMap, fragToLight + vec3(x, y, z)).r;
+				closestDepth *= omniShadowMaps[shadowIndex].farPlane;
+
+				if (currentDepth - bias > closestDepth)
+				{
+					shadow += 1.0;
+				}
+			}	
+		}
+	}
+
+	shadow /= pow(samples, 3);
 	return shadow;
 };
 
@@ -157,7 +173,7 @@ vec4 CalcPointLight(PointLight pointLight, int shadowIndex)
 	float shadowFactor = CalcOmniShadowFactor(pointLight, shadowIndex);
 
 	vec4 colour = CalcLightByDirection(pointLight.base, direction, shadowFactor);
-	float attenuation = pointLight.exponent * dist * dist + pointLight.linear * dist + pointLight.constant;
+	float attenuation = pointLight.exponent * pow(dist, 2) + pointLight.linear * dist + pointLight.constant;
 
 	return (colour / attenuation);
 }
