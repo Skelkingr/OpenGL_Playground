@@ -9,7 +9,15 @@ public:
 	Mesh();
 	Mesh(bool direction, float offset, float maxOffset, float increment);
 	~Mesh();
-		
+	
+	GLvoid ComputeAverageNormals(
+		std::vector<GLuint>& indices,
+		GLuint indicesCount,
+		std::vector<GLfloat>& vertices,
+		GLuint verticesCount,
+		GLuint vLength,
+		GLuint normalOffset
+	);
 	void CreateMesh(GLfloat* vertices, GLuint* indices, GLuint numOfVertices, GLuint numOfIndices);
 	void CreateMeshFromFile(const char* vFileLocation, std::vector<GLuint> indices, bool computeNormals);
 	void CreateMeshFromFile(const char* vFileLocation, const char* iFileLocation, bool computeNormals);
