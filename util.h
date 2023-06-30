@@ -3,6 +3,8 @@
 
 /* INCLUDES */ 
 
+#include "stb_image.h"
+
 #include <algorithm>
 #include <cmath>
 #include <iostream>
