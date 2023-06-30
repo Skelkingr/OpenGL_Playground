@@ -24,7 +24,7 @@ public:
 	);
 	~SpotLight();
 
-	void UseLight(
+	GLvoid UseLight(
 		GLuint ambientColourLocation,
 		GLuint ambientIntensityLocation,
 		GLuint diffuseIntensityLocation,
@@ -36,13 +36,16 @@ public:
 		GLuint edgeLocation
 	);
 
-	void SetFlash(glm::vec3 pos, glm::vec3 dir);
+	GLvoid SetFlash(glm::vec3 pos, glm::vec3 dir);
+	GLvoid Toggle() { mIsOn = !mIsOn; }
 
 private:
 	glm::vec3 mDirection;
 
 	GLfloat mEdge;
 	GLfloat mProcEdge;
+
+	GLboolean mIsOn;
 };
 
 #endif
