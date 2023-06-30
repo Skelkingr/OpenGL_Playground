@@ -3,12 +3,12 @@
 
 #include "Camera.h"
 #include "DirectionalLight.h"
-#include "GameTimer.h"
 #include "Material.h"
 #include "Model.h"
 #include "SpotLight.h"
 #include "Shader.h"
 #include "Util.h"
+#include "Window.h"
 
 struct LastMousePos
 {
@@ -34,7 +34,7 @@ public:
 	GLint Run();
 
 	GLvoid RenderScene();
-	GLvoid RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix);
+	GLvoid RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix);
 
 	GLvoid CreateObjects(GLboolean direction, GLfloat offset, GLfloat maxOffset, GLfloat increment);
 	GLvoid CreateShaders();
@@ -44,8 +44,6 @@ public:
 	GLvoid InitDirectionalLight();
 	GLvoid InitPointLights();
 	GLvoid InitSpotLights();
-	GLvoid InitLights();
-	
 	GLvoid InitMaterials();
 	GLvoid InitTextures();
 
@@ -53,28 +51,13 @@ public:
 
 	GLvoid DirectionalShadowMapPass(DirectionalLight* light);
 	GLvoid OmniShadowMapPass(PointLight* light);
-	
-	GLboolean* GetKeys() { return mKeys; }
-
-	GLfloat GetMouseChangeX();
-	GLfloat GetMouseChangeY();
 
 private:
-	GLboolean InitMainWindow();
+	GLfloat mDeltaTime;
+	GLfloat mLastTime;
 
-	GLvoid CreateCallbacks();
-	static GLvoid HandleKeys(GLFWwindow* window, GLint key, GLint code, GLint action, GLint mode);
-	static GLvoid HandleMouse(GLFWwindow* window, GLdouble xPos, GLdouble yPos);
-
-private:
-	GLint mClientWidth;
-	GLint mClientHeight;
+	Window mMainWindow;
 	const char* mWindowName;
-
-	GLFWwindow* mMainWindow;
-
-	GLint mBufferWidth;
-	GLint mBufferHeight;
 
 	GLuint mUniformProjection;
 	GLuint mUniformModel;
@@ -92,15 +75,10 @@ private:
 	Shader mDirectionalShadowShader;
 	Shader mOmniShadowShader;
 
-	GLboolean mKeys[1024];
-
 	LastMousePos mLastMousePosition;
 	MouseChange mMouseChange;
 
-	GLboolean mMouseFirstMoved;
-
 	Camera mCamera;
-	GameTimer mTimer;
 
 	std::vector<Texture*> mTextureList;
 
