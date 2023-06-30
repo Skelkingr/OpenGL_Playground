@@ -1,5 +1,8 @@
 #version 330
 
+#define MAX_POINT_LIGHTS 4
+#define MAX_SPOT_LIGHTS 4
+
 in vec4 vCol;
 in vec2 TexCoord;
 in vec3 Normal;
@@ -7,9 +10,6 @@ in vec3 FragPos;
 in vec4 DirectionalLightSpacePos;
 
 out vec4 colour;
-
-const int MAX_POINT_LIGHTS = 4;
-const int MAX_SPOT_LIGHTS = 4;
 
 struct BaseLight
 {
@@ -157,7 +157,7 @@ vec4 CalcPointLight(PointLight pointLight, int shadowIndex)
 	float shadowFactor = CalcOmniShadowFactor(pointLight, shadowIndex);
 
 	vec4 colour = CalcLightByDirection(pointLight.base, direction, shadowFactor);
-	float attenuation = pointLight.exponent * pow(dist, 2) + pointLight.linear * dist + pointLight.constant;
+	float attenuation = pointLight.exponent * dist * dist + pointLight.linear * dist + pointLight.constant;
 
 	return (colour / attenuation);
 }

@@ -90,6 +90,7 @@ GLint App::Run()
 		mCamera.MouseControl(GetMouseChangeX(), GetMouseChangeY(), deltaTime);
 
 		DirectionalShadowMapPass(&mMainLight);
+
 		
 		for (size_t i = 0; i < mPointLights.size(); i++)
 		{
@@ -182,19 +183,21 @@ GLvoid App::RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 	glUniform3f(mUniformEyePosition, mCamera.GetCameraPosition().x, mCamera.GetCameraPosition().y, mCamera.GetCameraPosition().z);
 
 	mShaderList[0].SetDirectionalLight(&mMainLight);
-	mShaderList[0].SetPointLights(mPointLights, mPointLights.size());
-	mShaderList[0].SetSpotLights(mSpotLights, mSpotLights.size());
+	mShaderList[0].SetPointLights(mPointLights, mPointLights.size(), 3, 0);
+	mShaderList[0].SetSpotLights(mSpotLights, mSpotLights.size(), 3 + mSpotLights.size(), mPointLights.size());
 
 	glm::mat4 lightTransform = mMainLight.CalculateLightTransform();
 	mShaderList[0].SetDirectionalLightTransform(&lightTransform);
 
-	mMainLight.GetShadowMap()->Read(GL_TEXTURE1);
-	mShaderList[0].SetTexture(0);
-	mShaderList[0].SetDirectionalShadowMap(1);
+	mMainLight.GetShadowMap()->Read(GL_TEXTURE2);
+	mShaderList[0].SetTexture(1);
+	mShaderList[0].SetDirectionalShadowMap(2);
 
 	glm::vec3 lowerLight = mCamera.GetCameraPosition();
 	lowerLight.y -= 0.3f;
 	mSpotLights[0].SetFlash(lowerLight, mCamera.GetCameraDirection());
+
+	mShaderList[0].Validate();
 
 	RenderScene();
 }
@@ -214,10 +217,13 @@ GLvoid App::CreateObjects(GLboolean direction, GLfloat offset, GLfloat maxOffset
 GLvoid App::CreateShaders()
 {
 	Shader* shader = new Shader();
-	shader->CreateFromFiles("shaders\\shader.vert", "shaders\\shader.frag");
+	shader->CreateFromFiles("shaders\\main_shader.vert", "shaders\\main_shader.frag");
 	mShaderList.push_back(*shader);
-
+	
+	mDirectionalShadowShader = Shader();
 	mDirectionalShadowShader.CreateFromFiles("shaders\\directional_shadow_map.vert", "shaders\\directional_shadow_map.frag");
+	
+	mOmniShadowShader = Shader();
 	mOmniShadowShader.CreateFromFiles("shaders\\omni_shadow_map.vert", "shaders\\omni_shadow_map.geom", "shaders\\omni_shadow_map.frag");
 }
 
@@ -235,13 +241,13 @@ GLvoid App::InitCamera()
 
 GLvoid App::InitDirectionalLight()
 {
-	mMainLight = DirectionalLight(2048, 2048, glm::vec3(1.0f, 1.0f, 1.0f), 0.1f, 0.6f, glm::vec3(0.0f, -1.0f, -7.0f));
+	mMainLight = DirectionalLight(2048, 2048, glm::vec3(1.0f, 1.0f, 1.0f), 0.05f, 0.1f, glm::vec3(0.0f, -1.0f, -7.0f));
 }
 
 GLvoid App::InitPointLights()
 {
-	mPointLights.push_back(PointLight(1024, 1024, 0.01f, 100.0f, glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
-	mPointLights.push_back(PointLight(1024, 1024, 0.01f, 100.0f, glm::vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));
+	mPointLights.push_back(PointLight(1024, 1024, 0.01f, 100.0f, glm::vec3(0.0f, 0.0f, 1.0f), 0.0f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
+	mPointLights.push_back(PointLight(1024, 1024, 0.01f, 100.0f, glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));
 }
 
 GLvoid App::InitSpotLights()
@@ -254,9 +260,9 @@ GLvoid App::InitSpotLights()
 			100.0f,
 			glm::vec3(1.0f, 1.0f, 1.0f),
 			1.0f,
-			4.0f,
-			glm::vec3(0.0f, 2.5f, 5.0f),
-			glm::vec3(0.0f, -1.0f, 0.0f),
+			6.0f,
+			mCamera.GetCameraPosition(),
+			mCamera.GetCameraDirection(),
 			0.2f,
 			0.1f,
 			0.05f,
@@ -268,7 +274,7 @@ GLvoid App::InitSpotLights()
 GLvoid App::InitLights()
 {
 	InitDirectionalLight();
-	InitPointLights();
+	/*InitPointLights();*/
 	InitSpotLights();
 }
 
@@ -308,6 +314,8 @@ GLvoid App::DirectionalShadowMapPass(DirectionalLight* light)
 	glm::mat4 lightTransform = mMainLight.CalculateLightTransform();
 	mDirectionalShadowShader.SetDirectionalLightTransform(&lightTransform);
 
+	mDirectionalShadowShader.Validate();
+
 	RenderScene();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -328,8 +336,9 @@ GLvoid App::OmniShadowMapPass(PointLight* light)
 
 	glUniform3f(mUniformOmniLightPos, light->GetPosition().x, light->GetPosition().y, light->GetPosition().z);
 	glUniform1f(mUniformFarPlane, light->GetFarPlane());
+	mOmniShadowShader.SetOmniLightMatrices(light->CalculateLightTransform());
 
-	mOmniShadowShader.SetLightMatrices(light->CalculateLightTransform());
+	mOmniShadowShader.Validate();
 
 	RenderScene();
 
@@ -365,8 +374,8 @@ GLboolean App::InitMainWindow()
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Core profile = no backwards compatibility
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // Allow forward compatibility
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	mMainWindow = glfwCreateWindow(mClientWidth, mClientHeight, mWindowName, nullptr, nullptr);
 	if (!mMainWindow)
@@ -385,7 +394,7 @@ GLboolean App::InitMainWindow()
 	CreateCallbacks();
 	glfwSetInputMode(mMainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	glewExperimental = GL_TRUE; // Allow modern extension features
+	glewExperimental = GL_TRUE;
 
 	if (glewInit() != GLEW_OK)
 	{
