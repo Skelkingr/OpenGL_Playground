@@ -54,6 +54,8 @@ Skybox::~Skybox()
 
 GLvoid Skybox::DrawSkybox(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 {
+	viewMatrix = glm::mat4(glm::mat3(viewMatrix));
+
 	glDepthMask(GL_FALSE);
 
 	mSkyShader->UseShader();
