@@ -193,10 +193,6 @@ GLvoid App::RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 	mShaderList[0].SetTexture(1);
 	mShaderList[0].SetDirectionalShadowMap(2);
 
-	glm::vec3 lowerLight = mCamera.GetCameraPosition();
-	lowerLight.y -= 0.3f;
-	mSpotLights[0].SetFlash(lowerLight, mCamera.GetCameraDirection());
-
 	mShaderList[0].Validate();
 
 	RenderScene();
@@ -246,8 +242,8 @@ GLvoid App::InitDirectionalLight()
 
 GLvoid App::InitPointLights()
 {
-	mPointLights.push_back(PointLight(1024, 1024, 0.01f, 100.0f, glm::vec3(0.0f, 0.0f, 1.0f), 0.0f, 1.0f, glm::vec3(0.0f, 2.5f, 5.0f), 0.2f, 0.1f, 0.05f));
-	mPointLights.push_back(PointLight(1024, 1024, 0.01f, 100.0f, glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 1.0f, glm::vec3(0.0f, 2.5f, -5.0f), 0.2f, 0.1f, 0.05f));
+	mPointLights.push_back(PointLight(1024, 1024, 0.01f, 100.0f, glm::vec3(0.0f, 0.0f, 1.0f), 0.0f, 0.4f, glm::vec3(0.0f, 2.5f, 5.0f), 0.3f, 0.01f, 0.01f));
+	mPointLights.push_back(PointLight(1024, 1024, 0.01f, 100.0f, glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.4f, glm::vec3(0.0f, 2.5f, -5.0f), 0.3f, 0.01f, 0.01f));
 }
 
 GLvoid App::InitSpotLights()
@@ -269,13 +265,17 @@ GLvoid App::InitSpotLights()
 			20.0f
 		)
 	);
+
+	glm::vec3 lowerLight = mCamera.GetCameraPosition();
+	lowerLight.y -= 0.3f;
+	mSpotLights[0].SetFlash(lowerLight, mCamera.GetCameraDirection());
 }
 
 GLvoid App::InitLights()
 {
 	InitDirectionalLight();
-	/*InitPointLights();*/
-	InitSpotLights();
+	InitPointLights();
+	//InitSpotLights();
 }
 
 GLvoid App::InitMaterials()
