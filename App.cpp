@@ -57,9 +57,6 @@ GLboolean App::Init()
 	InitLights(true, false, true);
 	InitSkybox();
 
-	for (Mesh* obj : mMeshList)
-		obj->SetProjection(glm::perspective(glm::radians(60.f), (GLfloat)mMainWindow.GetBufferWidth() / (GLfloat)mMainWindow.GetBufferHeight(), 0.1f, 100.0f));
-
 	return true;
 }
 
@@ -109,7 +106,7 @@ GLvoid App::RenderScene()
 	// Slenderman:
 	glm::mat4 model(1.0f);
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0.0f, 1.95f, -7.0f));
+	model = glm::translate(model, glm::vec3(0.0f, 2.0f, -7.0f));
 	model = glm::scale(model, glm::vec3(0.006f, 0.006f, 0.006f));
 	glUniformMatrix4fv(mUniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	mDullMaterial.UseMaterial(mUniformSpecularIntensity, mUniformShininess);
@@ -235,7 +232,7 @@ GLvoid App::InitCamera()
 
 GLvoid App::InitDirectionalLight()
 {
-	mMainLight = DirectionalLight(2048, 2048, glm::vec3(1.0f, 1.0f, 1.0f), 0.05f, 0.1f, glm::vec3(0.0f, -1.0f, -7.0f));
+	mMainLight = DirectionalLight(2048, 2048, glm::vec3(0.8f, 0.8f, 1.0f), 0.05f, 0.4f, glm::vec3(-10.0f, -10.0f, 10.0f));
 }
 
 GLvoid App::InitPointLights()
