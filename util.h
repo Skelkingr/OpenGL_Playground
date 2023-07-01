@@ -100,7 +100,7 @@ namespace
 		std::string str;
 		while (std::getline(is, str))
 		{
-			if (str.at(0) == '\\' || str.at(0) == '\0')
+			if (str.size() <= 0)
 				continue;
 
 			size_t pos = 0;
