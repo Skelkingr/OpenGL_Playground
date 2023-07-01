@@ -7,6 +7,7 @@
 #include "Model.h"
 #include "SpotLight.h"
 #include "Shader.h"
+#include "Skybox.h"
 #include "Util.h"
 #include "Window.h"
 
@@ -32,18 +33,20 @@ public:
 	GLint Run();
 
 	GLvoid RenderScene();
-	GLvoid RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix);
+	GLvoid RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix);
 
-	GLvoid CreateObjects(GLboolean direction, GLfloat offset, GLfloat maxOffset, GLfloat increment);
+	GLvoid CreateObjects();
 	GLvoid CreateShaders();
 
 	GLvoid InitCamera();
+	GLvoid InitTextures();
+	GLvoid InitMaterials();
+	GLvoid InitModels();
+	GLvoid InitLights(GLboolean directional, GLboolean point, GLboolean spot);
 	GLvoid InitDirectionalLight();
 	GLvoid InitPointLights();
 	GLvoid InitSpotLights();
-	GLvoid InitMaterials();
-	GLvoid InitTextures();
-	GLvoid InitModels();
+	GLvoid InitSkybox();
 
 	GLvoid DirectionalShadowMapPass(DirectionalLight* light);
 	GLvoid OmniShadowMapPass(PointLight* light);
@@ -86,6 +89,8 @@ private:
 	Material mDullMaterial;
 
 	Model mSlenderman;
+
+	Skybox mSkybox;
 };
 
 #endif

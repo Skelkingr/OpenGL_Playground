@@ -45,12 +45,11 @@ Skybox::Skybox(std::vector<std::string> faceLocations)
 
 	// Mesh setup
 	mSkyMesh = new Mesh();
-	mSkyMesh->CreateMeshFromFile("meshes\\skybox\\vertices.txt", "meshes\\skybox\\indices.txt", false);
+	mSkyMesh->CreateMeshFromFile("meshes\\skybox\\vertices.txt", "meshes\\skybox\\indices.txt", true);
 }
 
 Skybox::~Skybox()
-{
-}
+{}
 
 GLvoid Skybox::DrawSkybox(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 {

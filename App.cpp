@@ -47,16 +47,15 @@ GLboolean App::Init()
 		return false;
 	}
 
-	InitCamera();
-	InitDirectionalLight();
-	InitPointLights();
-	InitSpotLights();
-	InitMaterials();
-	InitTextures();
-	InitModels();
-
-	CreateObjects(true, 0.05f, 1.5f, 0.0005f);
+	CreateObjects();
 	CreateShaders();
+
+	InitCamera();
+	InitTextures();
+	InitMaterials();
+	InitModels();
+	InitLights(true, false, true);
+	InitSkybox();
 
 	for (Mesh* obj : mMeshList)
 		obj->SetProjection(glm::perspective(glm::radians(60.f), (GLfloat)mMainWindow.GetBufferWidth() / (GLfloat)mMainWindow.GetBufferHeight(), 0.1f, 100.0f));
@@ -95,7 +94,7 @@ GLint App::Run()
 		{
 			OmniShadowMapPass(&mSpotLights[i]);
 		}
-		RenderPass(projection, mCamera.CalculateViewMatrix());
+		RenderPass(mCamera.CalculateViewMatrix(), projection);
 
 		glUseProgram(0);
 
@@ -124,11 +123,11 @@ GLvoid App::RenderScene()
 	mMeshList[0]->RenderMesh();
 
 	// Wall 1:
-	model = glm::mat4(1.0f);
-	glUniformMatrix4fv(mUniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	mTextureList[2]->UseTexture();
-	mDullMaterial.UseMaterial(mUniformSpecularIntensity, mUniformShininess);
-	mMeshList[1]->RenderMesh();
+	//model = glm::mat4(1.0f);
+	//glUniformMatrix4fv(mUniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	//mTextureList[2]->UseTexture();
+	//mDullMaterial.UseMaterial(mUniformSpecularIntensity, mUniformShininess);
+	//mMeshList[1]->RenderMesh();
 
 	// Wall 2:
 	//model = glm::mat4(1.0f);
@@ -155,8 +154,15 @@ GLvoid App::RenderScene()
 	//mMeshList[1]->RenderMesh();
 }
 
-GLvoid App::RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
+GLvoid App::RenderPass(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 {
+	glViewport(0, 0, mMainWindow.GetWidth(), mMainWindow.GetHeight());
+
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	mSkybox.DrawSkybox(viewMatrix, projectionMatrix);
+
 	mShaderList[0].UseShader();
 
 	mUniformModel = mShaderList[0].GetModelLocation();
@@ -166,11 +172,6 @@ GLvoid App::RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 	mUniformEyePosition = mShaderList[0].GetEyePositionLocation();
 	mUniformSpecularIntensity = mShaderList[0].GetSpecularIntensityLocation();
 	mUniformShininess = mShaderList[0].GetShininessLocation();
-
-	glViewport(0, 0, mMainWindow.GetWidth(), mMainWindow.GetHeight());
-
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUniformMatrix4fv(mUniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 	glUniformMatrix4fv(mUniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
@@ -196,7 +197,7 @@ GLvoid App::RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 	RenderScene();
 }
 
-GLvoid App::CreateObjects(GLboolean direction, GLfloat offset, GLfloat maxOffset, GLfloat increment)
+GLvoid App::CreateObjects()
 {
 	Mesh* floor = new Mesh();
 	floor->CreateMeshFromFile("meshes\\plain\\vertices.txt", "meshes\\plain\\indices.txt", true);
@@ -284,6 +285,29 @@ GLvoid App::InitModels()
 {
 	mSlenderman = Model();
 	mSlenderman.LoadModel("models\\slenderman\\slenderman.obj");
+}
+
+GLvoid App::InitLights(GLboolean directional, GLboolean point, GLboolean spot)
+{
+	if (directional)
+		InitDirectionalLight();
+	if (point)
+		InitPointLights();
+	if (spot)
+		InitSpotLights();
+}
+
+GLvoid App::InitSkybox()
+{
+	std::vector<std::string> skyboxFaces;
+	skyboxFaces.push_back("textures\\skybox\\nightsky_rt.tga");
+	skyboxFaces.push_back("textures\\skybox\\nightsky_lf.tga");
+	skyboxFaces.push_back("textures\\skybox\\nightsky_up.tga");
+	skyboxFaces.push_back("textures\\skybox\\nightsky_dn.tga");
+	skyboxFaces.push_back("textures\\skybox\\nightsky_bk.tga");
+	skyboxFaces.push_back("textures\\skybox\\nightsky_ft.tga");
+
+	mSkybox = Skybox(skyboxFaces);
 }
 
 GLvoid App::DirectionalShadowMapPass(DirectionalLight* light)
